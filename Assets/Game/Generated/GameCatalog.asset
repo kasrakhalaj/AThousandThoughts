@@ -1,0 +1,62 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8e9451ecb351984ea3d13a652f55e09, type: 3}
+  m_Name: GameCatalog
+  m_EditorClassIdentifier: Assembly-CSharp::AfterHours.GameCatalog
+  cars:
+  - {fileID: 8678328087369827463, guid: af7ff83f9e2a01a459f3421cfb9e990f, type: 3}
+  - {fileID: 870731793925460520, guid: 1f896bde52e349f48af86bee0dde7d5a, type: 3}
+  - {fileID: 7666334239885210428, guid: 8f24251b68aaa5240b3a39e9acedf367, type: 3}
+  - {fileID: 3945420079506366003, guid: 63cb3cd69210b7e46953462e685dd338, type: 3}
+  - {fileID: 7532459974863073858, guid: e9d48af753298604ea8bb9cc195c542a, type: 3}
+  carNames:
+  - BEATALL
+  - DOCLOREAN
+  - LANDYROAMER
+  - TOYOYO HIGHLIGHT
+  - TRISTAR RACER
+  trees:
+  - {fileID: 6786845618689974976, guid: e0eaa99ffa9993c4d92357c608defa33, type: 3}
+  - {fileID: 7126609150412455526, guid: 1ea60799babeb2b42b8942f6cd94ce59, type: 3}
+  - {fileID: 8123786865643123600, guid: ef1e4b1766a9d294d8965caae60fbadf, type: 3}
+  - {fileID: 8281502600233963570, guid: 067cca89f62c5104f8be71a4650d6e11, type: 3}
+  rocks:
+  - {fileID: 5995670189796518864, guid: 3afc0bc222010564795a850b975962d7, type: 3}
+  - {fileID: 2065345155900534115, guid: 8d5fe65d2ea4eb846aea1cc5552c3a3a, type: 3}
+  - {fileID: 4118822290653903668, guid: 791a507a2aae72f4fac4907494e0cc1a, type: 3}
+  houses:
+  - {fileID: 9220952726635253585, guid: f9210c56ab611ad4987a225f0493597d, type: 3}
+  - {fileID: 6604852500182198544, guid: fb915042be0682148b9ff32a63193d4e, type: 3}
+  - {fileID: 1066944930646558720, guid: c13884995dde5834a8d74c151fd64e3f, type: 3}
+  - {fileID: 6533711748808917225, guid: 835bac6d6da55d54ca9275e372bd4100, type: 3}
+  buildings:
+  - {fileID: 3805182895023897615, guid: 1761e8774c94c7c458d0b274bea0ec9c, type: 3}
+  - {fileID: 912366474313218103, guid: 8d84c8e389623564693c404f7df121c1, type: 3}
+  - {fileID: 2722970323362830853, guid: 4e3c644ade66fd44883afe43087f396d, type: 3}
+  roadProps:
+  - {fileID: 6035049592816250494, guid: 510d9226ac8b93c4796ebab6320c0f3d, type: 3}
+  - {fileID: 4357557245630965928, guid: bf4343f0de6ff4c44a9367907cacfb77, type: 3}
+  - {fileID: 6219124986410187567, guid: 165ad97f8ad3ead4b8978ce28498d7ee, type: 3}
+  - {fileID: 389654338790770999, guid: 81f495cbcd020894d84e34e34b4dd253, type: 3}
+  roadSegment: {fileID: 2181480157689992295, guid: 9bd18214320d0e14fac07ccc5669bc1a, type: 3}
+  stationaryCar: {fileID: 7037924977903871474, guid: e5c3e6c63cf91c749b1e4bdf7bfa4ab7, type: 3}
+  movingCar: {fileID: 8507804363255772803, guid: ee1b345bb84db194aa12143dcdc89912, type: 3}
+  coin: {fileID: 7554107687270005912, guid: 98d3d01b6bfa9ac4ca640c3c335e6bd9, type: 3}
+  fuel: {fileID: 1914920973471719187, guid: e520fd4971395a147992da4f334f4637, type: 3}
+  particleMaterial: {fileID: 2100000, guid: 4af205efb67d57340952267d906e6439, type: 2}
+  engineSound: {fileID: 8300000, guid: 58a0af6daf4613d44aa66467c600610b, type: 3}
+  collisionSound: {fileID: 8300000, guid: a85c15f45d5245442b5d23a08cb30e6b, type: 3}
+  coinSound: {fileID: 8300000, guid: 075dd9a0ffbe037419898f4f634f3a69, type: 3}
+  fuelSound: {fileID: 8300000, guid: e81fc99fc37e33a41bb4af50115f64d9, type: 3}
+  ignitionSound: {fileID: 8300000, guid: 616d9c8749a1f214c9a0d6baef690c02, type: 3}
+  rainSound: {fileID: 8300000, guid: e007db842a6d327419ec735809faf46f, type: 3}
+  controls: {fileID: -944628639613478452, guid: bf3f1f56759b6b24bb56be62e9a7d0a5, type: 3}

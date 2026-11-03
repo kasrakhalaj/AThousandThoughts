@@ -1,0 +1,6 @@
+{
+  "name": "AfterHours.Runtime",
+  "rootNamespace": "AfterHours",
+  "references": ["Unity.InputSystem", "Unity.TextMeshPro", "UnityEngine.UI", "Unity.RenderPipelines.Universal.Runtime", "Unity.RenderPipelines.Core.Runtime"],
+  "autoReferenced": true
+}

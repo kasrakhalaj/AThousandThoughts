@@ -1,0 +1,6 @@
+{
+  "name": "AfterHours.EditMode",
+  "references": ["AfterHours.Runtime"],
+  "includePlatforms": ["Editor"],
+  "optionalUnityReferences": ["TestAssemblies"]
+}

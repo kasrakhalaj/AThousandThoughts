@@ -1,0 +1,5 @@
+{
+  "name": "AfterHours.PlayMode",
+  "references": ["AfterHours.Runtime", "Unity.InputSystem", "UnityEngine.UI"],
+  "optionalUnityReferences": ["TestAssemblies"]
+}
