@@ -1,0 +1,63 @@
+{
+  "success": true,
+  "command": "command",
+  "data": {
+    "command": "test status",
+    "parameters": {},
+    "result": {
+      "status": "completed",
+      "duration": 18.66,
+      "summary": {
+        "total": 5,
+        "passed": 5,
+        "failed": 0,
+        "skipped": 0,
+        "inconclusive": 0
+      },
+      "results": [
+        {
+          "FullName": "DrivingFlowTests.AllCarsKeepTheirLightsThroughDamageAndReverse",
+          "Status": "Passed",
+          "Duration": 4.6065726,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.DamageCooldownGameOverAndPersistentBest",
+          "Status": "Passed",
+          "Duration": 2.6329818,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.EarlyFogAndDenseRoadsideSurviveRecycling",
+          "Status": "Passed",
+          "Duration": 0.2316212,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.MusicCategoriesPlaybackAndWeatherZones",
+          "Status": "Passed",
+          "Duration": 2.2063634,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.SelectionIgnitionSteeringReversePausePoolingAndRestart",
+          "Status": "Passed",
+          "Duration": 8.943524,
+          "Message": null,
+          "StackTrace": null
+        }
+      ]
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "E:\\MyGames\\HW2\\AfterHours"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

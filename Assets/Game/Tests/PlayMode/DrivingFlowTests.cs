@@ -13,27 +13,39 @@ public sealed class DrivingFlowTests
     bool hadBest;
     int savedBest;
     InputSettings.EditorInputBehaviorInPlayMode savedInputBehavior;
+    InputSettings.BackgroundBehavior savedBackgroundBehavior;
     const string KeyName = "AfterHours.HighScore.v1";
     [UnitySetUp] public IEnumerator Setup()
     {
         hadBest = PlayerPrefs.HasKey(KeyName); savedBest = PlayerPrefs.GetInt(KeyName);
         savedInputBehavior = InputSystem.settings.editorInputBehaviorInPlayMode;
+        savedBackgroundBehavior = InputSystem.settings.backgroundBehavior;
         InputSystem.settings.editorInputBehaviorInPlayMode = InputSettings.EditorInputBehaviorInPlayMode.AllDeviceInputAlwaysGoesToGameView;
+        // The Editor may be unfocused while Pipeline runs tests; routing alone still permits device disabling.
+        InputSystem.settings.backgroundBehavior = InputSettings.BackgroundBehavior.IgnoreFocus;
         keyboard = InputSystem.AddDevice<Keyboard>();
-        yield return SceneManager.LoadSceneAsync("AfterHours"); yield return null;
+        Assert.That(keyboard.enabled, Is.True, "The synthetic keyboard must stay enabled during background tests.");
+        yield return SceneManager.LoadSceneAsync("AfterHours"); yield return new WaitForSecondsRealtime(.06f);
+        // Physical keyboards must not compete with the synthetic device during automated checks.
+        GameManager.Instance.Input.StartCar.actionMap.asset.devices = new InputDevice[] { keyboard };
+        yield return null;
     }
     [UnityTearDown] public IEnumerator Cleanup()
     {
         Time.timeScale = 1;
         if (keyboard != null) InputSystem.RemoveDevice(keyboard);
         InputSystem.settings.editorInputBehaviorInPlayMode = savedInputBehavior;
+        InputSystem.settings.backgroundBehavior = savedBackgroundBehavior;
+        // Reset the test run before restoring preferences, so OnApplicationQuit cannot save it again.
+        if (GameManager.Instance != null) GameManager.Instance.MainMenu();
         if (hadBest) PlayerPrefs.SetInt(KeyName, savedBest); else PlayerPrefs.DeleteKey(KeyName);
         PlayerPrefs.Save(); yield return null;
     }
     IEnumerator Press(Key key)
     {
-        InputSystem.QueueStateEvent(keyboard, new KeyboardState(key)); yield return null;
-        InputSystem.QueueStateEvent(keyboard, new KeyboardState()); yield return null;
+        // Keep each state across several player-loop updates, as a physical keypress would be.
+        InputSystem.QueueStateEvent(keyboard, new KeyboardState(key)); yield return new WaitForSecondsRealtime(.08f);
+        InputSystem.QueueStateEvent(keyboard, new KeyboardState()); yield return new WaitForSecondsRealtime(.08f);
     }
     [UnityTest] public IEnumerator SelectionIgnitionSteeringReversePausePoolingAndRestart()
     {

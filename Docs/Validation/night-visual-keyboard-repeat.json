@@ -1,0 +1,63 @@
+{
+  "success": true,
+  "command": "command",
+  "data": {
+    "command": "test status",
+    "parameters": {},
+    "result": {
+      "status": "completed",
+      "duration": 10.06,
+      "summary": {
+        "total": 5,
+        "passed": 3,
+        "failed": 2,
+        "skipped": 0,
+        "inconclusive": 0
+      },
+      "results": [
+        {
+          "FullName": "DrivingFlowTests.AllCarsKeepTheirLightsThroughDamageAndReverse",
+          "Status": "Failed",
+          "Duration": 4.4593407,
+          "Message": "  Expected: True\r\n  But was:  False\r\n",
+          "StackTrace": "at DrivingFlowTests+<AllCarsKeepTheirLightsThroughDamageAndReverse>d__11.MoveNext () [0x00233] in E:\\MyGames\\HW2\\AfterHours\\Assets\\Game\\Tests\\PlayMode\\DrivingFlowTests.cs:115\r\nat UnityEngine.TestTools.TestEnumerator+<Execute>d__8.MoveNext () [0x0003a] in .\\Library\\PackageCache\\com.unity.test-framework@ee3fe9477490\\UnityEngine.TestRunner\\NUnitExtensions\\Attributes\\TestEnumerator.cs:52\r\n"
+        },
+        {
+          "FullName": "DrivingFlowTests.DamageCooldownGameOverAndPersistentBest",
+          "Status": "Passed",
+          "Duration": 2.5822875,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.EarlyFogAndDenseRoadsideSurviveRecycling",
+          "Status": "Passed",
+          "Duration": 0.2610079,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.MusicCategoriesPlaybackAndWeatherZones",
+          "Status": "Passed",
+          "Duration": 2.2750668,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.SelectionIgnitionSteeringReversePausePoolingAndRestart",
+          "Status": "Failed",
+          "Duration": 0.453336,
+          "Message": "  Expected: Starting\r\n  But was:  Menu\r\n",
+          "StackTrace": "at DrivingFlowTests+<SelectionIgnitionSteeringReversePausePoolingAndRestart>d__8.MoveNext () [0x0010f] in E:\\MyGames\\HW2\\AfterHours\\Assets\\Game\\Tests\\PlayMode\\DrivingFlowTests.cs:51\r\nat UnityEngine.TestTools.TestEnumerator+<Execute>d__8.MoveNext () [0x0003a] in .\\Library\\PackageCache\\com.unity.test-framework@ee3fe9477490\\UnityEngine.TestRunner\\NUnitExtensions\\Attributes\\TestEnumerator.cs:52\r\n"
+        }
+      ]
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "E:\\MyGames\\HW2\\AfterHours"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

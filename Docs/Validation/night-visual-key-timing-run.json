@@ -1,0 +1,63 @@
+{
+  "success": true,
+  "command": "command",
+  "data": {
+    "command": "test status",
+    "parameters": {},
+    "result": {
+      "status": "completed",
+      "duration": 10.32,
+      "summary": {
+        "total": 5,
+        "passed": 4,
+        "failed": 1,
+        "skipped": 0,
+        "inconclusive": 0
+      },
+      "results": [
+        {
+          "FullName": "DrivingFlowTests.AllCarsKeepTheirLightsThroughDamageAndReverse",
+          "Status": "Passed",
+          "Duration": 4.7217543,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.DamageCooldownGameOverAndPersistentBest",
+          "Status": "Passed",
+          "Duration": 2.5420885,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.EarlyFogAndDenseRoadsideSurviveRecycling",
+          "Status": "Passed",
+          "Duration": 0.261329,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.MusicCategoriesPlaybackAndWeatherZones",
+          "Status": "Passed",
+          "Duration": 2.266818,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.SelectionIgnitionSteeringReversePausePoolingAndRestart",
+          "Status": "Failed",
+          "Duration": 0.4728493,
+          "Message": "  Expected: Starting\r\n  But was:  Menu\r\n",
+          "StackTrace": "at DrivingFlowTests+<SelectionIgnitionSteeringReversePausePoolingAndRestart>d__8.MoveNext () [0x0010f] in E:\\MyGames\\HW2\\AfterHours\\Assets\\Game\\Tests\\PlayMode\\DrivingFlowTests.cs:48\r\nat UnityEngine.TestTools.TestEnumerator+<Execute>d__8.MoveNext () [0x0003a] in .\\Library\\PackageCache\\com.unity.test-framework@ee3fe9477490\\UnityEngine.TestRunner\\NUnitExtensions\\Attributes\\TestEnumerator.cs:52\r\n"
+        }
+      ]
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "E:\\MyGames\\HW2\\AfterHours"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}
