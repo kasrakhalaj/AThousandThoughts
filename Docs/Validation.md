@@ -40,7 +40,7 @@ Windows x86_64 build completed successfully through `AfterHoursBuilder.BuildWind
 
 The first standalone launch created a Direct3D 12 device on the local NVIDIA RTX 4050 and remained running/responding. Its log contained no gameplay exceptions or shader errors. It revealed font ellipsis fallback warnings, corrected by explicitly using the supported text truncation mode before the final build.
 
-The final Windows rebuild also succeeded after the radio placement/text changes. The final build's music folder contains all **27 MP3s** present at handoff, verified byte-for-byte against the source library. The source library gained a track during implementation; discovery/copying includes it automatically.
+The final Windows rebuild also succeeded after the radio placement/text changes. Its standalone launch remained running/responding and its startup log contained no gameplay exceptions, shader errors or font ellipsis warnings. The final build's music folder contains all **27 MP3s** present at handoff, verified byte-for-byte against the source library. The source library gained a track during implementation; discovery/copying includes it automatically. Both smoke-test player processes were stopped after validation.
 
 Reviewed final captures under `Images/`: menu, driving, rain and reverse. Preview positions/weather/reverse state were staged for visual review; the separate PlayMode suite establishes keyboard behavior. The Editor was returned to Edit Mode and preview-generated high scores were cleared before handoff.
 
@@ -49,7 +49,7 @@ Reviewed final captures under `Images/`: menu, driving, rain and reverse. Previe
 - This is a first playable, not a final balance/art pass. Longer play sessions, camera comfort and traffic difficulty need player feedback.
 - Automated controls cover keyboard/mouse input infrastructure. Gamepad bindings exist but have not been tested on physical hardware.
 - Standalone launch smoke testing complements the Editor integration suite; it does not establish behavior on other PCs.
-- A restarted Editor logged transient Burst compiler server pipe errors during startup. These were separate from first-party C# compilation; subsequent runtime tests and the Windows build succeeded. Historical diagnostics remain in ignored local logs.
+- The Editor logged Burst compiler server pipe errors during startup/recompilation. These are an unresolved local tooling issue separate from first-party C# compilation; subsequent runtime tests and both Windows builds succeeded. The standalone startup log has no corresponding error. Historical diagnostics remain in ignored local logs.
 - No remote repository has been configured or published. No LMS upload, final report or submission ZIP has been prepared.
 - Exact vehicle publisher/license details were absent from the supplied asset folder and remain recorded in CREDITS.md.
 - Weapons are deferred by design.
