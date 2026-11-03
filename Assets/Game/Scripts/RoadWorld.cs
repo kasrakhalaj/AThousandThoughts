@@ -7,20 +7,29 @@ namespace AfterHours
     {
         const int ChunkCount = 17;
         readonly List<RoadChunk> chunks = new List<RoadChunk>();
-        readonly List<Interactable> active = new List<Interactable>(256);
-        readonly Dictionary<int, Stack<Interactable>> pools = new Dictionary<int, Stack<Interactable>>();
+        readonly List<Interactable> active = new List<Interactable>(264);
+        readonly List<StationaryCar> traffic = new List<StationaryCar>(96);
+        readonly Dictionary<int, Queue<Interactable>> pools = new Dictionary<int, Queue<Interactable>>();
         readonly Dictionary<Interactable, int> poolKeys = new Dictionary<Interactable, int>();
         GameManager game;
         GameCatalog catalog;
+        Camera trafficCamera;
         int furthestGenerated;
-        int windowCenter = int.MinValue;
+        int windowCenter = int.MinValue, windowDirection, minSection, maxSection;
         float trafficTimer;
+        bool populatingInitial;
         public int ActiveCount => active.Count;
+        public int ActiveTrafficCount => traffic.Count;
         public int PooledCount => poolKeys.Count;
+        public IReadOnlyList<StationaryCar> Traffic => traffic;
+        public TrafficFlow Flow => TrafficRules.FlowAt(game.Driver.transform.position.z);
+        public float TrafficWeatherFactor => game.Weather == null ? 1 : TrafficRules.WeatherSpeedFactor(game.Weather.RainAmount, game.Weather.FogAmount);
+        float WeatherHeadway => game.Weather == null ? 1 : 1 + game.Weather.RainAmount * .35f + game.Weather.FogAmount * .5f;
+        int TrafficBudget => Flow == TrafficFlow.Quiet ? 0 : Mathf.RoundToInt((Flow == TrafficFlow.Sparse ? 8 : Flow == TrafficFlow.Busy ? 20 : 14) + game.Run.Difficulty * 6);
 
         public void Initialize(GameManager owner, GameCatalog data)
         {
-            game = owner; catalog = data;
+            game = owner; catalog = data; trafficCamera = Camera.main;
             for (int i = 0; i < ChunkCount; i++)
             {
                 var road = Instantiate(catalog.roadSegment, transform).AddComponent<RoadChunk>();
@@ -32,134 +41,204 @@ namespace AfterHours
         }
         void Warm(int key, GameObject[] prefabs, int count)
         {
-            var pool = new Stack<Interactable>(count); pools.Add(key, pool);
+            var pool = new Queue<Interactable>(count); pools.Add(key, pool);
             for (int i = 0; i < count; i++)
             {
                 var instance = Instantiate(prefabs[i % prefabs.Length], transform).GetComponent<Interactable>();
-                if (instance is StationaryCar traffic) traffic.Initialize(catalog);
-                instance.gameObject.SetActive(false); pool.Push(instance); poolKeys.Add(instance, key);
+                if (instance is StationaryCar car) car.Initialize(catalog);
+                instance.gameObject.SetActive(false); pool.Enqueue(instance); poolKeys.Add(instance, key);
             }
         }
         Interactable Spawn(int key, Vector3 position)
         {
             if (pools[key].Count == 0) return null;
-            var item = pools[key].Pop(); item.Activate(game, position); active.Add(item);
+            var item = pools[key].Dequeue(); item.Activate(game, position); active.Add(item);
+            if (item is StationaryCar car) traffic.Add(car);
             return item;
         }
         void Release(int index)
         {
-            var item = active[index]; item.gameObject.SetActive(false); pools[poolKeys[item]].Push(item);
-            active.RemoveAt(index);
+            var item = active[index];
+            if (item is StationaryCar car) traffic.Remove(car);
+            item.gameObject.SetActive(false); pools[poolKeys[item]].Enqueue(item); active.RemoveAt(index);
         }
         public void ResetWorld()
         {
             for (int i = active.Count - 1; i >= 0; i--) Release(i);
-            furthestGenerated = -1; windowCenter = int.MinValue; trafficTimer = 4;
+            furthestGenerated = int.MinValue; windowCenter = int.MinValue; trafficTimer = 3;
             foreach (var chunk in chunks) chunk.gameObject.SetActive(false);
-            MaintainWindow(0);
+            // Initial traffic is already present before ignition; only later spawns require invisibility.
+            populatingInitial = true; MaintainWindow(game.Driver.transform.position.z); populatingInitial = false;
         }
         void MaintainWindow(float z)
         {
             int center = Mathf.FloorToInt(z / RoadChunk.Length);
-            if (center == windowCenter) return;
-            windowCenter = center;
-            int min = center - 7, max = min + ChunkCount - 1;
-            // Return old occupants before assigning newly visible chunks, keeping pool capacity bounded.
+            int direction = game.Driver.Reversing ? -1 : 1;
+            if (center == windowCenter && direction == windowDirection) return;
+            windowCenter = center; windowDirection = direction;
+            minSection = center - (direction > 0 ? 5 : 11); maxSection = minSection + ChunkCount - 1;
             for (int i = active.Count - 1; i >= 0; i--)
-                if (active[i].transform.position.z < min * 60 || active[i].transform.position.z > (max + 1) * 60) Release(i);
-            for (int index = min; index <= max; index++)
+                if (OutsideWindow(active[i].transform.position.z) && !TrafficVisible(active[i].transform.position)) Release(i);
+            for (int index = minSection; index <= maxSection; index++)
             {
                 bool found = false;
                 foreach (var chunk in chunks) if (chunk.gameObject.activeSelf && chunk.Index == index) { found = true; break; }
                 if (found) continue;
                 foreach (var chunk in chunks)
                 {
-                    if (!chunk.gameObject.activeSelf || chunk.Index < min || chunk.Index > max)
+                    if (!chunk.gameObject.activeSelf || chunk.Index < minSection || chunk.Index > maxSection)
                     {
                         chunk.gameObject.SetActive(true); chunk.Place(index);
                         bool fresh = index > furthestGenerated;
-                        Populate(index, fresh);
-                        furthestGenerated = Mathf.Max(furthestGenerated, index);
-                        break;
+                        Populate(index, fresh); furthestGenerated = Mathf.Max(furthestGenerated, index); break;
                     }
                 }
             }
         }
+        bool OutsideWindow(float z) => z < minSection * 60 || z > (maxSection + 1) * 60;
         void Populate(int index, bool fresh)
         {
             var random = new System.Random(unchecked(index * 17471 + 42013));
-            // Each eighth stretch is deliberately empty. The first meters are safe for ignition.
-            bool quiet = ((index % 16 + 16) % 16 >= 11);
-            if (!quiet)
+            float z = index * 60 + 18 + (float)random.NextDouble() * 30;
+            TrafficFlow flow = TrafficRules.FlowAt(z);
+            int safeLane = ((index % 3) + 3) % 3;
+            if (flow != TrafficFlow.Quiet)
             {
-                int rows = game.Run.Difficulty > .45f ? 2 : 1;
-                for (int row = 0; row < rows; row++)
+                float chance = flow == TrafficFlow.Sparse ? .45f : flow == TrafficFlow.Busy ? .95f : .7f;
+                if (random.NextDouble() < chance && traffic.Count < TrafficBudget)
                 {
-                    float z = index * 60 + (rows == 1 ? 36 : 22 + row * 30);
-                    int safeLane = ((index + row) % 3 + 3) % 3;
-                    int blocked = random.Next(3);
-                    if (blocked == safeLane) blocked = (blocked + 1) % 3;
-                    if (z < 0 && z > -80 && blocked == 1) blocked = 0;
-                    Spawn(random.NextDouble() < .1 && index > 1 ? 0 : 1, new Vector3((blocked - 1) * CarDriver.LaneWidth, .08f, z));
-                    if (game.Run.Difficulty > .2f)
-                    {
-                        int second = 3 - safeLane - blocked;
-                        Spawn(1, new Vector3((second - 1) * CarDriver.LaneWidth, .08f, z));
-                    }
-                    if (fresh) for (int c = 0; c < 3; c++) Spawn(2, new Vector3((safeLane - 1) * CarDriver.LaneWidth, .85f, z + c * 4));
+                    int lane = (safeLane + random.Next(1, 3)) % 3;
+                    bool stopped = index > 3 && random.NextDouble() < .045;
+                    SpawnTraffic(new Vector3((lane - 1) * CarDriver.LaneWidth, .08f, z), 18 + (float)random.NextDouble() * 9, stopped, populatingInitial);
                 }
+                if (fresh) for (int c = 0; c < 3; c++) Spawn(2, new Vector3((safeLane - 1) * CarDriver.LaneWidth, .85f, z + c * 4));
             }
             if (fresh && index >= 0 && index % 5 == 2)
                 Spawn(3, new Vector3((random.Next(3) - 1) * CarDriver.LaneWidth, .6f, index * 60 + 10));
         }
-        public bool CanMerge(Interactable car, float targetX)
+
+        bool OccupiesLane(StationaryCar car, int lane) => car is MovingCar moving ? moving.OccupiesLane(lane) : Mathf.Abs(car.transform.position.x - (lane - 1) * CarDriver.LaneWidth) < 2.05f;
+        bool PlayerOccupiesLane(int lane) => game.Driver.Lane == lane || Mathf.Abs(game.Driver.transform.position.x - (lane - 1) * CarDriver.LaneWidth) < 2.05f;
+        public bool TrafficVisible(Vector3 position)
         {
-            // Reserve an empty target lane plus a second escape lane around the merging car.
-            int occupied = 0;
-            foreach (var other in active)
+            if (trafficCamera == null) return true;
+            Vector3 view = trafficCamera.WorldToViewportPoint(position + Vector3.up);
+            return view.z > -6 && view.z < trafficCamera.farClipPlane + 8 && view.x > -.18f && view.x < 1.18f && view.y > -.25f && view.y < 1.25f;
+        }
+        bool HasEscapeLane(float z, int proposedLane, StationaryCar ignored)
+        {
+            int occupied = 1 << proposedLane;
+            if (ignored != null)
+                for (int lane = 0; lane < 3; lane++) if (OccupiesLane(ignored, lane)) occupied |= 1 << lane;
+            foreach (var car in traffic)
             {
-                if (other == car || !(other is StationaryCar) || !other.gameObject.activeSelf) continue;
-                if (Mathf.Abs(other.transform.position.z - car.transform.position.z) < 24)
+                if (car == ignored || Mathf.Abs(car.transform.position.z - z) > 22) continue;
+                for (int lane = 0; lane < 3; lane++) if (OccupiesLane(car, lane)) occupied |= 1 << lane;
+            }
+            if (occupied == 7) return false;
+            float closing = Mathf.Abs(game.Driver.Speed) + 38;
+            if (Mathf.Abs(z - game.Driver.transform.position.z) > 25 + closing * 2) return true;
+            for (int lane = Mathf.Max(0, game.Driver.Lane - 1); lane <= Mathf.Min(2, game.Driver.Lane + 1); lane++)
+                if ((occupied & (1 << lane)) == 0) return true;
+            return false;
+        }
+        public bool CanSpawnTraffic(Vector3 position, float speed)
+        {
+            return CanSpawnTraffic(position, speed, false);
+        }
+        bool CanSpawnTraffic(Vector3 position, float speed, bool initial)
+        {
+            int lane = Mathf.RoundToInt(position.x / CarDriver.LaneWidth) + 1;
+            if (lane < 0 || lane > 2 || Mathf.Abs(position.x - (lane - 1) * CarDriver.LaneWidth) > .1f) return false;
+            if (OutsideWindow(position.z) || Flow == TrafficFlow.Quiet || TrafficRules.FlowAt(position.z) == TrafficFlow.Quiet) return false;
+            if (!initial && TrafficVisible(position)) return false;
+            float gap = position.z - game.Driver.transform.position.z;
+            if (!TrafficRules.SafePlayerSpawn(gap, speed, game.Driver.Speed)) return false;
+            foreach (var other in traffic)
+                if (OccupiesLane(other, lane) && !TrafficRules.SafeLaneGap(other.transform.position.z - position.z, speed, other.Speed, 1.5f * WeatherHeadway)) return false;
+            return HasEscapeLane(position.z, lane, null);
+        }
+        StationaryCar SpawnTraffic(Vector3 position, float speed, bool stopped, bool initial)
+        {
+            if (!CanSpawnTraffic(position, stopped ? 0 : speed, initial)) return null;
+            var car = Spawn(stopped ? 0 : 1, position) as StationaryCar;
+            if (car is MovingCar moving) moving.SetCruisingSpeed(speed);
+            return car;
+        }
+        public StationaryCar TrySpawnTraffic(Vector3 position, float speed, bool stopped = false) => SpawnTraffic(position, speed, stopped, false);
+
+        public bool CanMerge(Interactable item, float targetX)
+        {
+            if (!(item is MovingCar car)) return false;
+            int lane = Mathf.RoundToInt(targetX / CarDriver.LaneWidth) + 1;
+            if (lane < 0 || lane > 2 || Mathf.Abs(targetX - (lane - 1) * CarDriver.LaneWidth) > .1f) return false;
+            float z = car.transform.position.z;
+            float headway = car.Headway * WeatherHeadway;
+            if (PlayerOccupiesLane(lane) && !TrafficRules.SafeLaneGap(game.Driver.transform.position.z - z, car.Speed, game.Driver.Speed, headway)) return false;
+            foreach (var other in traffic)
+                if (other != car && OccupiesLane(other, lane) && !TrafficRules.SafeLaneGap(other.transform.position.z - z, car.Speed, other.Speed, headway)) return false;
+            return HasEscapeLane(z, lane, car);
+        }
+        public bool TryChooseTrafficLane(MovingCar car, float desired, float currentSafe, out int lane)
+        {
+            lane = car.Lane;
+            float best = currentSafe + 2.5f;
+            for (int candidate = Mathf.Max(0, car.Lane - 1); candidate <= Mathf.Min(2, car.Lane + 1); candidate++)
+            {
+                if (candidate == car.Lane || !CanMerge(car, (candidate - 1) * CarDriver.LaneWidth)) continue;
+                float available = TrafficSpeedInLane(car, desired, candidate);
+                bool keepRight = car.Style == TrafficDriverStyle.Cautious && candidate > car.Lane && currentSafe >= desired - 1 && available >= desired - 1;
+                if (available > best || keepRight)
                 {
-                    if (Mathf.Abs(other.transform.position.x - targetX) < 2) return false;
-                    occupied++;
+                    lane = candidate; best = available;
                 }
             }
-            return occupied == 0;
+            return lane != car.Lane;
         }
         public float TrafficSpeed(StationaryCar car, float cruising)
         {
             float result = cruising;
+            for (int lane = 0; lane < 3; lane++) if (OccupiesLane(car, lane)) result = Mathf.Min(result, TrafficSpeedInLane(car, cruising, lane));
+            return result;
+        }
+        float TrafficSpeedInLane(StationaryCar car, float cruising, int lane)
+        {
+            float result = cruising;
+            float headway = (car is MovingCar moving ? moving.Headway : 1.5f) * WeatherHeadway;
             float playerGap = game.Driver.transform.position.z - car.transform.position.z;
-            if (playerGap > 0 && playerGap < 32 && Mathf.Abs(game.Driver.transform.position.x - car.transform.position.x) < 1.8f)
-                result = Mathf.Min(result, Mathf.Lerp(0, Mathf.Max(0, game.Driver.Speed), Mathf.InverseLerp(5, 25, playerGap)));
-            foreach (var other in active)
+            if (playerGap > 0 && PlayerOccupiesLane(lane))
+                result = Mathf.Min(result, TrafficRules.FollowingSpeed(cruising, car.Speed, game.Driver.Speed, playerGap, headway));
+            foreach (var other in traffic)
             {
-                if (other == car || !(other is StationaryCar ahead)) continue;
-                float gap = ahead.transform.position.z - car.transform.position.z;
-                if (gap <= 0 || gap > 30 || Mathf.Abs(ahead.transform.position.x - car.transform.position.x) > 1.8f) continue;
-                result = Mathf.Min(result, Mathf.Lerp(0, Mathf.Max(0, ahead.Speed), Mathf.InverseLerp(5, 23, gap)));
+                if (other == car || !OccupiesLane(other, lane)) continue;
+                float gap = other.transform.position.z - car.transform.position.z;
+                if (gap > 0) result = Mathf.Min(result, TrafficRules.FollowingSpeed(cruising, car.Speed, other.Speed, gap, headway));
             }
             return result;
         }
         public void SetTrafficAudioPaused(bool paused)
         {
-            foreach (var item in active) if (item is StationaryCar car) car.SetAudioPaused(paused);
+            foreach (var car in traffic) car.SetAudioPaused(paused);
         }
         void StreamTraffic(float dt, Vector3 player)
         {
             trafficTimer -= dt;
             if (trafficTimer > 0) return;
-            trafficTimer = Mathf.Lerp(6, 3.4f, game.Run.Difficulty);
-            int section = Mathf.FloorToInt(player.z / 60);
-            if ((section % 16 + 16) % 16 >= 11) return;
-            // Overtakers approach in an adjacent lane, preserving a stopped player's reaction space.
-            int lane = (game.Driver.Lane + (Random.value > .5f ? 1 : 2)) % 3;
-            float x = (lane - 1) * CarDriver.LaneWidth;
-            float z = player.z - 85;
-            foreach (var item in active) if (item is StationaryCar && Mathf.Abs(item.transform.position.x - x) < 2 && Mathf.Abs(item.transform.position.z - z) < 30) return;
-            var car = Spawn(1, new Vector3(x, .08f, z)) as MovingCar;
-            if (car != null) car.SetCruisingSpeed(Mathf.Max(22, Mathf.Abs(game.Driver.Speed) + 5));
+            float interval = Flow == TrafficFlow.Sparse ? 7 : Flow == TrafficFlow.Busy ? 2.6f : 4.5f;
+            trafficTimer = interval * Random.Range(.8f, 1.25f) * Mathf.Lerp(1, .75f, game.Run.Difficulty);
+            if (Flow == TrafficFlow.Quiet || traffic.Count >= TrafficBudget) return;
+            for (int attempt = 0; attempt < 6; attempt++)
+            {
+                int lane = Random.Range(0, 3);
+                bool behind = Random.value < .65f;
+                float speed = Random.Range(16f, 28f) + game.Run.Difficulty * 5;
+                if (behind && !game.Driver.Reversing) speed = Mathf.Max(speed, Mathf.Min(38, game.Driver.Speed + Random.Range(3f, 7f)));
+                float rearGap = Mathf.Max(Random.Range(115, 175), 20 + Mathf.Max(0, speed - game.Driver.Speed) * 4.2f);
+                float z = behind ? player.z - rearGap : (maxSection + 1) * 60 - Random.Range(10, 25);
+                if (game.Driver.Reversing && !behind) z = minSection * 60 + Random.Range(10, 25);
+                if (SpawnTraffic(new Vector3((lane - 1) * CarDriver.LaneWidth, .08f, z), speed, false, false) != null) return;
+            }
+            // An unsafe attempt is skipped; never force a car into the camera or an occupied gap.
         }
         public void Tick(float dt)
         {
@@ -173,11 +252,11 @@ namespace AfterHours
                 item.Tick(dt);
                 Vector3 p = item.transform.position;
                 float halfLength = item is StationaryCar ? 4.1f : 2.5f;
-                // Swept longitudinal test also handles a dropped frame without tunneling through a pickup.
                 float sweep = Mathf.Abs(game.Driver.Speed - (item is StationaryCar car ? car.Speed : 0)) * dt;
-                if (Mathf.Abs(p.x - player.x) < (item is StationaryCar ? 1.65f : 1.3f) && Mathf.Abs(p.z - player.z) < halfLength + sweep)
-                    item.Contact();
-                if (p.z < (windowCenter - 7) * 60 || p.z > (windowCenter + 10) * 60) Release(i);
+                if (Mathf.Abs(p.x - player.x) < (item is StationaryCar ? 1.65f : 1.3f) && Mathf.Abs(p.z - player.z) < halfLength + sweep) item.Contact();
+                // Quiet sections drain traffic only beyond the view; visible cars never disappear to meet a budget.
+                bool drain = item is StationaryCar && Flow == TrafficFlow.Quiet && Mathf.Abs(p.z - player.z) > 75;
+                if ((OutsideWindow(p.z) || drain) && !TrafficVisible(p)) Release(i);
                 if (game.State != GameState.Playing) break;
             }
         }

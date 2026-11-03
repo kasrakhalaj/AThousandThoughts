@@ -1,0 +1,27 @@
+{
+  "success": true,
+  "command": "command",
+  "data": {
+    "command": "script eval",
+    "parameters": {
+      "code": "if (UnityEditor.SessionState.GetBool(\"AfterHours.Traffic.HadScore\", false)) UnityEngine.PlayerPrefs.SetInt(\"AfterHours.HighScore.v1\", UnityEditor.SessionState.GetInt(\"AfterHours.Traffic.Score\", 0)); else UnityEngine.PlayerPrefs.DeleteKey(\"AfterHours.HighScore.v1\"); UnityEngine.PlayerPrefs.Save(); return new { playing = UnityEditor.EditorApplication.isPlaying, score = UnityEngine.PlayerPrefs.GetInt(\"AfterHours.HighScore.v1\"), expected = UnityEditor.SessionState.GetInt(\"AfterHours.Traffic.Score\", 0) };"
+    },
+    "result": {
+      "output": null,
+      "diagnostics": [],
+      "success": true,
+      "result": {
+        "playing": false,
+        "score": 19,
+        "expected": 19
+      }
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "E:\\MyGames\\HW2\\AfterHours"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

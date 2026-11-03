@@ -1,0 +1,105 @@
+{
+  "success": true,
+  "command": "command",
+  "data": {
+    "command": "test status",
+    "parameters": {},
+    "result": {
+      "status": "completed",
+      "duration": 48.93,
+      "summary": {
+        "total": 11,
+        "passed": 11,
+        "failed": 0,
+        "skipped": 0,
+        "inconclusive": 0
+      },
+      "results": [
+        {
+          "FullName": "DrivingFlowTests.AllCarsKeepTheirLightsThroughDamageAndReverse",
+          "Status": "Passed",
+          "Duration": 8.3017939,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.DamageCooldownGameOverAndPersistentBest",
+          "Status": "Passed",
+          "Duration": 2.9658969,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.EarlyFogAndDenseRoadsideSurviveRecycling",
+          "Status": "Passed",
+          "Duration": 0.2595052,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.GasHeldDuringIgnitionWorksWhenDrivingBecomesEnabled",
+          "Status": "Passed",
+          "Duration": 4.6812105,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.MusicCategoriesPlaybackAndWeatherZones",
+          "Status": "Passed",
+          "Duration": 2.2501935,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.QuietRoadDrainsHiddenCarsAndKeepsVisibleCars",
+          "Status": "Passed",
+          "Duration": 2.9899428,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.RecordedEngineTrafficMovementAndPause",
+          "Status": "Passed",
+          "Duration": 4.5428587,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.SelectionIgnitionSteeringReversePausePoolingAndRestart",
+          "Status": "Passed",
+          "Duration": 12.3305438,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.TrafficReservesMergesAndCancelsForPlayer",
+          "Status": "Passed",
+          "Duration": 2.9870632,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.TrafficSpawnRejectsVisibleOccupiedAndBlockedRoad",
+          "Status": "Passed",
+          "Duration": 4.5967903,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.WeatherChangesTrafficSpeedAndFollowingDistance",
+          "Status": "Passed",
+          "Duration": 2.9763712,
+          "Message": null,
+          "StackTrace": null
+        }
+      ]
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "E:\\MyGames\\HW2\\AfterHours"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

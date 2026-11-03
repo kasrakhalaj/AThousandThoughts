@@ -1,0 +1,23 @@
+{
+  "success": true,
+  "command": "command",
+  "data": {
+    "command": "script eval_file",
+    "parameters": {
+      "file": "Temp/TrafficSnapshot.cs"
+    },
+    "result": {
+      "output": null,
+      "diagnostics": [],
+      "success": true,
+      "result": "{ frame = 8730, time = 73.10841, state = Playing, flow = Normal, player = (0.00, 0.08, 350.00), speed = 0, lives = 3, pool = 264, count = 9, traffic = System.Collections.Generic.List`1[System.Object] }"
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "E:\\MyGames\\HW2\\AfterHours"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

@@ -167,7 +167,7 @@ public sealed class DrivingFlowTests
         Assert.That(g.Audio.EnginePlaying, Is.True); Assert.That(g.Audio.EngineVolume, Is.GreaterThan(.1f));
         MovingCar car = null;
         foreach (var candidate in Object.FindObjectsByType<MovingCar>())
-            if (candidate.Speed > 10 && Mathf.Abs(candidate.transform.position.z) > 60) { car = candidate; break; }
+            if (candidate.Speed > 10 && candidate.transform.position.z > 85 && candidate.transform.position.z < 500) { car = candidate; break; }
         Assert.That(car, Is.Not.Null);
         float start = car.transform.position.z; yield return new WaitForSeconds(.7f);
         Assert.That(car.transform.position.z - start, Is.GreaterThan(6));
@@ -189,5 +189,113 @@ public sealed class DrivingFlowTests
         Assert.That(g.Driver.Speed, Is.Zero, "The brake must win when both pedals are held.");
         Assert.That(g.Driver.Reversing, Is.False, "Braking must not select reverse gear.");
         InputSystem.QueueStateEvent(keyboard, new KeyboardState()); yield return null;
+    }
+
+    void MoveTrafficAway(GameManager g)
+    {
+        int i = 0;
+        foreach (var car in g.World.Traffic) car.transform.position = new Vector3(0, .08f, 3000 + i++ * 100);
+    }
+    MovingCar[] TrafficForScenario(GameManager g)
+    {
+        MoveTrafficAway(g);
+        var cars = new MovingCar[3];
+        for (int i = 0; i < cars.Length; i++)
+        {
+            cars[i] = g.World.TrySpawnTraffic(new Vector3((i - 1) * CarDriver.LaneWidth, .08f, -100 - i * 8), 20) as MovingCar;
+            Assert.That(cars[i], Is.Not.Null, "A hidden, spaced traffic scenario should be accepted.");
+            cars[i].transform.position = new Vector3(0, .08f, 4000 + i * 100);
+        }
+        return cars;
+    }
+    [UnityTest] public IEnumerator TrafficReservesMergesAndCancelsForPlayer()
+    {
+        var g = GameManager.Instance; g.StartRun(); yield return WaitForDriving(); g.TogglePause();
+        var cars = TrafficForScenario(g); var passer = cars[0]; var leader = cars[1]; var rival = cars[2];
+        passer.transform.position = new Vector3(-3.6f, .08f, 200); passer.SetCruisingSpeed(26);
+        leader.transform.position = new Vector3(-3.6f, .08f, 222); leader.SetCruisingSpeed(10);
+        Assert.That(g.World.CanMerge(passer, 0), Is.True, "A leader in the source lane must not block an empty target lane.");
+        for (int i = 0; i < 50 && !passer.IsMerging; i++) passer.Tick(.1f);
+        Assert.That(passer.Behavior, Is.EqualTo(TrafficBehavior.Signaling)); Assert.That(passer.ReservedLane, Is.EqualTo(1));
+        leader.transform.position = new Vector3(-3.6f, .08f, 3000);
+        rival.transform.position = new Vector3(3.6f, .08f, passer.transform.position.z + 15); rival.SetCruisingSpeed(30);
+        Assert.That(g.World.CanMerge(rival, 0), Is.False, "Two nearby drivers must not reserve the same gap.");
+        g.Driver.transform.position = new Vector3(0, .08f, passer.transform.position.z + 10);
+        passer.Tick(.1f);
+        Assert.That(passer.IsMerging, Is.False, "A player entering the gap during the signal must cancel the maneuver.");
+        Assert.That(passer.transform.position.x, Is.EqualTo(-3.6f).Within(.01f));
+        passer.Activate(g, new Vector3(-3.6f, .08f, 200));
+        Assert.That(passer.IsMerging, Is.False); Assert.That(passer.Behavior, Is.EqualTo(TrafficBehavior.Cruising));
+        g.Driver.transform.position = new Vector3(0, .08f, 0);
+        rival.transform.position = new Vector3(3.6f, .08f, 4000);
+        leader.transform.position = new Vector3(-3.6f, .08f, 240); leader.SetCruisingSpeed(10);
+        passer.SetCruisingSpeed(26);
+        bool completed = false;
+        for (int i = 0; i < 220; i++)
+        {
+            leader.transform.position += Vector3.forward * leader.Speed * .05f; passer.Tick(.05f);
+            if (passer.Behavior == TrafficBehavior.Recovering && Mathf.Abs(passer.transform.position.x) < .01f) { completed = true; break; }
+        }
+        Assert.That(completed, Is.True, "A safe overtake must finish smoothly in the adjacent lane.");
+        yield return null;
+    }
+    [UnityTest] public IEnumerator TrafficSpawnRejectsVisibleOccupiedAndBlockedRoad()
+    {
+        var g = GameManager.Instance; g.StartRun(); yield return WaitForDriving(); g.TogglePause(); MoveTrafficAway(g);
+        Assert.That(g.World.CanSpawnTraffic(new Vector3(0, .08f, 20), 20), Is.False);
+        Assert.That(g.World.TrafficVisible(new Vector3(0, .08f, 200)), Is.True);
+        Assert.That(g.World.TrySpawnTraffic(new Vector3(0, .08f, 200), 20), Is.Null, "No visible pop-in.");
+        Vector3 hidden = new Vector3(-3.6f, .08f, -100);
+        Assert.That(g.World.TrySpawnTraffic(hidden, 20), Is.Not.Null);
+        Assert.That(g.World.TrySpawnTraffic(hidden, 20), Is.Null, "No overlapping spawns.");
+        Assert.That(g.World.TrySpawnTraffic(new Vector3(0, .08f, -100), 20), Is.Not.Null);
+        Assert.That(g.World.TrySpawnTraffic(new Vector3(3.6f, .08f, -100), 20), Is.Null, "An escape lane must remain open.");
+        int capacity = g.World.PooledCount;
+        g.TogglePause(); yield return Press(Key.R); yield return new WaitForSeconds(1.4f); g.TogglePause();
+        MoveTrafficAway(g); g.World.Tick(0);
+        Assert.That(g.World.TrafficVisible(new Vector3(0, .08f, -200)), Is.True);
+        Assert.That(g.World.TrySpawnTraffic(new Vector3(0, .08f, -200), 25), Is.Null, "Reverse camera must also reject visible spawns.");
+        Assert.That(g.World.TrySpawnTraffic(new Vector3(0, .08f, -640), 25), Is.Not.Null);
+        Assert.That(g.World.PooledCount, Is.EqualTo(capacity));
+        yield return null;
+    }
+    [UnityTest] public IEnumerator QuietRoadDrainsHiddenCarsAndKeepsVisibleCars()
+    {
+        var g = GameManager.Instance; g.StartRun(); yield return WaitForDriving(); g.TogglePause();
+        var cars = TrafficForScenario(g);
+        g.Driver.transform.position = new Vector3(0, .08f, 1100); g.World.Tick(0);
+        Assert.That(g.World.Flow, Is.EqualTo(TrafficFlow.Quiet));
+        var camera = Camera.main; camera.transform.position = g.Driver.transform.position + new Vector3(0, 4.8f, -10.5f);
+        camera.transform.LookAt(g.Driver.transform.position + new Vector3(0, .8f, 9));
+        // These cars may have been returned by the window change; start with a fresh run at this location.
+        g.World.ResetWorld();
+        Assert.That(g.World.ActiveTrafficCount, Is.Zero);
+        Assert.That(g.World.TrySpawnTraffic(new Vector3(0, .08f, 1500), 20), Is.Null, "Quiet roads do not replenish traffic.");
+        // Return to a populated section, then carry existing cars into quiet road without respawning them.
+        g.Driver.transform.position = new Vector3(0, .08f, 0); g.World.ResetWorld(); cars = TrafficForScenario(g);
+        g.Driver.transform.position = new Vector3(0, .08f, 1100);
+        camera.transform.position = g.Driver.transform.position + new Vector3(0, 4.8f, -10.5f);
+        camera.transform.LookAt(g.Driver.transform.position + new Vector3(0, .8f, 9));
+        cars[0].transform.position = new Vector3(-3.6f, .08f, 1250);
+        cars[1].transform.position = new Vector3(3.6f, .08f, 950);
+        g.TogglePause(); g.World.Tick(.02f); g.TogglePause();
+        CollectionAssert.Contains(g.World.Traffic, cars[0], "Visible traffic must clear naturally.");
+        CollectionAssert.DoesNotContain(g.World.Traffic, cars[1], "Hidden traffic should drain from quiet road.");
+        yield return null;
+    }
+    [UnityTest] public IEnumerator WeatherChangesTrafficSpeedAndFollowingDistance()
+    {
+        var g = GameManager.Instance; g.StartRun(); yield return WaitForDriving(); g.TogglePause();
+        var cars = TrafficForScenario(g); var car = cars[0];
+        car.transform.position = new Vector3(0, .08f, 100); car.SetCruisingSpeed(25);
+        g.Driver.transform.position = new Vector3(0, .08f, 155);
+        float clearSpeed = g.World.TrafficSpeed(car, 30); float clearFactor = g.World.TrafficWeatherFactor;
+        g.Driver.transform.position = new Vector3(0, .08f, 1100);
+        for (int i = 0; i < 80; i++) g.Weather.Tick(.1f);
+        Assert.That(g.World.TrafficWeatherFactor, Is.LessThan(clearFactor - .2f));
+        g.Driver.transform.position = new Vector3(0, .08f, 155);
+        Assert.That(g.World.TrafficSpeed(car, 30), Is.LessThan(clearSpeed));
+        car.Tick(.5f); Assert.That(car.Speed, Is.LessThan(25));
+        yield return null;
     }
 }

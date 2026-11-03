@@ -1,3 +1,5 @@
+Current traffic behavior/spawn validation: [TrafficUpgradeValidation.md](TrafficUpgradeValidation.md).
+
 # First playable validation
 
 For the current manual-throttle, recorded-audio and 2018 traffic update, see [DriveUpgradeValidation.md](DriveUpgradeValidation.md). The sections below retain the earlier playable/night-pass history.

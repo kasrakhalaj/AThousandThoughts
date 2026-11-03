@@ -1,0 +1,105 @@
+{
+  "success": true,
+  "command": "command",
+  "data": {
+    "command": "test status",
+    "parameters": {},
+    "result": {
+      "status": "completed",
+      "duration": 46.59,
+      "summary": {
+        "total": 11,
+        "passed": 6,
+        "failed": 5,
+        "skipped": 0,
+        "inconclusive": 0
+      },
+      "results": [
+        {
+          "FullName": "DrivingFlowTests.AllCarsKeepTheirLightsThroughDamageAndReverse",
+          "Status": "Passed",
+          "Duration": 7.7271918,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.DamageCooldownGameOverAndPersistentBest",
+          "Status": "Passed",
+          "Duration": 2.9903375,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.EarlyFogAndDenseRoadsideSurviveRecycling",
+          "Status": "Passed",
+          "Duration": 0.250362,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.GasHeldDuringIgnitionWorksWhenDrivingBecomesEnabled",
+          "Status": "Passed",
+          "Duration": 4.6819376,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.MusicCategoriesPlaybackAndWeatherZones",
+          "Status": "Passed",
+          "Duration": 2.2485288,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.QuietRoadDrainsHiddenCarsAndKeepsVisibleCars",
+          "Status": "Failed",
+          "Duration": 2.9562614,
+          "Message": "  A hidden, spaced traffic scenario should be accepted.\r\n  Expected: not null\r\n  But was:  null\r\n",
+          "StackTrace": "at DrivingFlowTests.TrafficForScenario (AfterHours.GameManager g) [0x0004a] in E:\\MyGames\\HW2\\AfterHours\\Assets\\Game\\Tests\\PlayMode\\DrivingFlowTests.cs:206\r\nat DrivingFlowTests+<QuietRoadDrainsHiddenCarsAndKeepsVisibleCars>d__22.MoveNext () [0x00066] in E:\\MyGames\\HW2\\AfterHours\\Assets\\Game\\Tests\\PlayMode\\DrivingFlowTests.cs:254\r\nat UnityEngine.TestTools.TestEnumerator+<Execute>d__8.MoveNext () [0x0003a] in .\\Library\\PackageCache\\com.unity.test-framework@ee3fe9477490\\UnityEngine.TestRunner\\NUnitExtensions\\Attributes\\TestEnumerator.cs:52\r\n"
+        },
+        {
+          "FullName": "DrivingFlowTests.RecordedEngineTrafficMovementAndPause",
+          "Status": "Failed",
+          "Duration": 4.1179913,
+          "Message": "  Expected: True\r\n  But was:  False\r\n",
+          "StackTrace": "at DrivingFlowTests+<RecordedEngineTrafficMovementAndPause>d__16.MoveNext () [0x00242] in E:\\MyGames\\HW2\\AfterHours\\Assets\\Game\\Tests\\PlayMode\\DrivingFlowTests.cs:174\r\nat UnityEngine.TestTools.TestEnumerator+<Execute>d__8.MoveNext () [0x0003a] in .\\Library\\PackageCache\\com.unity.test-framework@ee3fe9477490\\UnityEngine.TestRunner\\NUnitExtensions\\Attributes\\TestEnumerator.cs:52\r\n"
+        },
+        {
+          "FullName": "DrivingFlowTests.SelectionIgnitionSteeringReversePausePoolingAndRestart",
+          "Status": "Passed",
+          "Duration": 12.6440242,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.TrafficReservesMergesAndCancelsForPlayer",
+          "Status": "Failed",
+          "Duration": 2.9582629,
+          "Message": "  A hidden, spaced traffic scenario should be accepted.\r\n  Expected: not null\r\n  But was:  null\r\n",
+          "StackTrace": "at DrivingFlowTests.TrafficForScenario (AfterHours.GameManager g) [0x0004a] in E:\\MyGames\\HW2\\AfterHours\\Assets\\Game\\Tests\\PlayMode\\DrivingFlowTests.cs:206\r\nat DrivingFlowTests+<TrafficReservesMergesAndCancelsForPlayer>d__20.MoveNext () [0x00066] in E:\\MyGames\\HW2\\AfterHours\\Assets\\Game\\Tests\\PlayMode\\DrivingFlowTests.cs:214\r\nat UnityEngine.TestTools.TestEnumerator+<Execute>d__8.MoveNext () [0x0003a] in .\\Library\\PackageCache\\com.unity.test-framework@ee3fe9477490\\UnityEngine.TestRunner\\NUnitExtensions\\Attributes\\TestEnumerator.cs:52\r\n"
+        },
+        {
+          "FullName": "DrivingFlowTests.TrafficSpawnRejectsVisibleOccupiedAndBlockedRoad",
+          "Status": "Failed",
+          "Duration": 2.9843365,
+          "Message": "  Expected: not null\r\n  But was:  null\r\n",
+          "StackTrace": "at DrivingFlowTests+<TrafficSpawnRejectsVisibleOccupiedAndBlockedRoad>d__21.MoveNext () [0x0012f] in E:\\MyGames\\HW2\\AfterHours\\Assets\\Game\\Tests\\PlayMode\\DrivingFlowTests.cs:238\r\nat UnityEngine.TestTools.TestEnumerator+<Execute>d__8.MoveNext () [0x0003a] in .\\Library\\PackageCache\\com.unity.test-framework@ee3fe9477490\\UnityEngine.TestRunner\\NUnitExtensions\\Attributes\\TestEnumerator.cs:52\r\n"
+        },
+        {
+          "FullName": "DrivingFlowTests.WeatherChangesTrafficSpeedAndFollowingDistance",
+          "Status": "Failed",
+          "Duration": 3.0111952,
+          "Message": "  A hidden, spaced traffic scenario should be accepted.\r\n  Expected: not null\r\n  But was:  null\r\n",
+          "StackTrace": "at DrivingFlowTests.TrafficForScenario (AfterHours.GameManager g) [0x0004a] in E:\\MyGames\\HW2\\AfterHours\\Assets\\Game\\Tests\\PlayMode\\DrivingFlowTests.cs:206\r\nat DrivingFlowTests+<WeatherChangesTrafficSpeedAndFollowingDistance>d__23.MoveNext () [0x00066] in E:\\MyGames\\HW2\\AfterHours\\Assets\\Game\\Tests\\PlayMode\\DrivingFlowTests.cs:278\r\nat UnityEngine.TestTools.TestEnumerator+<Execute>d__8.MoveNext () [0x0003a] in .\\Library\\PackageCache\\com.unity.test-framework@ee3fe9477490\\UnityEngine.TestRunner\\NUnitExtensions\\Attributes\\TestEnumerator.cs:52\r\n"
+        }
+      ]
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "E:\\MyGames\\HW2\\AfterHours"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

@@ -1,0 +1,94 @@
+{
+  "frame": 4068,
+  "time": 131.100922,
+  "state": "Playing",
+  "flow": "Normal",
+  "player": "(0.00, 0.08, 350.00)",
+  "speed": 0.0,
+  "lives": 3,
+  "pool": 264,
+  "count": 9,
+  "traffic": [
+    {
+      "name": "Traffic-SportsCar(Clone)",
+      "x": 3.6,
+      "z": 857.161743,
+      "speed": 18.0593967,
+      "behavior": "Cruising",
+      "style": "Cautious",
+      "lane": 2
+    },
+    {
+      "name": "Traffic-SportsCar2(Clone)",
+      "x": 3.6,
+      "z": 733.9397,
+      "speed": 17.680233,
+      "behavior": "Cruising",
+      "style": "Cautious",
+      "lane": 2
+    },
+    {
+      "name": "Traffic-Taxi(Clone)",
+      "x": 0.0,
+      "z": 717.781738,
+      "speed": 20.2319317,
+      "behavior": "Recovering",
+      "style": "Assertive",
+      "lane": 1
+    },
+    {
+      "name": "MovingCar(Clone)",
+      "x": -3.6,
+      "z": 723.38385,
+      "speed": 25.9003124,
+      "behavior": "Cruising",
+      "style": "Assertive",
+      "lane": 0
+    },
+    {
+      "name": "Traffic-Cop(Clone)",
+      "x": -3.6,
+      "z": 496.05957,
+      "speed": 18.1520576,
+      "behavior": "Cruising",
+      "style": "Balanced",
+      "lane": 0
+    },
+    {
+      "name": "Traffic-Taxi(Clone)",
+      "x": 3.6,
+      "z": 470.229553,
+      "speed": 28.06769,
+      "behavior": "Cruising",
+      "style": "Balanced",
+      "lane": 2
+    },
+    {
+      "name": "Traffic-SportsCar2(Clone)",
+      "x": 3.6,
+      "z": 395.017731,
+      "speed": 19.03665,
+      "behavior": "Cruising",
+      "style": "Cautious",
+      "lane": 2
+    },
+    {
+      "name": "Traffic-SportsCar(Clone)",
+      "x": 1.73061168,
+      "z": 301.2899,
+      "speed": 12.9891405,
+      "behavior": "ChangingLane",
+      "style": "Cautious",
+      "lane": 2
+    },
+    {
+      "name": "Traffic-SUV(Clone)",
+      "x": 3.6,
+      "z": 222.770584,
+      "speed": 22.9329929,
+      "behavior": "Cruising",
+      "style": "Cautious",
+      "lane": 2
+    }
+  ]
+}

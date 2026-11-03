@@ -38,8 +38,10 @@ For a Windows player, the `Music` folder belongs **beside the executable**. `Aft
 - `DriverInput` clones the serialized Input Actions asset. Driving actions are disabled in menus/pause/results; system/music actions remain available. The UI uses InputSystemUIInputModule.
 - StationaryCar, MovingCar, CoinPickup and FuelPickup inherit abstract `Interactable` through virtual/override behavior.
 - `RoadWorld` prewarms a fixed pool of road segments, cars and pickups. Road sections recycle in both directions. Revisiting recycled sections does not regenerate scoring pickups. No repeated gameplay Instantiate/Destroy.
-- Merging traffic signals first, checks a reserved target corridor, and only merges away from the player's immediate reaction zone.
-- Normal traffic uses all seven Quaternius 2018 car models, starts at varied road speeds (roughly 47–94 km/h), follows slower cars and receives periodic overtakers. Wheels rotate with travel. Rare stopped cars flash hazards for the assignment's stationary-obstacle requirement.
+- Traffic drivers cruise, follow, signal, change lanes and recover before another maneuver. Cautious, balanced and assertive profiles use different headways and signal durations. Drivers overtake slower traffic; cautious drivers also return right when safe. Other drivers hold their lane until a pass offers enough benefit.
+- Target-lane checks include the player, committed player steering, traffic ahead/behind and other merge reservations. Following observes both occupied lanes during a merge. Rain/fog lower desired speeds and increase spacing.
+- A bounded traffic director varies sparse, normal, busy and quiet stretches. New traffic must be outside the camera, have sufficient closing-time/vehicle gaps, and leave a reachable escape lane. The streamed road window follows forward/reverse viewing. Quiet stretches stop replenishment and retire hidden cars while visible cars clear naturally.
+- Normal traffic uses all seven Quaternius 2018 car models with rotating wheels, lights and quiet recorded engines. Queue-based reuse cycles through model variants. Rare hazard-lit stopped cars preserve the assignment's stationary obstacles.
 - `WeatherDirector` transitions among clear/rain/fog zones and occasional fireworks. Lights, smoke, sparks, pickup particles and restrained speed-reactive underglow cover the visual brief without changing the grounded art direction.
 - The moon sits within the driving view. Towns have houses and buildings on both sides; forest stretches use layered trees, bushes, grass, rocks and distant faceted hills. Scenery is prewarmed and recycled with the road.
 - Fog uses a depth-based URP fullscreen pass before post-processing. An early patch fades in from 110 m, becomes dense around 185–270 m and clears by 350 m; later weather zones include longer fog/rain stretches.
@@ -50,7 +52,7 @@ Player ignition, idle, mid/load engine layers, traffic engines and rain now use 
 
 ## Tests and development
 
-Use Unity Test Runner: `AfterHours.EditMode` for run rules; `AfterHours.PlayMode` for ignition, New Input System steering/reverse, camera, pause, pool capacity, restart, damage, high-score persistence, music and weather. Tests restore the pre-existing high-score preference.
+Use Unity Test Runner: `AfterHours.EditMode` for run and traffic safety rules; `AfterHours.PlayMode` for ignition, New Input System steering/reverse, camera, pause, pool capacity, restart, damage, high-score persistence, music/weather, safe spawning, reverse-camera visibility, merge reservations/cancellation/completion and quiet-road draining. Tests restore the pre-existing high-score preference.
 
 The Unity Pipeline package supports local Editor control and is a development dependency. No online game services, ads, accounts or multiplayer are required.
 

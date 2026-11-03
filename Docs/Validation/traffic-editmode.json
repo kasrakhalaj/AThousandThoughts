@@ -1,0 +1,98 @@
+{
+  "success": true,
+  "command": "command",
+  "data": {
+    "command": "test status",
+    "parameters": {},
+    "result": {
+      "status": "completed",
+      "duration": 0.24,
+      "summary": {
+        "total": 10,
+        "passed": 10,
+        "failed": 0,
+        "skipped": 0,
+        "inconclusive": 0
+      },
+      "results": [
+        {
+          "FullName": "RunModelTests.DifficultyRisesAndHasABoundedMaximum",
+          "Status": "Passed",
+          "Duration": 0.0192246,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "RunModelTests.FuelRunsOutAndRefillIsCapped",
+          "Status": "Passed",
+          "Duration": 0.0003226,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "RunModelTests.RestartResetsAllRunState",
+          "Status": "Passed",
+          "Duration": 0.0005548,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "RunModelTests.ReversingAndRevisitingRoadNeverFarmDistanceScore",
+          "Status": "Passed",
+          "Duration": 0.0002046,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "RunModelTests.ThreeCollisionsEndLivesWithoutGoingNegative",
+          "Status": "Passed",
+          "Duration": 0.0001639,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "TrafficRulesTests.EveryRouteCycleContainsQuietAndBusySectionsInBothDirections",
+          "Status": "Passed",
+          "Duration": 0.0008936,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "TrafficRulesTests.FastClosingTrafficNeedsMoreSpaceAheadAndBehind",
+          "Status": "Passed",
+          "Duration": 0.0006682,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "TrafficRulesTests.FollowingRespondsToStoppingDistanceAndWeatherHeadway",
+          "Status": "Passed",
+          "Duration": 0.0009071,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "TrafficRulesTests.RainAndFogReduceSpeedWithoutStoppingAllTraffic",
+          "Status": "Passed",
+          "Duration": 0.0007156,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "TrafficRulesTests.ReverseDrivingUsesCombinedClosingSpeedForSpawnSafety",
+          "Status": "Passed",
+          "Duration": 0.0003638,
+          "Message": null,
+          "StackTrace": null
+        }
+      ]
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "E:\\MyGames\\HW2\\AfterHours"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}
