@@ -86,4 +86,43 @@ public sealed class DrivingFlowTests
         g.Driver.transform.position = new Vector3(0, 0, 1600); g.Weather.Tick(1);
         Assert.That(g.Weather.Conditions, Is.EqualTo("FOG PATCH"));
     }
+
+    [UnityTest] public IEnumerator AllCarsKeepTheirLightsThroughDamageAndReverse()
+    {
+        var g = GameManager.Instance;
+        for (int i = 0; i < g.Catalog.cars.Length; i++)
+        {
+            var authored = g.Catalog.cars[i].GetComponentInChildren<VehicleLights>(true);
+            Assert.That(authored, Is.Not.Null, g.Catalog.carNames[i]);
+            Assert.That(authored.HeadlightCount, Is.EqualTo(2)); Assert.That(authored.TailLightCount, Is.EqualTo(2));
+            foreach (var lens in authored.GetComponentsInChildren<Renderer>())
+                Assert.That(lens.sharedMaterial.IsKeywordEnabled("_EMISSION"), Is.True, "Lamp emission shader variant must remain enabled.");
+        }
+        g.StartRun(); yield return new WaitForSeconds(2.3f);
+        var lamps = g.Driver.GetComponentInChildren<VehicleLights>();
+        Assert.That(lamps.IsOn, Is.True);
+        g.HitCar(g.Driver.transform.position); yield return null;
+        var tail = lamps.transform.Find("Red tail and brake light").GetComponent<Renderer>();
+        var properties = new MaterialPropertyBlock(); tail.GetPropertyBlock(properties);
+        Assert.That(properties.GetColor("_EmissionColor").r, Is.GreaterThan(2), "Damage must not erase tail lamp emission.");
+        yield return Press(Key.R); yield return new WaitForSeconds(1.6f);
+        Assert.That(lamps.Reversing, Is.True);
+        var reverse = lamps.transform.Find("Reverse light").GetComponent<Renderer>(); reverse.GetPropertyBlock(properties);
+        Assert.That(properties.GetColor("_EmissionColor").b, Is.GreaterThan(1));
+    }
+
+    [UnityTest] public IEnumerator EarlyFogAndDenseRoadsideSurviveRecycling()
+    {
+        var g = GameManager.Instance;
+        g.Driver.transform.position = new Vector3(0,0,220);
+        for (int i=0;i<70;i++) g.Weather.Tick(.1f);
+        Assert.That(g.Weather.FogAmount, Is.GreaterThan(.9f));
+        Assert.That(RenderSettings.fogDensity, Is.GreaterThan(.018f));
+        Assert.That(Shader.GetGlobalFloat("_AfterHoursFogDensity"), Is.EqualTo(RenderSettings.fogDensity).Within(.0001f));
+        Assert.That(g.Catalog.shrubs.Length, Is.GreaterThan(0)); Assert.That(g.Catalog.hills.Length, Is.GreaterThan(0));
+        var chunk = Object.FindFirstObjectByType<RoadChunk>(); int children = chunk.transform.childCount;
+        Assert.That(children, Is.GreaterThan(150));
+        chunk.Place(14); chunk.Place(-4); Assert.That(chunk.transform.childCount, Is.EqualTo(children));
+        yield return null;
+    }
 }

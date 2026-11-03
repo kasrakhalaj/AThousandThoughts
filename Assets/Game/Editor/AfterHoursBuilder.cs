@@ -87,6 +87,7 @@ public static class AfterHoursBuilder
             importer.defaultSampleSettings = settings; importer.SaveAndReimport();
         }
         AssetDatabase.SaveAssets();
+        NightVisualUpgrade.Apply();
         Debug.Log("AFTER_HOURS_CREATED: " + ScenePath);
     }
     static AudioClip Clip(string name) => AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Game/Audio/" + name + ".wav");
@@ -143,12 +144,18 @@ public static class AfterHoursBuilder
     {
         if (original == null) return metal;
         if (Converted.TryGetValue(original, out var converted)) return converted;
+        foreach (string guid in AssetDatabase.FindAssets("t:Material", new[] { Generated }))
+        {
+            var existing = AssetDatabase.LoadAssetAtPath<Material>(AssetDatabase.GUIDToAssetPath(guid));
+            if (existing.name == original.name && existing.mainTexture == original.mainTexture && existing.color == (original.HasProperty("_Color") ? original.GetColor("_Color") : Color.white))
+            { Converted.Add(original, existing); return existing; }
+        }
         converted = new Material(Shader.Find("Universal Render Pipeline/Lit")); converted.name = original.name;
         converted.color = original.HasProperty("_Color") ? original.GetColor("_Color") : Color.white;
         if (original.mainTexture != null) converted.mainTexture = original.mainTexture;
         converted.SetFloat("_Smoothness", .22f); converted.EnableKeyword("_EMISSION");
         converted.SetColor("_EmissionColor", Color.black);
-        AssetDatabase.CreateAsset(converted, Generated + "/ImportedMaterial-" + materialIndex++ + ".mat");
+        AssetDatabase.CreateAsset(converted, AssetDatabase.GenerateUniqueAssetPath(Generated + "/ImportedMaterial-" + materialIndex++ + ".mat"));
         Converted.Add(original, converted); return converted;
     }
     static void ConfigureMaterials()
@@ -274,6 +281,12 @@ public static class AfterHoursBuilder
             string output = Path.Combine(folder, "Music", Path.GetRelativePath(source, file)); Directory.CreateDirectory(Path.GetDirectoryName(output)); File.Copy(file, output, true);
         }
         Debug.Log("AFTER_HOURS_BUILD: " + folder);
+    }
+
+    public static GameObject[] BuildRoadsidePlants()
+    {
+        return Models("nature-kit", new[] { "plant_bush", "plant_bushLarge", "plant_bushTriangle" }, 1.1f)
+            .Concat(Models("nature-kit", new[] { "grass_large", "grass_leafsLarge" }, .6f)).ToArray();
     }
 
     public static void RepairCarModels()

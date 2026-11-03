@@ -12,7 +12,9 @@ namespace AfterHours
         public const float LaneTime = .24f;
         GameObject[] models;
         Transform visual;
-        Light[] headlights;
+        VehicleLights[] lamps;
+        int selected;
+        bool ignition;
         Light underglow;
         ParticleSystem exhaust;
         Renderer[] renderers;
@@ -27,17 +29,8 @@ namespace AfterHours
             visual.SetParent(transform, false);
             models = new GameObject[catalog.cars.Length];
             for (int i = 0; i < models.Length; i++) models[i] = Instantiate(catalog.cars[i], visual);
-            headlights = new Light[2];
-            for (int i = 0; i < 2; i++)
-            {
-                var go = new GameObject("Headlight"); go.transform.SetParent(visual, false);
-                go.transform.localPosition = new Vector3(i == 0 ? -.7f : .7f, .65f, 2f);
-                go.transform.localRotation = Quaternion.Euler(9, i == 0 ? -5 : 5, 0);
-                var light = go.AddComponent<Light>(); light.type = LightType.Spot;
-                light.range = 65; light.spotAngle = 60; light.innerSpotAngle = 33;
-                light.intensity = 16; light.color = new Color(1, .91f, .72f); light.shadows = LightShadows.None;
-                headlights[i] = light;
-            }
+            lamps = new VehicleLights[models.Length];
+            for (int i = 0; i < models.Length; i++) lamps[i] = models[i].GetComponentInChildren<VehicleLights>();
             var glow = new GameObject("Subtle underbody light"); glow.transform.SetParent(visual, false);
             glow.transform.localPosition = new Vector3(0, .22f, 0);
             underglow = glow.AddComponent<Light>(); underglow.type = LightType.Point;
@@ -50,12 +43,18 @@ namespace AfterHours
 
         public void Select(int index)
         {
+            selected = index;
             for (int i = 0; i < models.Length; i++) models[i].SetActive(i == index);
-            renderers = models[index].GetComponentsInChildren<Renderer>();
+            var body = new System.Collections.Generic.List<Renderer>();
+            foreach (var renderer in models[index].GetComponentsInChildren<Renderer>())
+                if (renderer.GetComponentInParent<VehicleLights>() == null) body.Add(renderer);
+            renderers = body.ToArray();
+            if (lamps[index] != null) lamps[index].SetIgnition(ignition);
         }
         public void SetIgnition(bool on)
         {
-            foreach (var headlight in headlights) headlight.enabled = on;
+            ignition = on;
+            if (lamps[selected] != null) lamps[selected].SetIgnition(on);
             underglow.enabled = on;
             var emission = exhaust.emission; emission.enabled = on;
         }
@@ -79,6 +78,7 @@ namespace AfterHours
             else brakeHold = 0;
             desiredSpeed = Reversing ? -10 : brake ? 0 : cruise;
             Speed = Mathf.MoveTowards(Speed, desiredSpeed, (brake || Speed * desiredSpeed < 0 ? 22 : 8) * dt);
+            if (lamps[selected] != null) lamps[selected].SetDrivingState(brake || Speed * desiredSpeed < 0, Reversing);
             int steering = (input.Right.WasPressedThisFrame() ? 1 : 0) - (input.Left.WasPressedThisFrame() ? 1 : 0);
             // When the rear-facing camera is active, left/right follow screen space.
             if (Reversing) steering = -steering;

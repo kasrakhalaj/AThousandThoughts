@@ -13,6 +13,8 @@ namespace AfterHours
         public GameObject[] houses;
         public GameObject[] buildings;
         public GameObject[] roadProps;
+        public GameObject[] shrubs;
+        public GameObject[] hills;
         public GameObject roadSegment;
         public GameObject stationaryCar;
         public GameObject movingCar;

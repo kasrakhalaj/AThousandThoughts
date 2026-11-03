@@ -53,3 +53,27 @@ Reviewed final captures under `Images/`: menu, driving, rain and reverse. Previe
 - No remote repository has been configured or published. No LMS upload, final report or submission ZIP has been prepared.
 - Exact vehicle publisher/license details were absent from the supplied asset folder and remain recorded in CREDITS.md.
 - Weapons are deferred by design.
+
+## Night visual pass — 2026-11-03
+
+Baseline commit: `1a99c98`. Scope: moon visibility, working distance fog, fuller scenery and lights on all five cars. No input bindings or gameplay control implementation changed.
+
+Unity compiled the changed runtime/editor/test assemblies. Both custom shaders reported supported. Asset metadata audit: **809 identifiers**, no duplicate GUIDs and no missing meta files, excluding diagnostic screenshots. Serialized startup scene and Input Actions are retained; the temporary preloaded-assets setting change was restored to the baseline.
+
+The final full PlayMode run passed **5/5** with zero failed/skipped tests in **17.90 seconds** (`Validation/night-visual-results.json`). It includes the prior driving/music/damage checks plus all-car lamp configuration/emission, damage-flash isolation, reverse lamps, early fog state/shader globals and denser scenery recycling.
+
+After the final lamp-position adjustments, the focused all-car lighting/damage/reverse check passed again, **1/1 in 5.74 seconds** (`Validation/night-visual-lights-final.json`).
+
+The first full run was 4/5: the existing driving-flow check remained in Menu after its simulated Enter press. That same check passed in isolation (8.26 seconds), and the unchanged full suite then passed. The initial result and isolated recheck are retained in `Validation/night-visual-first-run.json` and `Validation/night-visual-controls-recheck.json`. This is an observed intermittent test-input delivery failure; its precise cause is unresolved. No production input code was changed to make it pass.
+
+Reviewed front/rear close-ups of every car. The review found and fixed disabled lamp emission material variants and corrected two cars' lamp positions to their body fixtures. Reviewed the composited driving HUD/moon/town capture and same-camera forest clear/fog captures at 650 m. Dense fog was approximately 0.889 blend / 0.01895 density; it visibly obscured distant road/trees while keeping the nearby car readable. Captures are staged, including removal of nearby traffic for an unobstructed scenery view. Integration tests separately exercise real keyboard actions. See `Images/night-upgrade.png`, `Images/lights-five-cars.png`, `Images/fog-clear.png` and `Images/fog-dense.png`.
+
+The local Editor still logs the pre-existing Burst compiler pipe failures. Its license-service reconnect dialog was recovered during reopening. These tooling issues are recorded separately from the successful C# compilation and runtime checks. Computer use was stopped by the user's Escape key; no further desktop automation was used.
+
+Play Mode was exited and the high-score preference captured before this validation session was restored after the staged drive. Longer-session performance and testing on other PCs remain outside this visual pass.
+
+The updated Windows x86_64 build succeeded in **225.98 seconds**. BuildReport reports **0 errors, 1 warning**, with a 111,876,274-byte player before the external music library. The warning is the bundled TextMeshPro/Mobile/Distance Field shader's deprecated `enable_d3d11_debug_symbols` directive; vendor shader files were not changed. Raw summary: `Validation/night-visual-build.json`.
+
+The Editor also emitted one native assertion, `Callback unregistration failed. Callback not registered.`, from `BuildPipeline.BuildPlayer` during the successful build. Its precise cause is unresolved; it is separate from the BuildReport error count. The Console summary preserves this alongside the existing Burst failures. No gameplay exceptions or shader errors appeared in the standalone startup log. The Windows player launched on Direct3D 12, remained running/responding, and was stopped after the smoke check. This is startup coverage; the visual scenarios and keyboard interactions were verified in the Editor, not by controlling the standalone window.
+
+All **27** built MP3 files matched the source library by SHA-256, with no missing/mismatched files. The refreshed executable is `../Build/AfterHours/AfterHours.exe`. Status: ready with the documented Editor tooling/test-input limitations.

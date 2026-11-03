@@ -11,7 +11,7 @@ namespace AfterHours
         {
             base.Activate(owner, position); targetX = position.x; signalTime = 0;
             decisionTime = Random.Range(4, 12);
-            if (signal == null) signal = GetComponentInChildren<Light>();
+            if (signal == null) signal = transform.Find("Turn indicator").GetComponent<Light>();
             if (signal != null) signal.enabled = false;
         }
         public override void Tick(float dt)

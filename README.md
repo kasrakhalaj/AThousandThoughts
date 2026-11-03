@@ -38,6 +38,9 @@ For a Windows player, the `Music` folder belongs **beside the executable**. `Aft
 - `RoadWorld` prewarms a fixed pool of road segments, cars and pickups. Road sections recycle in both directions. Revisiting recycled sections does not regenerate scoring pickups. No repeated gameplay Instantiate/Destroy.
 - Merging traffic signals first, checks a reserved target corridor, and only merges away from the player's immediate reaction zone.
 - `WeatherDirector` transitions among clear/rain/fog zones and occasional fireworks. Lights, smoke, sparks, pickup particles and restrained speed-reactive underglow cover the visual brief without changing the grounded art direction.
+- The moon sits within the driving view. Towns have houses and buildings on both sides; forest stretches use layered trees, bushes, grass, rocks and distant faceted hills. Scenery is prewarmed and recycled with the road.
+- Fog uses a depth-based URP fullscreen pass before post-processing. An early patch fades in from 110 m, becomes dense around 185–270 m and clears by 350 m; later weather zones include longer fog/rain stretches.
+- Each of the five cars has fitted headlight lenses and road beams, red tail/brake lights and white reverse lamps. Ignition controls them; traffic cars also carry lights. Damage flashes preserve lamp emission.
 - High score uses `PlayerPrefs` key `AfterHours.HighScore.v1`.
 
 ## Tests and development

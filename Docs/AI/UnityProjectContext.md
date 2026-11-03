@@ -29,6 +29,8 @@ GameManager is the assignment-required Singleton. RunModel owns deterministic ru
 
 Use PascalCase APIs, private state, explicit Initialize methods and namespace AfterHours. Physics-free swept proximity checks own gameplay interactions; model geometry never owns rules. Runtime HUD uses anchored uGUI/TMP with a single InputSystemUIInputModule.
 
+The night visual pass adds VehicleLights to all five player models and the two traffic visuals. CarDriver excludes lamp renderers from damage flashes and updates ignition/braking/reverse states. MovingCar resolves its named Turn indicator explicitly. RoadChunk prewarms 64 trees, 40 shrubs/grass, 10 rocks, 8 houses, 6 buildings, 8 props and 8 faceted hills per segment, enabling biome-appropriate groups. WeatherDirector drives shader globals for RoadFog.shader and sky haze; RenderSettings.fog is disabled to avoid duplicate fog. PC_Renderer contains Unity's built-in FullScreenPassRendererFeature named Road distance and ground fog, with depth and color input before post-processing. Preserve this renderer subasset and its material. NightVisualUpgrade.Apply performs targeted authoring repairs without replacing the scene.
+
 ## Constraints and validation
 
 Keep the New Input System, three lanes/lives, fuel death, rising speed/traffic density, pooling, inheritance, Singleton, PlayerPrefs, night sky/headlights/underglow/fireworks/particles/Bloom, menus/HUD and audio required by HW2. User prefers grounded low-poly scenery with rain/fog and quiet sections. Gun is for later.

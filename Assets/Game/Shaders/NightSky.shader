@@ -12,6 +12,7 @@ Shader "AfterHours/NightSky"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             struct Attributes { float4 positionOS : POSITION; };
             struct Varyings { float4 positionCS : SV_POSITION; float3 direction : TEXCOORD0; };
+            float _AfterHoursFog;
             Varyings Vert(Attributes v)
             {
                 Varyings o; o.positionCS = TransformObjectToHClip(v.positionOS.xyz); o.direction = v.positionOS.xyz; return o;
@@ -26,8 +27,15 @@ Shader "AfterHours/NightSky"
                 float hash = frac(sin(dot(floor(grid), float2(127.1, 311.7))) * 43758.5453);
                 float star = (1 - smoothstep(.015, .085, length(frac(grid) - .5))) * step(.984, hash) * smoothstep(.02, .2, d.y);
                 color += star * lerp(float3(.7, .8, 1), float3(1, .9, .7), hash);
-                float moon = smoothstep(.99935, .99955, dot(d, normalize(float3(-.4, .52, .65))));
-                color = lerp(color, float3(.8, .84, .79), moon);
+                float3 moonDirection = normalize(float3(-.32, .14, 1));
+                float alignment = dot(d, moonDirection);
+                float moon = smoothstep(.99865, .99885, alignment);
+                float halo = pow(saturate(alignment), 2400) * .11;
+                float2 moonUV = float2(dot(d, normalize(cross(float3(0,1,0),moonDirection))), d.y-moonDirection.y) * 21;
+                float craters = .035 * sin(moonUV.x * 9 + sin(moonUV.y * 7)) * sin(moonUV.y * 11);
+                color += halo * float3(.65, .73, .8);
+                color = lerp(color, float3(1.2, 1.22, 1.13) + craters, moon);
+                color = lerp(color, float3(.065, .09, .115), saturate(_AfterHoursFog * horizon * .65));
                 return half4(color, 1);
             }
             ENDHLSL

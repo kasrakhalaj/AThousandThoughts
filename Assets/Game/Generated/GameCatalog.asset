@@ -47,6 +47,14 @@ MonoBehaviour:
   - {fileID: 4357557245630965928, guid: bf4343f0de6ff4c44a9367907cacfb77, type: 3}
   - {fileID: 6219124986410187567, guid: 165ad97f8ad3ead4b8978ce28498d7ee, type: 3}
   - {fileID: 389654338790770999, guid: 81f495cbcd020894d84e34e34b4dd253, type: 3}
+  shrubs:
+  - {fileID: 7380084924770845080, guid: 7419e5b58e7cef848bb61ae8d630ee6b, type: 3}
+  - {fileID: 5692692965860933984, guid: cfb3328a21d14dc4aa7f1ee25005a398, type: 3}
+  - {fileID: 3107178710420462279, guid: 9feb29567eb68534aa48053150183b6e, type: 3}
+  - {fileID: 7737645140045070029, guid: 8918df6a417ef9d46b64902dd03212fb, type: 3}
+  - {fileID: 954372148789000457, guid: f33713248bdd2d5459bc522ff2d7c41b, type: 3}
+  hills:
+  - {fileID: 757151204220337394, guid: e59cd7aaa7bb99c40a3178d1b18ecaf0, type: 3}
   roadSegment: {fileID: 2181480157689992295, guid: 9bd18214320d0e14fac07ccc5669bc1a, type: 3}
   stationaryCar: {fileID: 7037924977903871474, guid: e5c3e6c63cf91c749b1e4bdf7bfa4ab7, type: 3}
   movingCar: {fileID: 8507804363255772803, guid: ee1b345bb84db194aa12143dcdc89912, type: 3}
