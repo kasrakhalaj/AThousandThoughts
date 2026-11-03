@@ -45,7 +45,13 @@ public sealed class TrafficRulesTests
                 if (flow == TrafficFlow.Busy) busy++;
                 if (flow == TrafficFlow.Sparse) sparse++;
             }
-            Assert.That(quiet, Is.EqualTo(6)); Assert.That(busy, Is.EqualTo(3)); Assert.That(sparse, Is.GreaterThan(3));
+            Assert.That(quiet, Is.EqualTo(3)); Assert.That(busy, Is.EqualTo(6)); Assert.That(sparse, Is.EqualTo(3));
         }
+    }
+    [Test] public void OnlyFullyOpaqueFogCanHideANewCar()
+    {
+        Assert.That(TrafficRules.HiddenByFog(180, .0025f), Is.False);
+        Assert.That(TrafficRules.HiddenByFog(100, .021f), Is.False);
+        Assert.That(TrafficRules.HiddenByFog(200, .021f), Is.True);
     }
 }

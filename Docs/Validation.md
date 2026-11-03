@@ -1,3 +1,5 @@
+Latest density correction and moving-player verification: [TrafficDensityValidation.md](TrafficDensityValidation.md).
+
 Current traffic behavior/spawn validation: [TrafficUpgradeValidation.md](TrafficUpgradeValidation.md).
 
 # First playable validation

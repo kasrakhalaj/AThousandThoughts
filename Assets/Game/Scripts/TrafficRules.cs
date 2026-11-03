@@ -13,9 +13,16 @@ namespace AfterHours
             int cycle = Mathf.FloorToInt(section / 24f);
             int local = section - cycle * 24;
             int quietStart = 14 + (int)((uint)(cycle * 17471 + 42013) % 3);
-            if (local >= quietStart && local < quietStart + 6) return TrafficFlow.Quiet;
-            if (local < 4 || local >= quietStart - 2) return TrafficFlow.Sparse;
-            return local >= 7 && local <= 9 ? TrafficFlow.Busy : TrafficFlow.Normal;
+            if (local >= quietStart && local < quietStart + 3) return TrafficFlow.Quiet;
+            if (local == 0 || local == quietStart - 1 || local == quietStart + 3) return TrafficFlow.Sparse;
+            return local >= 4 && local <= 9 ? TrafficFlow.Busy : TrafficFlow.Normal;
+        }
+
+        public static bool HiddenByFog(float cameraDistance, float density)
+        {
+            // Match RoadFog's squared exponential, conservatively using the top of a 2m car.
+            // At this threshold less than 0.01% of the vehicle color survives the fog pass.
+            return Mathf.Max(0, cameraDistance - 20) * density * Mathf.Exp(-.05f) >= 3.1f;
         }
 
         public static float WeatherSpeedFactor(float rain, float fog) => 1 - .18f * rain - .23f * fog;
@@ -29,13 +36,13 @@ namespace AfterHours
             return Mathf.Clamp(Mathf.Min(following, stopping), 0, desired);
         }
 
-        public static bool SafeLaneGap(float signedGap, float speed, float otherSpeed, float headway)
+        public static bool SafeLaneGap(float signedGap, float speed, float otherSpeed, float headway, float anticipation = 3.2f)
         {
             bool ahead = signedGap >= 0;
             float closing = ahead ? Mathf.Max(0, speed - otherSpeed) : Mathf.Max(0, otherSpeed - speed);
             float followingSpeed = ahead ? speed : otherSpeed;
             float needed = 7 + Mathf.Max(0, followingSpeed) * headway * .65f
-                + closing * 3.2f + closing * closing / 20;
+                + closing * anticipation + closing * closing / 20;
             return Mathf.Abs(signedGap) > needed;
         }
 

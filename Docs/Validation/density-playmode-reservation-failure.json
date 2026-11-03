@@ -1,0 +1,119 @@
+{
+  "success": true,
+  "command": "command",
+  "data": {
+    "command": "test status",
+    "parameters": {},
+    "result": {
+      "status": "completed",
+      "duration": 60.1,
+      "summary": {
+        "total": 13,
+        "passed": 12,
+        "failed": 1,
+        "skipped": 0,
+        "inconclusive": 0
+      },
+      "results": [
+        {
+          "FullName": "DrivingFlowTests.AllCarsKeepTheirLightsThroughDamageAndReverse",
+          "Status": "Passed",
+          "Duration": 5.4902424,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.DamageCooldownGameOverAndPersistentBest",
+          "Status": "Passed",
+          "Duration": 3.2608148,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.DistantPassingDoesNotReserveAnEscapeLaneForAPlayerFarBehind",
+          "Status": "Passed",
+          "Duration": 3.1053659,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.EarlyFogAndDenseRoadsideSurviveRecycling",
+          "Status": "Passed",
+          "Duration": 0.3638879,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.GasHeldDuringIgnitionWorksWhenDrivingBecomesEnabled",
+          "Status": "Passed",
+          "Duration": 4.8864453,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.MusicCategoriesPlaybackAndWeatherZones",
+          "Status": "Passed",
+          "Duration": 2.4006412,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.QuietRoadDrainsHiddenCarsAndKeepsVisibleCars",
+          "Status": "Passed",
+          "Duration": 3.1742678,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.RecordedEngineTrafficMovementAndPause",
+          "Status": "Passed",
+          "Duration": 4.6853522,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.SelectionIgnitionSteeringReversePausePoolingAndRestart",
+          "Status": "Passed",
+          "Duration": 12.5828324,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.TrafficIsPresentAheadDuringEarlyAcceleration",
+          "Status": "Passed",
+          "Duration": 9.2172219,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.TrafficReservesMergesAndCancelsForPlayer",
+          "Status": "Failed",
+          "Duration": 3.050344,
+          "Message": "  Two nearby drivers must not reserve the same gap.\r\n  Expected: False\r\n  But was:  True\r\n",
+          "StackTrace": "at DrivingFlowTests+<TrafficReservesMergesAndCancelsForPlayer>d__20.MoveNext () [0x001a8] in E:\\MyGames\\HW2\\AfterHours\\Assets\\Game\\Tests\\PlayMode\\DrivingFlowTests.cs:222\r\nat UnityEngine.TestTools.TestEnumerator+<Execute>d__8.MoveNext () [0x0003a] in .\\Library\\PackageCache\\com.unity.test-framework@ee3fe9477490\\UnityEngine.TestRunner\\NUnitExtensions\\Attributes\\TestEnumerator.cs:52\r\n"
+        },
+        {
+          "FullName": "DrivingFlowTests.TrafficSpawnRejectsVisibleOccupiedAndBlockedRoad",
+          "Status": "Passed",
+          "Duration": 4.7122348,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.WeatherChangesTrafficSpeedAndFollowingDistance",
+          "Status": "Passed",
+          "Duration": 3.1305628,
+          "Message": null,
+          "StackTrace": null
+        }
+      ]
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "E:\\MyGames\\HW2\\AfterHours"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}
