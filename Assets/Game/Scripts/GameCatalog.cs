@@ -18,10 +18,14 @@ namespace AfterHours
         public GameObject roadSegment;
         public GameObject stationaryCar;
         public GameObject movingCar;
+        public GameObject[] movingTrafficVariants;
         public GameObject coin;
         public GameObject fuel;
         public Material particleMaterial;
         public AudioClip engineSound;
+        public AudioClip engineMidSound;
+        public AudioClip engineLoadSound;
+        public AudioClip trafficEngineSound;
         public AudioClip collisionSound;
         public AudioClip coinSound;
         public AudioClip fuelSound;

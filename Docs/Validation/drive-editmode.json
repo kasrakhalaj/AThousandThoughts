@@ -1,0 +1,63 @@
+{
+  "success": true,
+  "command": "command",
+  "data": {
+    "command": "test status",
+    "parameters": {},
+    "result": {
+      "status": "completed",
+      "duration": 0.17,
+      "summary": {
+        "total": 5,
+        "passed": 5,
+        "failed": 0,
+        "skipped": 0,
+        "inconclusive": 0
+      },
+      "results": [
+        {
+          "FullName": "RunModelTests.DifficultyRisesAndHasABoundedMaximum",
+          "Status": "Passed",
+          "Duration": 0.0233299,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "RunModelTests.FuelRunsOutAndRefillIsCapped",
+          "Status": "Passed",
+          "Duration": 0.000528,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "RunModelTests.RestartResetsAllRunState",
+          "Status": "Passed",
+          "Duration": 0.0015938,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "RunModelTests.ReversingAndRevisitingRoadNeverFarmDistanceScore",
+          "Status": "Passed",
+          "Duration": 0.000564,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "RunModelTests.ThreeCollisionsEndLivesWithoutGoingNegative",
+          "Status": "Passed",
+          "Duration": 0.0003813,
+          "Message": null,
+          "StackTrace": null
+        }
+      ]
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "E:\\MyGames\\HW2\\AfterHours"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

@@ -21,7 +21,8 @@ public static class NightVisualUpgrade
         Vector2[] front = { new Vector2(.58f,.72f), new Vector2(.57f,.67f), new Vector2(.62f,.87f), new Vector2(.55f,.96f), new Vector2(.68f,.48f) };
         Vector2[] rear = { new Vector2(.62f,.52f), new Vector2(.61f,.76f), new Vector2(.7f,.55f), new Vector2(.6f,.74f), new Vector2(.7f,.5f) };
         for (int i = 0; i < catalog.cars.Length; i++) UpgradeCar(catalog.cars[i], front[i], rear[i], white, red, i == 0 || i == 2 || i == 3);
-        UpdateTrafficVisual(catalog.stationaryCar, catalog.cars[2]); UpdateTrafficVisual(catalog.movingCar, catalog.cars[0]);
+        if (catalog.movingTrafficVariants == null || catalog.movingTrafficVariants.Length == 0)
+        { UpdateTrafficVisual(catalog.stationaryCar, catalog.cars[2]); UpdateTrafficVisual(catalog.movingCar, catalog.cars[0]); }
         if (catalog.shrubs == null || catalog.shrubs.Length == 0) catalog.shrubs = AfterHoursBuilder.BuildRoadsidePlants();
         catalog.hills = new[] { HillPrefab(hill) };
         EditorUtility.SetDirty(catalog);

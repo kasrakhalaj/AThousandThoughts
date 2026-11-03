@@ -1,0 +1,110 @@
+[
+  {
+    "name": "ignition",
+    "author": "RutgerMuller",
+    "freesoundId": 50898,
+    "source": "https://freesound.org/people/RutgerMuller/sounds/50898/",
+    "download": "https://cdn.freesound.org/previews/50/50898_179538-hq.mp3",
+    "license": "CC0-1.0",
+    "bytes": 106772,
+    "asset": "Assets/Game/Audio/Recorded/Recorded-ignition.wav",
+    "excerpt": [
+      0,
+      2.7
+    ],
+    "crossfadeSeconds": 0,
+    "durationSeconds": 2.7,
+    "rms": 0.05870029702782631,
+    "processing": "HQ MP3 preview decoded; mono, 45 Hz high-pass, 9 kHz low-pass, gain, loop crossfade or edge fades"
+  },
+  {
+    "name": "player-engine",
+    "author": "lovretta",
+    "freesoundId": 141240,
+    "source": "https://freesound.org/people/lovretta/sounds/141240/",
+    "download": "https://cdn.freesound.org/previews/141/141240_581937-hq.mp3",
+    "license": "CC0-1.0",
+    "bytes": 1913734,
+    "asset": "Assets/Game/Audio/Recorded/Recorded-player-idle.wav",
+    "excerpt": [
+      26,
+      29.5
+    ],
+    "crossfadeSeconds": 0.2,
+    "durationSeconds": 3.3,
+    "rms": 0.14000000059604645,
+    "processing": "HQ MP3 preview decoded; mono, 45 Hz high-pass, 9 kHz low-pass, gain, loop crossfade or edge fades"
+  },
+  {
+    "name": "player-engine",
+    "author": "lovretta",
+    "freesoundId": 141240,
+    "source": "https://freesound.org/people/lovretta/sounds/141240/",
+    "download": "https://cdn.freesound.org/previews/141/141240_581937-hq.mp3",
+    "license": "CC0-1.0",
+    "bytes": 1913734,
+    "asset": "Assets/Game/Audio/Recorded/Recorded-player-mid.wav",
+    "excerpt": [
+      52,
+      54.5
+    ],
+    "crossfadeSeconds": 0.2,
+    "durationSeconds": 2.3,
+    "rms": 0.14000000059604645,
+    "processing": "HQ MP3 preview decoded; mono, 45 Hz high-pass, 9 kHz low-pass, gain, loop crossfade or edge fades"
+  },
+  {
+    "name": "player-engine",
+    "author": "lovretta",
+    "freesoundId": 141240,
+    "source": "https://freesound.org/people/lovretta/sounds/141240/",
+    "download": "https://cdn.freesound.org/previews/141/141240_581937-hq.mp3",
+    "license": "CC0-1.0",
+    "bytes": 1913734,
+    "asset": "Assets/Game/Audio/Recorded/Recorded-player-load.wav",
+    "excerpt": [
+      47.1,
+      49.2
+    ],
+    "crossfadeSeconds": 0.16,
+    "durationSeconds": 1.94,
+    "rms": 0.14000000059604645,
+    "processing": "HQ MP3 preview decoded; mono, 45 Hz high-pass, 9 kHz low-pass, gain, loop crossfade or edge fades"
+  },
+  {
+    "name": "traffic-engine",
+    "author": "sound_catcher99",
+    "freesoundId": 425158,
+    "source": "https://freesound.org/people/sound_catcher99/sounds/425158/",
+    "download": "https://cdn.freesound.org/previews/425/425158_4370343-hq.mp3",
+    "license": "CC0-1.0",
+    "bytes": 274176,
+    "asset": "Assets/Game/Audio/Recorded/Recorded-traffic-engine.wav",
+    "excerpt": [
+      5.5,
+      9.5
+    ],
+    "crossfadeSeconds": 0.25,
+    "durationSeconds": 3.75,
+    "rms": 0.12000001221895218,
+    "processing": "HQ MP3 preview decoded; mono, 45 Hz high-pass, 9 kHz low-pass, gain, loop crossfade or edge fades"
+  },
+  {
+    "name": "rain",
+    "author": "colorsCrimsonTears",
+    "freesoundId": 532681,
+    "source": "https://freesound.org/people/colorsCrimsonTears/sounds/532681/",
+    "download": "https://cdn.freesound.org/previews/532/532681_11785387-hq.mp3",
+    "license": "CC0-1.0",
+    "bytes": 538857,
+    "asset": "Assets/Game/Audio/Recorded/Recorded-rain.wav",
+    "excerpt": [
+      0.2,
+      21.2
+    ],
+    "crossfadeSeconds": 0.45,
+    "durationSeconds": 20.55,
+    "rms": 0.10999999940395355,
+    "processing": "HQ MP3 preview decoded; mono, 45 Hz high-pass, 9 kHz low-pass, gain, loop crossfade or edge fades"
+  }
+]

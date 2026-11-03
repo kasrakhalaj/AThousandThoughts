@@ -21,9 +21,9 @@ public sealed class RunModelTests
     }
     [Test] public void DifficultyRisesAndHasABoundedMaximum()
     {
-        var run = new RunModel(); float speed = run.CruiseSpeed;
-        run.Advance(3000, 1); Assert.That(run.CruiseSpeed, Is.GreaterThan(speed));
-        run.Advance(60000, 1); Assert.That(run.CruiseSpeed, Is.EqualTo(34));
+        var run = new RunModel(); float speed = run.TopSpeed;
+        run.Advance(3000, 1); Assert.That(run.TopSpeed, Is.GreaterThan(speed));
+        run.Advance(60000, 1); Assert.That(run.TopSpeed, Is.EqualTo(44));
     }
     [Test] public void RestartResetsAllRunState()
     {

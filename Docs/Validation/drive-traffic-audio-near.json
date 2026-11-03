@@ -1,0 +1,12 @@
+{
+  "output": null,
+  "diagnostics": [],
+  "success": true,
+  "result": {
+    "rms": 0.0038422919125823225,
+    "playing": true,
+    "gain": 0.085,
+    "distance": 14.8871527,
+    "spatial": 1
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "success": true,
+  "command": "command",
+  "data": {
+    "command": "script eval",
+    "parameters": {
+      "code": "var r=UnityEditor.Build.Reporting.BuildReport.GetLatestReport();var a=new System.Collections.Generic.List<string>();foreach(var s in r.steps)foreach(var m in s.messages)if(m.type==UnityEngine.LogType.Warning||m.type==UnityEngine.LogType.Error)a.Add(m.type+\": \"+m.content);return new {result=r.summary.result.ToString(),errors=r.summary.totalErrors,warnings=r.summary.totalWarnings,bytes=r.summary.totalSize,duration=r.summary.totalTime.TotalSeconds,platform=r.summary.platform.ToString(),messages=a.ToArray()};",
+      "timeout": "120"
+    },
+    "result": {
+      "output": null,
+      "diagnostics": [],
+      "success": true,
+      "result": {
+        "result": "Succeeded",
+        "errors": 0,
+        "warnings": 1,
+        "bytes": 114666298,
+        "duration": 45.9621027,
+        "platform": "StandaloneWindows64",
+        "messages": [
+          "Warning: Shader warning in 'TextMeshPro/Mobile/Distance Field': #pragma enable_d3d11_debug_symbols has been deprecated, instead please use #pragma enable_debug_symbols at line 84"
+        ]
+      }
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "E:\\MyGames\\HW2\\AfterHours"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

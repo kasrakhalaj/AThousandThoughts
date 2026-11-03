@@ -13,7 +13,7 @@ namespace AfterHours
         public int Coins { get; private set; }
         public int Score => (int)(Furthest * 2) + Coins * 25;
         public float Difficulty => Math.Min((float)Furthest / 6000f, 1f);
-        public float CruiseSpeed => 17f + Difficulty * 17f;
+        public float TopSpeed => 30f + Difficulty * 14f;
         public void Reset() { Lives = 3; Fuel = 100; Furthest = 0; Coins = 0; }
         public void Advance(double position, float seconds)
         {

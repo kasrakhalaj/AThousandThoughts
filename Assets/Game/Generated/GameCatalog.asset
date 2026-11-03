@@ -58,13 +58,24 @@ MonoBehaviour:
   roadSegment: {fileID: 2181480157689992295, guid: 9bd18214320d0e14fac07ccc5669bc1a, type: 3}
   stationaryCar: {fileID: 7037924977903871474, guid: e5c3e6c63cf91c749b1e4bdf7bfa4ab7, type: 3}
   movingCar: {fileID: 8507804363255772803, guid: ee1b345bb84db194aa12143dcdc89912, type: 3}
+  movingTrafficVariants:
+  - {fileID: 8507804363255772803, guid: ee1b345bb84db194aa12143dcdc89912, type: 3}
+  - {fileID: 2810498632136460694, guid: 49c39fbc14ae55945879bd62c26de7e0, type: 3}
+  - {fileID: 5015809885880572685, guid: 9da1151fd84fd214892d75bc693ec396, type: 3}
+  - {fileID: 5604929672408556281, guid: 68c708bf547ac134d825fc1e031933bb, type: 3}
+  - {fileID: 4893543358511688570, guid: 71d26c3cf3db0f44cb7c066b8a342744, type: 3}
+  - {fileID: 2113132583826693681, guid: 9af9a59cbe895494cb2623e3584c7586, type: 3}
+  - {fileID: 8131929693676638704, guid: bbcdb650c3d4cb64f8982a386dad238f, type: 3}
   coin: {fileID: 7554107687270005912, guid: 98d3d01b6bfa9ac4ca640c3c335e6bd9, type: 3}
   fuel: {fileID: 1914920973471719187, guid: e520fd4971395a147992da4f334f4637, type: 3}
   particleMaterial: {fileID: 2100000, guid: 4af205efb67d57340952267d906e6439, type: 2}
-  engineSound: {fileID: 8300000, guid: 58a0af6daf4613d44aa66467c600610b, type: 3}
+  engineSound: {fileID: 8300000, guid: 414f4fa21e9f97443b7f4a845043273c, type: 3}
+  engineMidSound: {fileID: 8300000, guid: b73c5473250a09748a37d89a6abec5bd, type: 3}
+  engineLoadSound: {fileID: 8300000, guid: 77d9ead73a754284094294a612fbe51c, type: 3}
+  trafficEngineSound: {fileID: 8300000, guid: fa209f8e22e5f7e41b6adb3df5a95bb5, type: 3}
   collisionSound: {fileID: 8300000, guid: a85c15f45d5245442b5d23a08cb30e6b, type: 3}
   coinSound: {fileID: 8300000, guid: 075dd9a0ffbe037419898f4f634f3a69, type: 3}
   fuelSound: {fileID: 8300000, guid: e81fc99fc37e33a41bb4af50115f64d9, type: 3}
-  ignitionSound: {fileID: 8300000, guid: 616d9c8749a1f214c9a0d6baef690c02, type: 3}
-  rainSound: {fileID: 8300000, guid: e007db842a6d327419ec735809faf46f, type: 3}
+  ignitionSound: {fileID: 8300000, guid: 82519643341ea714fb583b93d6111f84, type: 3}
+  rainSound: {fileID: 8300000, guid: a765444e1d2b6444b8b531309fc60a9f, type: 3}
   controls: {fileID: -944628639613478452, guid: bf3f1f56759b6b24bb56be62e9a7d0a5, type: 3}

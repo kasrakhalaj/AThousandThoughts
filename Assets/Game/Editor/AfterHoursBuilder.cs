@@ -88,6 +88,8 @@ public static class AfterHoursBuilder
         }
         AssetDatabase.SaveAssets();
         NightVisualUpgrade.Apply();
+        if (File.Exists("Assets/Art/RealCars2018/NormalCar1.fbx") && File.Exists("Assets/Game/Audio/Recorded/Recorded-player-idle.wav"))
+            TrafficAudioUpgrade.Apply();
         Debug.Log("AFTER_HOURS_CREATED: " + ScenePath);
     }
     static AudioClip Clip(string name) => AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Game/Audio/" + name + ".wav");
@@ -318,6 +320,8 @@ public static class AfterHoursBuilder
             Debug.Log(names[i] + " corrected bounds: " + Bounds(visual.gameObject).size);
             PrefabUtility.SaveAsPrefabAsset(root, path); PrefabUtility.UnloadPrefabContents(root);
         }
-        CreateTraffic(catalog.cars[2], false); CreateTraffic(catalog.cars[0], true); AssetDatabase.SaveAssets();
+        if (catalog.movingTrafficVariants == null || catalog.movingTrafficVariants.Length == 0)
+        { CreateTraffic(catalog.cars[2], false); CreateTraffic(catalog.cars[0], true); }
+        AssetDatabase.SaveAssets();
     }
 }

@@ -16,6 +16,8 @@ namespace AfterHours
         RectTransform canvas, menu, hud, pause, results, starting, musicCard;
         TMP_Text carName, lives, speed, score, best, weather, tip, endScore, reason, track, category, musicState, direction;
         UnityEngine.UI.Image fuelFill, progress;
+        UnityEngine.UI.Image speedFill;
+        public int DisplayedSpeedKph { get; private set; }
         UnityEngine.UI.Image[] bars;
         UnityEngine.UI.Button shuffle;
         float refresh;
@@ -47,8 +49,12 @@ namespace AfterHours
             Stretch(hud);
             var dashboard = Box("Dashboard", hud, new Vector2(.035f, .96f), new Vector2(550, 137), new Vector2(0, 1), PanelColor);
             speed = Label(dashboard, "000", 65, Cream, 22, -15, 175, 80, FontStyles.Bold);
+            speed.gameObject.name = "Speed (kmh)";
             Label(dashboard, "KM/H", 16, Muted, 180, -53, 70, 25);
-            direction = Label(dashboard, "DRIVE", 17, Amber, 26, -100, 180, 25);
+            var speedRail = Box("Speed gauge", dashboard, new Vector2(0, 1), new Vector2(210, 5), new Vector2(0, 1), new Color(.2f, .26f, .24f));
+            speedRail.anchoredPosition = new Vector2(24, -92);
+            speedFill = Box("Speed", speedRail, new Vector2(0, 1), new Vector2(0, 5), new Vector2(0, 1), Amber).GetComponent<UnityEngine.UI.Image>();
+            direction = Label(dashboard, "IDLE", 15, Amber, 26, -106, 235, 23);
             lives = Label(dashboard, "", 22, Cream, 290, -25, 225, 35);
             Label(dashboard, "FUEL", 14, Muted, 290, -78, 100, 22);
             var fuelBack = Box("Fuel gauge", dashboard, new Vector2(0, 1), new Vector2(220, 8), new Vector2(0, 1), new Color(.2f, .26f, .24f));
@@ -61,7 +67,7 @@ namespace AfterHours
             var wr = (RectTransform)weather.transform; wr.anchorMin = wr.anchorMax = new Vector2(.965f, .79f); wr.pivot = new Vector2(1, 1); wr.anchoredPosition = Vector2.zero; weather.alignment = TextAlignmentOptions.Right;
             tip = Label(hud, "", 18, Cream, 0, 0, 1100, 50, FontStyles.Normal, TextAlignmentOptions.Center);
             var tr = (RectTransform)tip.transform; tr.anchorMin = tr.anchorMax = new Vector2(.5f, .045f); tr.pivot = new Vector2(.5f, 0); tr.anchoredPosition = Vector2.zero;
-            var controls = Label(hud, "A / D  STEER     S  BRAKE / REVERSE     W  FORWARD     ESC  PAUSE", 15, Muted, 0, 0, 1100, 30, FontStyles.Normal, TextAlignmentOptions.Center);
+            var controls = Label(hud, "W  GAS     S  BRAKE     A / D  STEER     R  REVERSE GEAR     ESC  PAUSE", 15, Muted, 0, 0, 1100, 30, FontStyles.Normal, TextAlignmentOptions.Center);
             var cr = (RectTransform)controls.transform; cr.anchorMin = cr.anchorMax = new Vector2(.5f, .015f); cr.pivot = new Vector2(.5f, 0); cr.anchoredPosition = Vector2.zero;
 
             pause = CenterPanel("Pause", "TAKE A BREATHER", "Your road will be here when you're ready.");
@@ -132,8 +138,11 @@ namespace AfterHours
             refresh -= Time.unscaledDeltaTime;
             if (refresh > 0) return; refresh = .1f;
             carName.text = game.Catalog.carNames[game.SelectedCar];
-            speed.text = (Mathf.Abs(game.Driver.Speed) * 3.6f).ToString("000");
-            direction.text = game.Driver.Reversing ? "R / REVERSING" : "D / DRIVE";
+            DisplayedSpeedKph = Mathf.RoundToInt(Mathf.Abs(game.Driver.Speed) * 3.6f);
+            speed.text = DisplayedSpeedKph.ToString("000");
+            speedFill.rectTransform.sizeDelta = new Vector2(210 * Mathf.Clamp01(Mathf.Abs(game.Driver.Speed) / game.Run.TopSpeed), 5);
+            string pedal = game.Driver.Braking ? "BRAKE" : game.Driver.Throttle > .05f ? "GAS" : Mathf.Abs(game.Driver.Speed) > .5f ? "COAST" : "IDLE";
+            direction.text = (game.Driver.Reversing ? "R" : "D" + game.Driver.Gear) + " / " + pedal;
             lives.text = "LIVES   " + game.Run.Lives + " / 3";
             score.text = game.Run.Score.ToString("N0"); best.text = "BEST  " + Mathf.Max(game.HighScore, game.Run.Score).ToString("N0");
             fuelFill.rectTransform.sizeDelta = new Vector2(220 * game.Run.Fuel / 100, 8);

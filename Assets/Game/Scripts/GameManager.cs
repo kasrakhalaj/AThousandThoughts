@@ -19,6 +19,8 @@ namespace AfterHours
         public string Tip { get; private set; }
         public GameCatalog Catalog { get; private set; }
         public DriverInput Input { get; private set; }
+        public float IgnitionDuration => Mathf.Clamp(Catalog.ignitionSound.length, 2.1f, 5);
+        public CarAudio Audio => audioRig;
         FollowCamera follow;
         CarAudio audioRig;
         GameHud hud;
@@ -27,9 +29,9 @@ namespace AfterHours
         const string HighScoreKey = "AfterHours.HighScore.v1";
         static readonly string[] Tips = {
             "A / D or arrows switch lanes. Leave yourself an escape route.",
-            "An amber signal means a car is about to merge. Give it room.",
-            "Hold S to stop, then keep holding to reverse. W drives forward.",
-            "R switches direction. Steering follows the camera when reversing.",
+            "An amber signal warns of merging traffic. Flashing hazards mark a stopped car.",
+            "Hold W to accelerate. Release it to coast. S brakes.",
+            "R selects forward or reverse gear. Hold W for gas; steering follows the camera.",
             "Fuel cans add 30% fuel. Watch the gauge, even on quiet roads.",
             "N / B change songs. M pauses music. Your artist folders are playlists.",
             "Fog rolls in gradually. Watch for silhouettes and tail lights.",
@@ -63,7 +65,7 @@ namespace AfterHours
         {
             State = GameState.Starting; Time.timeScale = 1; Input.EnableDriving(false);
             Run.Reset(); Driver.Reset(); World.ResetWorld(); Driver.SetIgnition(true); audioRig.Ignition();
-            SetTip(0); yield return new WaitForSeconds(2.1f);
+            SetTip(0); yield return new WaitForSeconds(IgnitionDuration);
             State = GameState.Playing; Input.EnableDriving(true);
         }
         public void TogglePause()
@@ -105,7 +107,7 @@ namespace AfterHours
             if (State == GameState.Playing)
             {
                 float dt = Time.deltaTime;
-                Driver.Tick(Input, Run.CruiseSpeed, dt); Run.Advance(Driver.transform.position.z, dt); World.Tick(dt);
+                Driver.Tick(Input, Run.TopSpeed, dt); Run.Advance(Driver.transform.position.z, dt); World.Tick(dt);
                 if (State == GameState.Playing && Run.Fuel <= 0) EndRun("OUT OF FUEL");
                 tipTime -= dt; if (tipTime <= 0) SetTip(tipIndex + 1);
             }

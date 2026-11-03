@@ -47,6 +47,17 @@ public sealed class DrivingFlowTests
         InputSystem.QueueStateEvent(keyboard, new KeyboardState(key)); yield return new WaitForSecondsRealtime(.08f);
         InputSystem.QueueStateEvent(keyboard, new KeyboardState()); yield return new WaitForSecondsRealtime(.08f);
     }
+    IEnumerator Hold(Key key, float seconds)
+    {
+        InputSystem.QueueStateEvent(keyboard, new KeyboardState(key)); yield return new WaitForSecondsRealtime(seconds);
+        InputSystem.QueueStateEvent(keyboard, new KeyboardState()); yield return new WaitForSecondsRealtime(.08f);
+    }
+    IEnumerator WaitForDriving()
+    {
+        float deadline = Time.realtimeSinceStartup + 7;
+        while (GameManager.Instance.State == GameState.Starting && Time.realtimeSinceStartup < deadline) yield return null;
+        Assert.That(GameManager.Instance.State, Is.EqualTo(GameState.Playing));
+    }
     [UnityTest] public IEnumerator SelectionIgnitionSteeringReversePausePoolingAndRestart()
     {
         var g = GameManager.Instance;
@@ -55,11 +66,17 @@ public sealed class DrivingFlowTests
         g.SelectCar(1); Assert.That(g.SelectedCar, Is.EqualTo(1));
         Assert.That(Object.FindObjectsByType<UnityEngine.EventSystems.EventSystem>(FindObjectsSortMode.None).Length, Is.EqualTo(1));
         yield return Press(Key.Enter); Assert.That(g.State, Is.EqualTo(GameState.Starting));
-        Assert.That(g.Driver.Speed, Is.Zero); yield return new WaitForSeconds(2.3f);
+        Assert.That(g.Driver.Speed, Is.Zero); yield return WaitForDriving();
         Assert.That(g.State, Is.EqualTo(GameState.Playing)); yield return new WaitForSeconds(.5f);
-        Assert.That(g.Driver.Speed, Is.GreaterThan(0));
+        Assert.That(g.Driver.Speed, Is.Zero, "Ignition must not drive the car automatically.");
+        yield return Hold(Key.W, 1.8f); Assert.That(g.Driver.Speed, Is.GreaterThan(10));
+        float poweredSpeed = g.Driver.Speed; yield return new WaitForSeconds(.4f);
+        Assert.That(g.Driver.Speed, Is.LessThan(poweredSpeed)); Assert.That(g.Driver.Speed, Is.GreaterThan(0));
+        yield return Hold(Key.S, .25f); Assert.That(g.Driver.Speed, Is.LessThan(poweredSpeed - 3));
+        var hud = Object.FindAnyObjectByType<GameHud>();
+        Assert.That(hud.DisplayedSpeedKph, Is.EqualTo(Mathf.RoundToInt(Mathf.Abs(g.Driver.Speed) * 3.6f)).Within(4));
         yield return Press(Key.D); yield return new WaitForSeconds(.3f); Assert.That(g.Driver.Lane, Is.EqualTo(2));
-        yield return Press(Key.R); yield return new WaitForSeconds(2); Assert.That(g.Driver.Speed, Is.LessThan(0));
+        yield return Press(Key.R); yield return Hold(Key.W, 2); Assert.That(g.Driver.Speed, Is.LessThan(0));
         Assert.That(Camera.main.transform.position.z, Is.GreaterThan(g.Driver.transform.position.z));
         yield return Press(Key.A); Assert.That(g.Driver.Lane, Is.EqualTo(2)); // Screen-left becomes world-right in reverse.
         yield return Press(Key.Escape); Assert.That(g.State, Is.EqualTo(GameState.Paused));
@@ -69,12 +86,12 @@ public sealed class DrivingFlowTests
         int capacity = g.World.PooledCount;
         for (int i = 0; i < 12; i++) { g.Driver.transform.position = new Vector3(0, .08f, i * 120); g.World.Tick(0); }
         Assert.That(g.World.PooledCount, Is.EqualTo(capacity)); Assert.That(g.World.ActiveCount, Is.LessThan(capacity));
-        g.Restart(); yield return new WaitForSeconds(2.3f);
+        g.Restart(); yield return WaitForDriving();
         Assert.That(g.Run.Lives, Is.EqualTo(3)); Assert.That(g.Run.Fuel, Is.GreaterThan(99));
     }
     [UnityTest] public IEnumerator DamageCooldownGameOverAndPersistentBest()
     {
-        var g = GameManager.Instance; g.StartRun(); yield return new WaitForSeconds(2.3f);
+        var g = GameManager.Instance; g.StartRun(); yield return WaitForDriving();
         g.Run.Advance(100, 0); g.HitCar(g.Driver.transform.position); g.HitCar(g.Driver.transform.position);
         Assert.That(g.Run.Lives, Is.EqualTo(2));
         for (int i = 0; i < 2; i++) { g.Driver.Tick(g.Input, 0, 3); g.HitCar(g.Driver.transform.position); }
@@ -110,7 +127,7 @@ public sealed class DrivingFlowTests
             foreach (var lens in authored.GetComponentsInChildren<Renderer>())
                 Assert.That(lens.sharedMaterial.IsKeywordEnabled("_EMISSION"), Is.True, "Lamp emission shader variant must remain enabled.");
         }
-        g.StartRun(); yield return new WaitForSeconds(2.3f);
+        g.StartRun(); yield return WaitForDriving();
         var lamps = g.Driver.GetComponentInChildren<VehicleLights>();
         Assert.That(lamps.IsOn, Is.True);
         g.HitCar(g.Driver.transform.position); yield return null;
@@ -136,5 +153,41 @@ public sealed class DrivingFlowTests
         Assert.That(children, Is.GreaterThan(150));
         chunk.Place(14); chunk.Place(-4); Assert.That(chunk.transform.childCount, Is.EqualTo(children));
         yield return null;
+    }
+
+    [UnityTest] public IEnumerator RecordedEngineTrafficMovementAndPause()
+    {
+        var g = GameManager.Instance;
+        Assert.That(g.Catalog.movingTrafficVariants.Length, Is.EqualTo(7));
+        Assert.That(g.Catalog.engineSound.name, Is.EqualTo("Recorded-player-idle"));
+        Assert.That(g.Catalog.trafficEngineSound.name, Is.EqualTo("Recorded-traffic-engine"));
+        Assert.That(g.Catalog.rainSound.name, Is.EqualTo("Recorded-rain"));
+        g.StartRun(); yield return WaitForDriving(); yield return new WaitForSeconds(.4f);
+        Assert.That(g.Driver.Speed, Is.Zero);
+        Assert.That(g.Audio.EnginePlaying, Is.True); Assert.That(g.Audio.EngineVolume, Is.GreaterThan(.1f));
+        MovingCar car = null;
+        foreach (var candidate in Object.FindObjectsByType<MovingCar>())
+            if (candidate.Speed > 10 && Mathf.Abs(candidate.transform.position.z) > 60) { car = candidate; break; }
+        Assert.That(car, Is.Not.Null);
+        float start = car.transform.position.z; yield return new WaitForSeconds(.7f);
+        Assert.That(car.transform.position.z - start, Is.GreaterThan(6));
+        Assert.That(car.EnginePlaying, Is.True); Assert.That(car.EngineVolume, Is.LessThan(g.Audio.EngineVolume));
+        g.TogglePause(); yield return new WaitForSecondsRealtime(.15f);
+        Assert.That(car.EnginePlaying, Is.False); float parked = car.transform.position.z;
+        yield return new WaitForSecondsRealtime(.15f); Assert.That(car.transform.position.z, Is.EqualTo(parked));
+        g.TogglePause(); yield return new WaitForSeconds(.15f); Assert.That(car.EnginePlaying, Is.True);
+    }
+
+    [UnityTest] public IEnumerator GasHeldDuringIgnitionWorksWhenDrivingBecomesEnabled()
+    {
+        var g = GameManager.Instance; g.StartRun();
+        InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.W));
+        yield return new WaitForSeconds(.3f); Assert.That(g.Driver.Speed, Is.Zero);
+        yield return WaitForDriving(); yield return new WaitForSeconds(.6f);
+        Assert.That(g.Driver.Speed, Is.GreaterThan(3), "A held gas pedal must be read when the driving map is enabled.");
+        InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.W, Key.S)); yield return new WaitForSeconds(1.1f);
+        Assert.That(g.Driver.Speed, Is.Zero, "The brake must win when both pedals are held.");
+        Assert.That(g.Driver.Reversing, Is.False, "Braking must not select reverse gear.");
+        InputSystem.QueueStateEvent(keyboard, new KeyboardState()); yield return null;
     }
 }

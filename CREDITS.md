@@ -15,13 +15,24 @@ These packs are CC0. The download manifest and archive checksums are retained ou
 
 Five FBX vehicle models and related props were supplied by the student in `../Assets/Vehicles` and copied unchanged into `Assets/Art/Vehicles`. The student described these as free itch.io assets. The exact publisher URL/license file was not included in the supplied folder; record those details before final submission. Generated prefab wrappers normalize model scale and convert materials for URP while preserving the source files.
 
+AI traffic uses Quaternius's **Realistic Car Pack - Nov 2018**, supplied in `../Assets/Vehicles/Realistic Car Pack - Nov 2018`. Seven FBXs and the included CC0 1.0 license were copied unchanged to `Assets/Art/RealCars2018`. Publisher: https://quaternius.com/ (the supplied license also credits https://www.patreon.com/quaternius). Generated wrappers normalize scale, convert materials and extract the authored lamp geometry into independently lit meshes. Original FBXs are not modified.
+
 ## Font
 
 Liberation Sans and TextMeshPro essential resources. Liberation Sans font license is included under `Assets/TextMesh Pro/Fonts` (SIL Open Font License).
 
 ## Audio
 
-Engine, ignition, rain, collision and pickup sounds are original synthesized audio generated for this project. Their reproducible generator is `../Tools/make_drive_audio.py`.
+Active engine, ignition and rain sounds are edited **real field recordings**, downloaded from the public Freesound HQ MP3 previews on 2026-11-03. Each source page identifies its recording as CC0 1.0:
+
+- Player engine layers: **Renault 19 underhood acceleration**, by **lovretta** — https://freesound.org/people/lovretta/sounds/141240/
+- Ignition/key turn: **Car Ignition Key - Engine Starting Running Idle 2.wav**, by **RutgerMuller** — https://freesound.org/people/RutgerMuller/sounds/50898/
+- AI engine: **Car engine start up running and turning off.wav**, by **sound_catcher99** — https://freesound.org/people/sound_catcher99/sounds/425158/
+- Rain: **Rainfall**, by **colorsCrimsonTears** — https://freesound.org/people/colorsCrimsonTears/sounds/532681/
+
+License: https://creativecommons.org/publicdomain/zero/1.0/. Source MP3s, downloaded source pages and download manifest are retained in `../SourceAudio/FieldRecordings`. `Docs/RecordedSoundSources.json` records download URLs, excerpts and processing for every active clip. Preparation uses mono conversion, filtering, level adjustment and loop crossfades; no engine or rain tones are synthesized. The player layers come from portions of the same recording with runtime pitch/crossfade changes. They are stylized engine characters, not exact recordings of each depicted vehicle make.
+
+Collision and pickup effects remain original synthesized audio generated for this project. Their generator is `../Tools/make_drive_audio.py`. Older synthesized engine/ignition/rain files remain as unused development assets; the catalog points to `Audio/Recorded` clips.
 
 The personal MP3 music library was supplied by the student. It is stored outside Unity Assets and read from the local Music folder. Original artist/song filenames are preserved. The music is not part of the Kenney assets. Original-format backups are retained outside the active library.
 

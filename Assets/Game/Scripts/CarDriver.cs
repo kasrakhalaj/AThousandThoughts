@@ -8,6 +8,9 @@ namespace AfterHours
         public bool Reversing { get; private set; }
         public int Lane { get; private set; } = 1;
         public float HitCooldown { get; private set; }
+        public float Throttle { get; private set; }
+        public bool Braking { get; private set; }
+        public int Gear => Mathf.Abs(Speed) < 1 ? 1 : Mathf.Clamp(1 + Mathf.FloorToInt(Mathf.Abs(Speed) / 8), 1, 5);
         public const float LaneWidth = 3.6f;
         public const float LaneTime = .24f;
         GameObject[] models;
@@ -19,7 +22,6 @@ namespace AfterHours
         ParticleSystem exhaust;
         Renderer[] renderers;
         MaterialPropertyBlock flash;
-        float brakeHold;
         float desiredSpeed;
 
         public void Initialize(GameCatalog catalog)
@@ -61,24 +63,20 @@ namespace AfterHours
         public void Reset()
         {
             transform.position = new Vector3(0, .08f, 0); Speed = 0; Reversing = false;
-            Lane = 1; HitCooldown = 0; brakeHold = 0; desiredSpeed = 0;
+            Lane = 1; HitCooldown = 0; desiredSpeed = 0; Throttle = 0; Braking = false;
             visual.localRotation = Quaternion.identity;
         }
-        public void Tick(DriverInput input, float cruise, float dt)
+        public void Tick(DriverInput input, float topSpeed, float dt)
         {
             HitCooldown = Mathf.Max(0, HitCooldown - dt);
             if (input.Reverse.WasPressedThisFrame()) Reversing = !Reversing;
-            if (input.Forward.WasPressedThisFrame()) { Reversing = false; brakeHold = 0; }
-            bool brake = input.Brake.IsPressed();
-            if (brake && !Reversing)
-            {
-                brakeHold = Mathf.Abs(Speed) < .3f ? brakeHold + dt : 0;
-                if (brakeHold > .45f) Reversing = true;
-            }
-            else brakeHold = 0;
-            desiredSpeed = Reversing ? -10 : brake ? 0 : cruise;
-            Speed = Mathf.MoveTowards(Speed, desiredSpeed, (brake || Speed * desiredSpeed < 0 ? 22 : 8) * dt);
-            if (lamps[selected] != null) lamps[selected].SetDrivingState(brake || Speed * desiredSpeed < 0, Reversing);
+            Throttle = Mathf.Clamp01(input.Throttle.ReadValue<float>());
+            Braking = input.Brake.IsPressed();
+            desiredSpeed = Braking ? 0 : (Reversing ? -10 : topSpeed) * Throttle;
+            bool changingDirection = Speed * desiredSpeed < 0;
+            float acceleration = Braking || changingDirection ? 22 : Throttle > .01f ? Mathf.Lerp(9, 5.5f, Mathf.Abs(Speed) / 44) : 2.2f;
+            Speed = Mathf.MoveTowards(Speed, desiredSpeed, acceleration * dt);
+            if (lamps[selected] != null) lamps[selected].SetDrivingState(Braking || changingDirection, Reversing);
             int steering = (input.Right.WasPressedThisFrame() ? 1 : 0) - (input.Left.WasPressedThisFrame() ? 1 : 0);
             // When the rear-facing camera is active, left/right follow screen space.
             if (Reversing) steering = -steering;

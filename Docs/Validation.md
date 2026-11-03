@@ -1,5 +1,7 @@
 # First playable validation
 
+For the current manual-throttle, recorded-audio and 2018 traffic update, see [DriveUpgradeValidation.md](DriveUpgradeValidation.md). The sections below retain the earlier playable/night-pass history.
+
 Date: 2026-11-03. Scope: the initial HW2 implementation, Windows desktop, Unity 6000.6.7f1, URP 17.6.0, New Input System only.
 
 ## Baseline

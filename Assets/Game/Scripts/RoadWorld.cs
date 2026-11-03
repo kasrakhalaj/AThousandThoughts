@@ -14,6 +14,7 @@ namespace AfterHours
         GameCatalog catalog;
         int furthestGenerated;
         int windowCenter = int.MinValue;
+        float trafficTimer;
         public int ActiveCount => active.Count;
         public int PooledCount => poolKeys.Count;
 
@@ -25,22 +26,25 @@ namespace AfterHours
                 var road = Instantiate(catalog.roadSegment, transform).AddComponent<RoadChunk>();
                 road.Initialize(catalog, i); chunks.Add(road);
             }
-            Warm(0, catalog.stationaryCar, 48); Warm(1, catalog.movingCar, 48);
-            Warm(2, catalog.coin, 144); Warm(3, catalog.fuel, 24);
+            Warm(0, new[] { catalog.stationaryCar }, 48);
+            Warm(1, catalog.movingTrafficVariants != null && catalog.movingTrafficVariants.Length > 0 ? catalog.movingTrafficVariants : new[] { catalog.movingCar }, 48);
+            Warm(2, new[] { catalog.coin }, 144); Warm(3, new[] { catalog.fuel }, 24);
         }
-        void Warm(int key, GameObject prefab, int count)
+        void Warm(int key, GameObject[] prefabs, int count)
         {
             var pool = new Stack<Interactable>(count); pools.Add(key, pool);
             for (int i = 0; i < count; i++)
             {
-                var instance = Instantiate(prefab, transform).GetComponent<Interactable>();
+                var instance = Instantiate(prefabs[i % prefabs.Length], transform).GetComponent<Interactable>();
+                if (instance is StationaryCar traffic) traffic.Initialize(catalog);
                 instance.gameObject.SetActive(false); pool.Push(instance); poolKeys.Add(instance, key);
             }
         }
-        void Spawn(int key, Vector3 position)
+        Interactable Spawn(int key, Vector3 position)
         {
-            if (pools[key].Count == 0) return;
+            if (pools[key].Count == 0) return null;
             var item = pools[key].Pop(); item.Activate(game, position); active.Add(item);
+            return item;
         }
         void Release(int index)
         {
@@ -50,7 +54,7 @@ namespace AfterHours
         public void ResetWorld()
         {
             for (int i = active.Count - 1; i >= 0; i--) Release(i);
-            furthestGenerated = -1; windowCenter = int.MinValue;
+            furthestGenerated = -1; windowCenter = int.MinValue; trafficTimer = 4;
             foreach (var chunk in chunks) chunk.gameObject.SetActive(false);
             MaintainWindow(0);
         }
@@ -95,11 +99,12 @@ namespace AfterHours
                     int safeLane = ((index + row) % 3 + 3) % 3;
                     int blocked = random.Next(3);
                     if (blocked == safeLane) blocked = (blocked + 1) % 3;
-                    Spawn(random.NextDouble() > .45 ? 1 : 0, new Vector3((blocked - 1) * CarDriver.LaneWidth, .08f, z));
+                    if (z < 0 && z > -80 && blocked == 1) blocked = 0;
+                    Spawn(random.NextDouble() < .1 && index > 1 ? 0 : 1, new Vector3((blocked - 1) * CarDriver.LaneWidth, .08f, z));
                     if (game.Run.Difficulty > .2f)
                     {
                         int second = 3 - safeLane - blocked;
-                        Spawn(0, new Vector3((second - 1) * CarDriver.LaneWidth, .08f, z));
+                        Spawn(1, new Vector3((second - 1) * CarDriver.LaneWidth, .08f, z));
                     }
                     if (fresh) for (int c = 0; c < 3; c++) Spawn(2, new Vector3((safeLane - 1) * CarDriver.LaneWidth, .85f, z + c * 4));
                 }
@@ -122,10 +127,45 @@ namespace AfterHours
             }
             return occupied == 0;
         }
+        public float TrafficSpeed(StationaryCar car, float cruising)
+        {
+            float result = cruising;
+            float playerGap = game.Driver.transform.position.z - car.transform.position.z;
+            if (playerGap > 0 && playerGap < 32 && Mathf.Abs(game.Driver.transform.position.x - car.transform.position.x) < 1.8f)
+                result = Mathf.Min(result, Mathf.Lerp(0, Mathf.Max(0, game.Driver.Speed), Mathf.InverseLerp(5, 25, playerGap)));
+            foreach (var other in active)
+            {
+                if (other == car || !(other is StationaryCar ahead)) continue;
+                float gap = ahead.transform.position.z - car.transform.position.z;
+                if (gap <= 0 || gap > 30 || Mathf.Abs(ahead.transform.position.x - car.transform.position.x) > 1.8f) continue;
+                result = Mathf.Min(result, Mathf.Lerp(0, Mathf.Max(0, ahead.Speed), Mathf.InverseLerp(5, 23, gap)));
+            }
+            return result;
+        }
+        public void SetTrafficAudioPaused(bool paused)
+        {
+            foreach (var item in active) if (item is StationaryCar car) car.SetAudioPaused(paused);
+        }
+        void StreamTraffic(float dt, Vector3 player)
+        {
+            trafficTimer -= dt;
+            if (trafficTimer > 0) return;
+            trafficTimer = Mathf.Lerp(6, 3.4f, game.Run.Difficulty);
+            int section = Mathf.FloorToInt(player.z / 60);
+            if ((section % 16 + 16) % 16 >= 11) return;
+            // Overtakers approach in an adjacent lane, preserving a stopped player's reaction space.
+            int lane = (game.Driver.Lane + (Random.value > .5f ? 1 : 2)) % 3;
+            float x = (lane - 1) * CarDriver.LaneWidth;
+            float z = player.z - 85;
+            foreach (var item in active) if (item is StationaryCar && Mathf.Abs(item.transform.position.x - x) < 2 && Mathf.Abs(item.transform.position.z - z) < 30) return;
+            var car = Spawn(1, new Vector3(x, .08f, z)) as MovingCar;
+            if (car != null) car.SetCruisingSpeed(Mathf.Max(22, Mathf.Abs(game.Driver.Speed) + 5));
+        }
         public void Tick(float dt)
         {
             Vector3 player = game.Driver.transform.position;
             MaintainWindow(player.z);
+            if (dt > 0) StreamTraffic(dt, player);
             for (int i = active.Count - 1; i >= 0; i--)
             {
                 var item = active[i];
@@ -134,7 +174,7 @@ namespace AfterHours
                 Vector3 p = item.transform.position;
                 float halfLength = item is StationaryCar ? 4.1f : 2.5f;
                 // Swept longitudinal test also handles a dropped frame without tunneling through a pickup.
-                float sweep = Mathf.Abs(game.Driver.Speed) * dt;
+                float sweep = Mathf.Abs(game.Driver.Speed - (item is StationaryCar car ? car.Speed : 0)) * dt;
                 if (Mathf.Abs(p.x - player.x) < (item is StationaryCar ? 1.65f : 1.3f) && Mathf.Abs(p.z - player.z) < halfLength + sweep)
                     item.Contact();
                 if (p.z < (windowCenter - 7) * 60 || p.z > (windowCenter + 10) * 60) Release(i);

@@ -1,0 +1,31 @@
+{
+  "success": true,
+  "command": "command",
+  "data": {
+    "command": "script eval",
+    "parameters": {
+      "code": "var r=UnityEditor.Build.Reporting.BuildReport.GetLatestReport();var a=new System.Collections.Generic.List<string>();foreach(var s in r.steps)foreach(var m in s.messages)if(m.type==UnityEngine.LogType.Warning||m.type==UnityEngine.LogType.Error)a.Add(m.type+\": \"+m.content);return new {result=r.summary.result.ToString(),errors=r.summary.totalErrors,warnings=r.summary.totalWarnings,bytes=r.summary.totalSize,duration=r.summary.totalTime.TotalSeconds,messages=a.ToArray()};",
+      "timeout": "120"
+    },
+    "result": {
+      "output": null,
+      "diagnostics": [],
+      "success": true,
+      "result": {
+        "result": "Succeeded",
+        "errors": 0,
+        "warnings": 0,
+        "bytes": 114666298,
+        "duration": 28.8875516,
+        "messages": []
+      }
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "E:\\MyGames\\HW2\\AfterHours"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}
