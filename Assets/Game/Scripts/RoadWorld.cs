@@ -88,7 +88,7 @@ namespace AfterHours
         void MaintainWindow(float z)
         {
             int center = Mathf.FloorToInt(z / RoadChunk.Length);
-            int direction = game.Driver.RearView ? -1 : 1;
+            int direction = game.Driver.CameraRearView ? -1 : 1;
             if (center == windowCenter && direction == windowDirection) return;
             windowCenter = center; windowDirection = direction;
             minSection = center - (direction > 0 ? 5 : 11); maxSection = minSection + ChunkCount - 1;

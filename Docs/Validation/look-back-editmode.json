@@ -1,0 +1,203 @@
+{
+  "success": true,
+  "command": "command",
+  "data": {
+    "command": "test status",
+    "parameters": {},
+    "result": {
+      "status": "completed",
+      "duration": 0.03,
+      "summary": {
+        "total": 25,
+        "passed": 25,
+        "failed": 0,
+        "skipped": 0,
+        "inconclusive": 0
+      },
+      "results": [
+        {
+          "FullName": "ManualTransmissionTests.BoundsReverseAndResetAreSafe",
+          "Status": "Passed",
+          "Duration": 0.002397,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "ManualTransmissionTests.CorrectManualShiftingCanReach300AndChangesRpm",
+          "Status": "Passed",
+          "Duration": 0.0013799,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "ManualTransmissionTests.DownshiftCannotOverRevOrInstantlyRemoveSpeed",
+          "Status": "Passed",
+          "Duration": 0.0003854,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "ManualTransmissionTests.LowGearHasALimiterAndHighGearLugsAtLowSpeed",
+          "Status": "Passed",
+          "Duration": 0.0004813,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "ManualTransmissionTests.ShiftsRequireARequestAndAClutchInterval",
+          "Status": "Passed",
+          "Duration": 0.000312,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "RunModelTests.DifficultyRisesAndHasABoundedMaximum",
+          "Status": "Passed",
+          "Duration": 0.0003848,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "RunModelTests.FuelRunsOutAndRefillIsCapped",
+          "Status": "Passed",
+          "Duration": 0.0003351,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "RunModelTests.RestartResetsAllRunState",
+          "Status": "Passed",
+          "Duration": 0.0003069,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "RunModelTests.ReversingAndRevisitingRoadNeverFarmDistanceScore",
+          "Status": "Passed",
+          "Duration": 0.0003087,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "RunModelTests.ThreeCollisionsEndLivesWithoutGoingNegative",
+          "Status": "Passed",
+          "Duration": 0.0001909,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "TrafficRulesTests.EveryRouteCycleContainsQuietAndBusySectionsInBothDirections",
+          "Status": "Passed",
+          "Duration": 0.0008439,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "TrafficRulesTests.FastClosingTrafficNeedsMoreSpaceAheadAndBehind",
+          "Status": "Passed",
+          "Duration": 0.000302,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "TrafficRulesTests.FollowingRespondsToStoppingDistanceAndWeatherHeadway",
+          "Status": "Passed",
+          "Duration": 0.0002243,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "TrafficRulesTests.OnlyFullyOpaqueFogCanHideANewCar",
+          "Status": "Passed",
+          "Duration": 0.0001412,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "TrafficRulesTests.RainAndFogReduceSpeedWithoutStoppingAllTraffic",
+          "Status": "Passed",
+          "Duration": 0.0002604,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "TrafficRulesTests.ReverseDrivingUsesCombinedClosingSpeedForSpawnSafety",
+          "Status": "Passed",
+          "Duration": 0.00015,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "VehicleDynamicsTests.AccelerationIsConsistentAtDifferentFrameRates",
+          "Status": "Passed",
+          "Duration": 0.0006271,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "VehicleDynamicsTests.DiagonalNearMissDoesNotCombineContactsAtDifferentTimes",
+          "Status": "Passed",
+          "Duration": 0.0006851,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "VehicleDynamicsTests.FullGasBuildsSpeedGraduallyAndTheLastHundredTakesLonger",
+          "Status": "Passed",
+          "Duration": 0.0005426,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "VehicleDynamicsTests.GasCoastingAndBrakingProduceDifferentAcceleration",
+          "Status": "Passed",
+          "Duration": 0.0001912,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "VehicleDynamicsTests.HighSpeedSweepOnlyHitsWhenTheVehicleActuallyCrosses(35,10,False)",
+          "Status": "Passed",
+          "Duration": 0.0006782,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "VehicleDynamicsTests.HighSpeedSweepOnlyHitsWhenTheVehicleActuallyCrosses(15,-15,True)",
+          "Status": "Passed",
+          "Duration": 7.61e-05,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "VehicleDynamicsTests.HighSpeedSweepOnlyHitsWhenTheVehicleActuallyCrosses(-10,-35,False)",
+          "Status": "Passed",
+          "Duration": 5.21e-05,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "VehicleDynamicsTests.ReverseBrakesBeforeChangingDirectionAndKeepsItsOwnLimit",
+          "Status": "Passed",
+          "Duration": 0.00019,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "VehicleDynamicsTests.SixGearsMatchTheNewSpeedRange",
+          "Status": "Passed",
+          "Duration": 0.000272,
+          "Message": null,
+          "StackTrace": null
+        }
+      ]
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "E:\\MyGames\\HW2\\AfterHours"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

@@ -9,6 +9,8 @@ namespace AfterHours
         public Vector3 PreviousPosition { get; private set; }
         public bool Reversing { get; private set; }
         public bool RearView => Speed < -.1f || Mathf.Abs(Speed) <= .1f && Reversing;
+        public bool LookingBack { get; private set; }
+        public bool CameraRearView => RearView || LookingBack;
         public int Lane { get; private set; } = 1;
         public float HitCooldown { get; private set; }
         public float Throttle { get; private set; }
@@ -77,11 +79,13 @@ namespace AfterHours
             transform.position = new Vector3(0, .08f, 0); Speed = 0; Reversing = false;
             Lane = 1; HitCooldown = 0; Acceleration = 0; Throttle = 0; Braking = false; PreviousPosition = transform.position;
             transmission.Reset();
+            LookingBack = false;
             visual.localRotation = Quaternion.identity;
         }
         public void Tick(DriverInput input, float topSpeed, float dt, float power = 1)
         {
             PreviousPosition = transform.position;
+            LookingBack = input.LookBack.IsPressed();
             HitCooldown = Mathf.Max(0, HitCooldown - dt);
             transmission.Tick(dt);
             if (input.Reverse.WasPressedThisFrame()) { Reversing = !Reversing; transmission.Reset(); }

@@ -69,7 +69,13 @@ public static class LiveDensityProbe
             if(best!=current){steering=best>current?Key.D:Key.A;releaseSteering=true;}
         }
         else releaseSteering=false;
-        if (gearKey != Key.None) InputSystem.QueueStateEvent(keyboard, steering==Key.None ? new KeyboardState(Key.W,gearKey) : new KeyboardState(Key.W,gearKey,steering));
+        bool lookingBack = SessionState.GetBool("AfterHours.Probe.LookBack", false) && elapsed >= 10 && elapsed < 14;
+        if (lookingBack)
+        {
+            if (gearKey != Key.None) InputSystem.QueueStateEvent(keyboard, steering==Key.None ? new KeyboardState(Key.W,Key.C,gearKey) : new KeyboardState(Key.W,Key.C,gearKey,steering));
+            else InputSystem.QueueStateEvent(keyboard,steering==Key.None ? new KeyboardState(Key.W,Key.C) : new KeyboardState(Key.W,Key.C,steering));
+        }
+        else if (gearKey != Key.None) InputSystem.QueueStateEvent(keyboard, steering==Key.None ? new KeyboardState(Key.W,gearKey) : new KeyboardState(Key.W,gearKey,steering));
         else InputSystem.QueueStateEvent(keyboard,steering==Key.None?new KeyboardState(Key.W):new KeyboardState(Key.W,steering));
         if(!captured && elapsed>=12)
         {
@@ -87,7 +93,7 @@ public static class LiveDensityProbe
                 if(Mathf.Abs(gap)<180)near++;
                 if(Mathf.Abs(gap)<180 && c is MovingCar m && m.IsMerging)merging++;
             }
-            samples.Add(new {seconds=elapsed,z=g.Driver.transform.position.z,speed=g.Driver.Speed,acceleration=g.Driver.Acceleration,gear=g.Driver.Gear,rpm=g.Driver.EngineRpm,shifting=g.Driver.IsShifting,shiftCues=g.Audio.ShiftCueCount,pedalCues=g.Audio.ThrottleCueCount,flow=g.World.Flow.ToString(),ahead,near,visible,merging,total=g.World.ActiveTrafficCount,lives=g.Run.Lives});
+            samples.Add(new {seconds=elapsed,z=g.Driver.transform.position.z,speed=g.Driver.Speed,acceleration=g.Driver.Acceleration,gear=g.Driver.Gear,lookingBack=g.Driver.LookingBack,reversing=g.Driver.Reversing,cameraZ=Camera.main.transform.position.z,cameraForwardZ=Camera.main.transform.forward.z,rpm=g.Driver.EngineRpm,shifting=g.Driver.IsShifting,shiftCues=g.Audio.ShiftCueCount,pedalCues=g.Audio.ThrottleCueCount,flow=g.World.Flow.ToString(),ahead,near,visible,merging,total=g.World.ActiveTrafficCount,lives=g.Run.Lives});
         }
     }
     static float SampleAudio(AudioSource source)

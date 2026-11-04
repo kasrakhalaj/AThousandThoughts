@@ -19,7 +19,7 @@ namespace AfterHours
         UnityEngine.UI.Image speedFill;
         public int DisplayedSpeedKph { get; private set; }
         public float DisplayedAcceleration { get; private set; }
-        TMP_Text acceleration, engineRpm, shiftHint;
+        TMP_Text acceleration, engineRpm, shiftHint, lookBackHint;
         UnityEngine.UI.Image rpmFill;
         public int DisplayedGear { get; private set; }
         public int DisplayedRpm { get; private set; }
@@ -81,8 +81,11 @@ namespace AfterHours
             var wr = (RectTransform)weather.transform; wr.anchorMin = wr.anchorMax = new Vector2(.965f, .79f); wr.pivot = new Vector2(1, 1); wr.anchoredPosition = Vector2.zero; weather.alignment = TextAlignmentOptions.Right;
             tip = Label(hud, "", 18, Cream, 0, 0, 1100, 50, FontStyles.Normal, TextAlignmentOptions.Center);
             var tr = (RectTransform)tip.transform; tr.anchorMin = tr.anchorMax = new Vector2(.5f, .045f); tr.pivot = new Vector2(.5f, 0); tr.anchoredPosition = Vector2.zero;
-            var controls = Label(hud, "W  GAS     S  BRAKE     A / D  STEER     Q / E  GEARS     R  REVERSE     ESC  PAUSE", 15, Muted, 0, 0, 1100, 30, FontStyles.Normal, TextAlignmentOptions.Center);
+            var controls = Label(hud, "W  GAS     S  BRAKE     A / D  STEER     Q / E  GEARS     C  LOOK BACK     R  REVERSE     ESC  PAUSE", 15, Muted, 0, 0, 1100, 30, FontStyles.Normal, TextAlignmentOptions.Center);
             var cr = (RectTransform)controls.transform; cr.anchorMin = cr.anchorMax = new Vector2(.5f, .015f); cr.pivot = new Vector2(.5f, 0); cr.anchoredPosition = Vector2.zero;
+
+            lookBackHint = Label(hud, "LOOK BACK / RELEASE TO RETURN", 16, Amber, 0, 0, 400, 30, FontStyles.Normal, TextAlignmentOptions.Center);
+            var lr = (RectTransform)lookBackHint.transform; lr.anchorMin = lr.anchorMax = new Vector2(.5f, .95f); lr.pivot = new Vector2(.5f, 1); lr.anchoredPosition = Vector2.zero;
 
             pause = CenterPanel("Pause", "TAKE A BREATHER", "Your road will be here when you're ready.");
             Button(pause, "CONTINUE", 55, -180, 450, 60, () => game.TogglePause(), true);
@@ -131,6 +134,7 @@ namespace AfterHours
         public void Tick()
         {
             var state = game.State;
+            lookBackHint.gameObject.SetActive(game.Driver.LookingBack);
             menu.gameObject.SetActive(state == GameState.Menu); hud.gameObject.SetActive(state == GameState.Playing);
             pause.gameObject.SetActive(state == GameState.Paused); results.gameObject.SetActive(state == GameState.GameOver);
             starting.gameObject.SetActive(state == GameState.Starting);

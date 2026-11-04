@@ -16,6 +16,7 @@ The scene and serialized catalog/prefabs are already authored. `After Hours > Cr
 | A/D or left/right arrows | Change lane |
 | S/down arrow | Brake (takes priority over gas) |
 | R | Select forward or reverse gear |
+| C (hold) / right-stick click (hold) | Look behind while continuing to drive |
 | E / right shoulder | Shift up one gear |
 | Q / left shoulder | Shift down one gear |
 | W/up arrow | Hold for gas in the selected gear |
@@ -23,7 +24,7 @@ The scene and serialized catalog/prefabs are already authored. `After Hours > Cr
 | N / B | Next / previous song |
 | M | Pause/resume music |
 
-Steering follows screen space while the camera faces the road behind the reversing car. The car's orientation remains physically forward. Gamepad D-pad, triggers, west button and Start are also bound; keyboard/mouse is the primary validation target.
+Hold C to check traffic behind while driving forward; release C to restore the normal view. This camera glance keeps forward steering, gas, gear and engine RPM behavior. R still selects actual reverse driving. Steering follows screen space while the car is reversing. The car's orientation remains physically forward. Gamepad D-pad, triggers, west button and Start are also bound; keyboard/mouse is the primary validation target.
 
 The engine starts while the car remains stopped. Hold W to accelerate, release it to coast and press S to brake. R selects forward or reverse gear; W supplies gas in either gear. Braking takes priority when both pedals are held. The dashboard shows actual km/h, a speed bar, gear and gas/coast/brake state. The forward limit is 300 km/h. Gas supplies acceleration against rolling/aerodynamic resistance; the final 100 km/h takes much longer than the first. With well-timed manual shifts, base clear-road tuning is approximately 0-100 in 7s, 0-200 in 16s and 0-300 in 39s. Holding gas alone stays in the selected gear. Distance progression adds a small acceleration bonus while traffic gets harder. The dashboard shows signed acceleration along travel in m/s²; six selected gears drive actual torque, per-gear rev limits and engine RPM. E shifts up, Q shifts down, and an automatic clutch briefly cuts power for 0.36s. First through sixth redlines are approximately 45/85/130/180/240/300 km/h. Early high gears lug; a downshift that would over-rev is rejected. The RPM bar and shift prompts guide the driver.
 

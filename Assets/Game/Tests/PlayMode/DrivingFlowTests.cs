@@ -405,4 +405,59 @@ public sealed class DrivingFlowTests
         Assert.That(g.Driver.Gear, Is.EqualTo(2)); Assert.That(g.Audio.ShiftCueCount, Is.EqualTo(3));
         InputSystem.QueueStateEvent(keyboard, new KeyboardState()); yield return null;
     }
+    [UnityTest] public IEnumerator HoldLookBackWhileDrivingKeepsForwardMotionGearAndSteering()
+    {
+        var g = GameManager.Instance; g.StartRun(); yield return WaitForDriving();
+        InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.W)); yield return new WaitForSeconds(1.5f);
+        float before = g.Driver.transform.position.z; int gear = g.Driver.Gear;
+        InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.W, Key.C)); yield return new WaitForSeconds(.2f);
+        Assert.That(g.Driver.LookingBack, Is.True); Assert.That(g.Driver.CameraRearView, Is.True);
+        Assert.That(g.Driver.Reversing, Is.False); Assert.That(g.Driver.RearView, Is.False);
+        Assert.That(g.Driver.Speed, Is.GreaterThan(0)); Assert.That(g.Driver.transform.position.z, Is.GreaterThan(before));
+        Assert.That(g.Driver.Gear, Is.EqualTo(gear));
+        Assert.That(Camera.main.transform.position.z, Is.GreaterThan(g.Driver.transform.position.z));
+        Assert.That(Camera.main.transform.forward.z, Is.LessThan(0));
+        Assert.That(g.World.TrafficVisible(g.Driver.transform.position + new Vector3(0, 0, -150)), Is.True);
+        Assert.That(g.World.TrySpawnTraffic(g.Driver.transform.position + new Vector3(0, 0, -150), 20), Is.Null);
+        InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.W, Key.C, Key.A)); yield return new WaitForSeconds(.08f);
+        InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.W, Key.C)); yield return new WaitForSeconds(.25f);
+        Assert.That(g.Driver.Lane, Is.EqualTo(0), "A/D keep their forward-driving meaning during a manual camera glance.");
+        InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.W)); yield return new WaitForSeconds(.2f);
+        Assert.That(g.Driver.LookingBack, Is.False); Assert.That(g.Driver.CameraRearView, Is.False);
+        Assert.That(Camera.main.transform.position.z, Is.LessThan(g.Driver.transform.position.z));
+        Assert.That(Camera.main.transform.forward.z, Is.GreaterThan(0));
+        InputSystem.QueueStateEvent(keyboard, new KeyboardState()); yield return null;
+    }
+    [UnityTest] public IEnumerator LookBackCameraKeepsPlayerInFrontDuringFastForwardTravel()
+    {
+        var g = GameManager.Instance; g.StartRun(); yield return WaitForDriving();
+        InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.C)); yield return new WaitForSeconds(.1f);
+        // Repeated large travel steps reproduce longitudinal follow lag even at fast test frame rates.
+        for (int i = 0; i < 12; i++)
+        {
+            g.Driver.transform.position += Vector3.forward * 4;
+            yield return new WaitForEndOfFrame();
+            Assert.That(Camera.main.transform.position.z - g.Driver.transform.position.z, Is.GreaterThan(8),
+                "Forward travel must never leave the rear-facing camera behind the player.");
+            Assert.That(Camera.main.WorldToViewportPoint(g.Driver.transform.position).z, Is.GreaterThan(0));
+        }
+    }
+    [UnityTest] public IEnumerator LookBackHeldThroughIgnitionPauseAndMenuResetsCorrectly()
+    {
+        var g = GameManager.Instance;
+        InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.C)); yield return new WaitForSeconds(.1f);
+        Assert.That(g.Driver.LookingBack, Is.False, "The driving action is disabled in the menu.");
+        g.StartRun(); yield return WaitForDriving(); yield return new WaitForSeconds(.1f);
+        Assert.That(g.Driver.LookingBack, Is.True, "A held C key must be recognized when ignition enables driving.");
+        Assert.That(g.Driver.Speed, Is.Zero); Assert.That(g.Driver.Reversing, Is.False);
+        Assert.That(Camera.main.transform.position.z, Is.GreaterThan(g.Driver.transform.position.z));
+        g.TogglePause(); InputSystem.QueueStateEvent(keyboard, new KeyboardState()); yield return new WaitForSecondsRealtime(.15f);
+        g.TogglePause(); yield return new WaitForSeconds(.15f);
+        Assert.That(g.Driver.LookingBack, Is.False); Assert.That(Camera.main.transform.position.z, Is.LessThan(g.Driver.transform.position.z));
+        InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.C)); yield return new WaitForSeconds(.1f);
+        Assert.That(g.Driver.LookingBack, Is.True);
+        g.MainMenu(); yield return new WaitForSeconds(.1f); Assert.That(g.Driver.LookingBack, Is.False);
+        Assert.That(g.Driver.Gear, Is.EqualTo(1)); Assert.That(g.Driver.Reversing, Is.False);
+        InputSystem.QueueStateEvent(keyboard, new KeyboardState()); yield return null;
+    }
 }

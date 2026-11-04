@@ -1,0 +1,28 @@
+{
+  "success": true,
+  "command": "command",
+  "data": {
+    "command": "script eval",
+    "parameters": {
+      "code": "UnityEditor.SessionState.SetBool(\"AfterHours.Probe.LookBack\", false); return new { playing=UnityEditor.EditorApplication.isPlaying, score=UnityEngine.PlayerPrefs.GetInt(\"AfterHours.HighScore.v1\"), background=UnityEngine.InputSystem.InputSystem.settings.backgroundBehavior.ToString(), routing=UnityEngine.InputSystem.InputSystem.settings.editorInputBehaviorInPlayMode.ToString() };"
+    },
+    "result": {
+      "output": null,
+      "diagnostics": [],
+      "success": true,
+      "result": {
+        "playing": false,
+        "score": 19,
+        "background": "ResetAndDisableNonBackgroundDevices",
+        "routing": "PointersAndKeyboardsRespectGameViewFocus"
+      }
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "E:\\MyGames\\HW2\\AfterHours"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

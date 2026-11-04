@@ -29,6 +29,7 @@ namespace AfterHours
         const string HighScoreKey = "AfterHours.HighScore.v1";
         static readonly string[] Tips = {
             "A / D or arrows switch lanes. Leave yourself an escape route.",
+            "Hold C to check traffic behind you. Release it to look ahead again.",
             "An amber signal warns of merging traffic. Flashing hazards mark a stopped car.",
             "W supplies gas. E shifts up and Q shifts down. Watch the RPM gauge.",
             "Shift near the redline. A high gear at low speed makes acceleration sluggish.",
@@ -108,7 +109,10 @@ namespace AfterHours
             if (State == GameState.Playing)
             {
                 float dt = Time.deltaTime;
-                Driver.Tick(Input, Run.TopSpeed, dt, Run.AccelerationScale); Run.Advance(Driver.transform.position.z, dt); World.Tick(dt, Driver.PreviousPosition);
+                Driver.Tick(Input, Run.TopSpeed, dt, Run.AccelerationScale);
+                // Set the requested view before streaming traffic into the newly visible road.
+                follow.PrepareView();
+                Run.Advance(Driver.transform.position.z, dt); World.Tick(dt, Driver.PreviousPosition);
                 if (State == GameState.Playing && Run.Fuel <= 0) EndRun("OUT OF FUEL");
                 tipTime -= dt; if (tipTime <= 0) SetTip(tipIndex + 1);
             }
