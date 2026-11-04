@@ -16,7 +16,7 @@ namespace AfterHours
             if (driver == null) return;
             float dt = Time.unscaledDeltaTime;
             bool menu = game.State == GameState.Menu;
-            direction = Mathf.MoveTowards(direction, driver.Reversing ? -1 : 1, dt * 2.8f);
+            direction = Mathf.MoveTowards(direction, driver.RearView ? -1 : 1, dt * 2.8f);
             Vector3 player = driver.transform.position;
             Vector3 offset = menu ? new Vector3(7, 3.6f, -7.8f) : new Vector3(0, 4.8f, -10.5f * direction);
             Vector3 desired = player + offset;
@@ -28,7 +28,7 @@ namespace AfterHours
                 shake -= Time.deltaTime;
                 transform.position += new Vector3(Mathf.Sin(Time.time * 87), Mathf.Cos(Time.time * 71), 0) * shake * .14f;
             }
-            lens.fieldOfView = Mathf.Lerp(lens.fieldOfView, menu ? 43 : 60 + Mathf.Abs(driver.Speed) * .24f, dt * 3);
+            lens.fieldOfView = Mathf.Lerp(lens.fieldOfView, menu ? 43 : 60 + Mathf.Clamp01(Mathf.Abs(driver.Speed) / VehicleDynamics.ForwardLimit) * 14, dt * 3);
         }
     }
 }

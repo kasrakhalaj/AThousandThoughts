@@ -69,7 +69,7 @@ public sealed class DrivingFlowTests
         Assert.That(g.Driver.Speed, Is.Zero); yield return WaitForDriving();
         Assert.That(g.State, Is.EqualTo(GameState.Playing)); yield return new WaitForSeconds(.5f);
         Assert.That(g.Driver.Speed, Is.Zero, "Ignition must not drive the car automatically.");
-        yield return Hold(Key.W, 1.8f); Assert.That(g.Driver.Speed, Is.GreaterThan(10));
+        yield return Hold(Key.W, 2.5f); Assert.That(g.Driver.Speed, Is.GreaterThan(10));
         float poweredSpeed = g.Driver.Speed; yield return new WaitForSeconds(.4f);
         Assert.That(g.Driver.Speed, Is.LessThan(poweredSpeed)); Assert.That(g.Driver.Speed, Is.GreaterThan(0));
         yield return Hold(Key.S, .25f); Assert.That(g.Driver.Speed, Is.LessThan(poweredSpeed - 3));
@@ -183,7 +183,7 @@ public sealed class DrivingFlowTests
         var g = GameManager.Instance; g.StartRun();
         InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.W));
         yield return new WaitForSeconds(.3f); Assert.That(g.Driver.Speed, Is.Zero);
-        yield return WaitForDriving(); yield return new WaitForSeconds(.6f);
+        yield return WaitForDriving(); yield return new WaitForSeconds(.8f);
         Assert.That(g.Driver.Speed, Is.GreaterThan(3), "A held gas pedal must be read when the driving map is enabled.");
         InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.W, Key.S)); yield return new WaitForSeconds(1.1f);
         Assert.That(g.Driver.Speed, Is.Zero, "The brake must win when both pedals are held.");
@@ -301,7 +301,7 @@ public sealed class DrivingFlowTests
     [UnityTest] public IEnumerator TrafficIsPresentAheadDuringEarlyAcceleration()
     {
         var g = GameManager.Instance; g.StartRun(); yield return WaitForDriving();
-        yield return Hold(Key.W, 6);
+        yield return Hold(Key.W, 8);
         int ahead = 0;
         foreach (var car in g.World.Traffic)
         {
@@ -323,5 +323,28 @@ public sealed class DrivingFlowTests
         g.Driver.transform.position = new Vector3(0, .08f, 140);
         Assert.That(g.World.CanMerge(cars[0], 0), Is.False, "The player still owns a safe reaction gap.");
         yield return null;
+    }
+    [UnityTest] public IEnumerator HeldGasReaches300WithSixGearsAndAccelerationHud()
+    {
+        var g = GameManager.Instance; g.StartRun(); yield return WaitForDriving();
+        InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.W)); yield return new WaitForSeconds(.2f);
+        Assert.That(g.Driver.Speed, Is.InRange(.1f, 4));
+        Assert.That(g.Driver.Acceleration, Is.GreaterThan(0));
+        // Advance this component on a clear test road; traffic survival is validated separately.
+        for (int i = 0; i < 2250; i++) g.Driver.Tick(g.Input, g.Run.TopSpeed, .02f);
+        yield return new WaitForSeconds(.15f);
+        Assert.That(g.Driver.Speed * 3.6f, Is.EqualTo(300).Within(.1f));
+        Assert.That(g.Driver.Gear, Is.EqualTo(6));
+        var hud = Object.FindAnyObjectByType<GameHud>();
+        Assert.That(hud.DisplayedSpeedKph, Is.EqualTo(300));
+        Assert.That(Mathf.Abs(hud.DisplayedAcceleration), Is.LessThan(.1f));
+        InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.W, Key.S)); yield return new WaitForSeconds(.4f);
+        Assert.That(g.Driver.Speed, Is.LessThan(VehicleDynamics.ForwardLimit - 3));
+        Assert.That(hud.DisplayedAcceleration, Is.LessThan(-8));
+        yield return Press(Key.R);
+        Assert.That(g.Driver.Speed, Is.GreaterThan(0));
+        Assert.That(g.Driver.RearView, Is.False, "Selecting reverse at speed must keep the view in the actual travel direction.");
+        Assert.That(Camera.main.transform.position.z, Is.LessThan(g.Driver.transform.position.z));
+        InputSystem.QueueStateEvent(keyboard, new KeyboardState()); yield return null;
     }
 }

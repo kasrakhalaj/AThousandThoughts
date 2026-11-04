@@ -63,7 +63,7 @@ public static class LiveDensityProbe
         if(!captured && elapsed>=12)
         {
             captured=true;
-            ScreenCapture.CaptureScreenshot(Path.GetFullPath("Docs/Images/density-driving.png"));
+            ScreenCapture.CaptureScreenshot(Path.GetFullPath(SessionState.GetString("AfterHours.Density.CapturePath", "Docs/Images/density-driving.png")));
         }
         if(elapsed>=sampleAt)
         {
@@ -76,7 +76,7 @@ public static class LiveDensityProbe
                 if(Mathf.Abs(gap)<180)near++;
                 if(Mathf.Abs(gap)<180 && c is MovingCar m && m.IsMerging)merging++;
             }
-            samples.Add(new {seconds=elapsed,z=g.Driver.transform.position.z,speed=g.Driver.Speed,flow=g.World.Flow.ToString(),ahead,near,visible,merging,total=g.World.ActiveTrafficCount,lives=g.Run.Lives});
+            samples.Add(new {seconds=elapsed,z=g.Driver.transform.position.z,speed=g.Driver.Speed,acceleration=g.Driver.Acceleration,gear=g.Driver.Gear,flow=g.World.Flow.ToString(),ahead,near,visible,merging,total=g.World.ActiveTrafficCount,lives=g.Run.Lives});
         }
     }
     static float LaneGap(GameManager g,int lane)

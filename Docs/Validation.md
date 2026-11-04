@@ -1,3 +1,5 @@
+Latest 300km/h acceleration and high-speed validation: [AccelerationValidation.md](AccelerationValidation.md).
+
 Latest density correction and moving-player verification: [TrafficDensityValidation.md](TrafficDensityValidation.md).
 
 Current traffic behavior/spawn validation: [TrafficUpgradeValidation.md](TrafficUpgradeValidation.md).

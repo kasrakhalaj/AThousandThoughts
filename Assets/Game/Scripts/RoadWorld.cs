@@ -25,17 +25,18 @@ namespace AfterHours
         public TrafficFlow Flow => TrafficRules.FlowAt(game.Driver.transform.position.z);
         public float TrafficWeatherFactor => game.Weather == null ? 1 : TrafficRules.WeatherSpeedFactor(game.Weather.RainAmount, game.Weather.FogAmount);
         float WeatherHeadway => game.Weather == null ? 1 : 1 + game.Weather.RainAmount * .35f + game.Weather.FogAmount * .5f;
-        int TrafficBudget => Flow == TrafficFlow.Quiet ? 0 : Mathf.RoundToInt((Flow == TrafficFlow.Sparse ? 7 : Flow == TrafficFlow.Busy ? 16 : 12) + game.Run.Difficulty * 4);
+        float SpeedPressure => Mathf.InverseLerp(100, 300, Mathf.Abs(game.Driver.Speed) * 3.6f);
+        int TrafficBudget => Flow == TrafficFlow.Quiet ? 0 : Mathf.RoundToInt((Flow == TrafficFlow.Sparse ? 7 : Flow == TrafficFlow.Busy ? 16 : 12) + game.Run.Difficulty * 4 + SpeedPressure * 3);
         public int NearbyTrafficCount
         {
             get
             {
                 int count = 0;
-                float direction = game.Driver.Reversing ? -1 : 1;
+                float direction = game.Driver.RearView ? -1 : 1;
                 foreach (var car in traffic)
                 {
                     float gap = (car.transform.position.z - game.Driver.transform.position.z) * direction;
-                    if (gap > -100 && gap < 300) count++;
+                    if (gap > -100 && gap < Mathf.Max(300, Mathf.Abs(game.Driver.Speed) * 5)) count++;
                 }
                 return count;
             }
@@ -87,7 +88,7 @@ namespace AfterHours
         void MaintainWindow(float z)
         {
             int center = Mathf.FloorToInt(z / RoadChunk.Length);
-            int direction = game.Driver.Reversing ? -1 : 1;
+            int direction = game.Driver.RearView ? -1 : 1;
             if (center == windowCenter && direction == windowDirection) return;
             windowCenter = center; windowDirection = direction;
             minSection = center - (direction > 0 ? 5 : 11); maxSection = minSection + ChunkCount - 1;
@@ -255,24 +256,26 @@ namespace AfterHours
             trafficTimer -= dt;
             if (trafficTimer > 0) return;
             float interval = Flow == TrafficFlow.Sparse ? 2.5f : Flow == TrafficFlow.Busy ? .8f : 1.4f;
-            trafficTimer = interval * Random.Range(.8f, 1.25f) * Mathf.Lerp(1, .75f, game.Run.Difficulty);
+            trafficTimer = interval * Random.Range(.8f, 1.25f) * Mathf.Lerp(1, .75f, game.Run.Difficulty) * Mathf.Lerp(1, .85f, SpeedPressure);
             if (Flow == TrafficFlow.Quiet || NearbyTrafficCount >= TrafficBudget || traffic.Count >= 42) return;
             for (int attempt = 0; attempt < 12; attempt++)
             {
                 int lane = Random.Range(0, 3);
                 bool behind = Random.value < .25f;
                 float speed = Random.Range(16f, 28f) + game.Run.Difficulty * 5;
-                if (behind && !game.Driver.Reversing) speed = Mathf.Max(speed, Mathf.Min(38, game.Driver.Speed + Random.Range(3f, 7f)));
+                if (behind && !game.Driver.RearView) speed = Mathf.Max(speed, Mathf.Min(38, game.Driver.Speed + Random.Range(3f, 7f)));
                 float rearGap = Mathf.Max(Random.Range(115, 175), 20 + Mathf.Max(0, speed - game.Driver.Speed) * 4.2f);
                 float hiddenDistance = Mathf.Min(trafficCamera.farClipPlane + 32, 40 + 3.1f / Mathf.Max(.0001f, RenderSettings.fogDensity * Mathf.Exp(-.05f)));
-                float direction = game.Driver.Reversing ? -1 : 1;
-                float z = behind ? player.z - rearGap : player.z + direction * (hiddenDistance + Random.Range(5, 30));
+                float direction = game.Driver.RearView ? -1 : 1;
+                float closing = direction > 0 ? game.Driver.Speed - speed : speed - game.Driver.Speed;
+                float warningDistance = Mathf.Max(75, 20 + Mathf.Max(0, closing) * 4.2f);
+                float z = behind ? player.z - rearGap : player.z + direction * (Mathf.Max(hiddenDistance, warningDistance) + Random.Range(5, 30));
                 z = Mathf.Clamp(z, minSection * 60 + 10, (maxSection + 1) * 60 - 10);
                 if (SpawnTraffic(new Vector3((lane - 1) * CarDriver.LaneWidth, .08f, z), speed, false, false) != null) return;
             }
             // An unsafe attempt is skipped; never force a car into the camera or an occupied gap.
         }
-        public void Tick(float dt)
+        public void Tick(float dt, Vector3? previousPlayerPosition = null)
         {
             Vector3 player = game.Driver.transform.position;
             MaintainWindow(player.z);
@@ -281,14 +284,16 @@ namespace AfterHours
             {
                 var item = active[i];
                 if (!item.gameObject.activeSelf) { Release(i); continue; }
+                Vector3 previousItemPosition = item.transform.position;
                 item.Tick(dt);
                 Vector3 p = item.transform.position;
                 float halfLength = item is StationaryCar ? 4.1f : 2.5f;
-                float sweep = Mathf.Abs(game.Driver.Speed - (item is StationaryCar car ? car.Speed : 0)) * dt;
-                if (Mathf.Abs(p.x - player.x) < (item is StationaryCar ? 1.65f : 1.3f) && Mathf.Abs(p.z - player.z) < halfLength + sweep) item.Contact();
+                Vector3 before = previousItemPosition - (previousPlayerPosition ?? player);
+                Vector3 after = p - player;
+                if (VehicleDynamics.SweptContact(new Vector2(before.x, before.z), new Vector2(after.x, after.z), item is StationaryCar ? 1.65f : 1.3f, halfLength)) item.Contact();
                 // Quiet sections drain traffic only beyond the view; visible cars never disappear to meet a budget.
                 bool drain = item is StationaryCar && Flow == TrafficFlow.Quiet && Mathf.Abs(p.z - player.z) > 75;
-                float travelGap = (p.z - player.z) * (game.Driver.Reversing ? -1 : 1);
+                float travelGap = (p.z - player.z) * (game.Driver.RearView ? -1 : 1);
                 bool passed = item is StationaryCar && travelGap < -180;
                 if ((OutsideWindow(p.z) || drain || passed) && !TrafficVisible(p)) Release(i);
                 if (game.State != GameState.Playing) break;

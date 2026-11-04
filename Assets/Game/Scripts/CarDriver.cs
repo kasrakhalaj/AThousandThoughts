@@ -5,12 +5,15 @@ namespace AfterHours
     public sealed class CarDriver : MonoBehaviour
     {
         public float Speed { get; private set; }
+        public float Acceleration { get; private set; }
+        public Vector3 PreviousPosition { get; private set; }
         public bool Reversing { get; private set; }
+        public bool RearView => Speed < -.1f || Mathf.Abs(Speed) <= .1f && Reversing;
         public int Lane { get; private set; } = 1;
         public float HitCooldown { get; private set; }
         public float Throttle { get; private set; }
         public bool Braking { get; private set; }
-        public int Gear => Mathf.Abs(Speed) < 1 ? 1 : Mathf.Clamp(1 + Mathf.FloorToInt(Mathf.Abs(Speed) / 8), 1, 5);
+        public int Gear => VehicleDynamics.Gear(Speed);
         public const float LaneWidth = 3.6f;
         public const float LaneTime = .24f;
         GameObject[] models;
@@ -22,7 +25,6 @@ namespace AfterHours
         ParticleSystem exhaust;
         Renderer[] renderers;
         MaterialPropertyBlock flash;
-        float desiredSpeed;
 
         public void Initialize(GameCatalog catalog)
         {
@@ -63,23 +65,24 @@ namespace AfterHours
         public void Reset()
         {
             transform.position = new Vector3(0, .08f, 0); Speed = 0; Reversing = false;
-            Lane = 1; HitCooldown = 0; desiredSpeed = 0; Throttle = 0; Braking = false;
+            Lane = 1; HitCooldown = 0; Acceleration = 0; Throttle = 0; Braking = false; PreviousPosition = transform.position;
             visual.localRotation = Quaternion.identity;
         }
-        public void Tick(DriverInput input, float topSpeed, float dt)
+        public void Tick(DriverInput input, float topSpeed, float dt, float power = 1)
         {
+            PreviousPosition = transform.position;
             HitCooldown = Mathf.Max(0, HitCooldown - dt);
             if (input.Reverse.WasPressedThisFrame()) Reversing = !Reversing;
             Throttle = Mathf.Clamp01(input.Throttle.ReadValue<float>());
             Braking = input.Brake.IsPressed();
-            desiredSpeed = Braking ? 0 : (Reversing ? -10 : topSpeed) * Throttle;
-            bool changingDirection = Speed * desiredSpeed < 0;
-            float acceleration = Braking || changingDirection ? 22 : Throttle > .01f ? Mathf.Lerp(9, 5.5f, Mathf.Abs(Speed) / 44) : 2.2f;
-            Speed = Mathf.MoveTowards(Speed, desiredSpeed, acceleration * dt);
+            bool changingDirection = Throttle > .001f && (Reversing ? Speed > 0 : Speed < 0);
+            float previousSpeed = Speed;
+            Speed = VehicleDynamics.Step(Speed, Throttle, Braking, Reversing, topSpeed, dt, power);
+            Acceleration = dt > 0 ? (Speed - previousSpeed) / dt : 0;
             if (lamps[selected] != null) lamps[selected].SetDrivingState(Braking || changingDirection, Reversing);
             int steering = (input.Right.WasPressedThisFrame() ? 1 : 0) - (input.Left.WasPressedThisFrame() ? 1 : 0);
             // When the rear-facing camera is active, left/right follow screen space.
-            if (Reversing) steering = -steering;
+            if (RearView) steering = -steering;
             Lane = Mathf.Clamp(Lane + steering, 0, 2);
             Vector3 position = transform.position;
             float targetX = (Lane - 1) * LaneWidth;
@@ -89,7 +92,7 @@ namespace AfterHours
             transform.position = position;
             float lean = dt > 0 ? (position.x - oldX) / dt : 0;
             visual.localRotation = Quaternion.Slerp(visual.localRotation, Quaternion.Euler(0, lean * .8f, -lean * .25f), dt * 9);
-            underglow.intensity = Mathf.Lerp(.1f, 1.8f, Mathf.InverseLerp(0, 34, Mathf.Abs(Speed)));
+            underglow.intensity = Mathf.Lerp(.1f, 1.8f, Mathf.InverseLerp(0, VehicleDynamics.ForwardLimit, Mathf.Abs(Speed)));
             flash.SetColor("_EmissionColor", HitCooldown > 0 && Mathf.Sin(HitCooldown * 35) > 0 ? new Color(.8f, .12f, .04f) : Color.black);
             foreach (var renderer in renderers) renderer.SetPropertyBlock(flash);
         }

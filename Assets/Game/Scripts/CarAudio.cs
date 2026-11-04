@@ -36,7 +36,7 @@ namespace AfterHours
             float dt = Time.unscaledDeltaTime;
             ignitionRemaining = Mathf.Max(0, ignitionRemaining - dt);
             float speed = Mathf.Abs(game.Driver.Speed);
-            float gearProgress = Mathf.Repeat(speed, 8) / 8;
+            float gearProgress = game.Driver.RearView ? Mathf.Clamp01(speed / VehicleDynamics.ReverseLimit) : VehicleDynamics.GearProgress(speed);
             float targetRpm = speed < 1 ? .08f + game.Driver.Throttle * .18f : .2f + gearProgress * .62f + game.Driver.Throttle * .15f;
             rpm = Mathf.Lerp(rpm, targetRpm, 1 - Mathf.Exp(-dt * 8));
             float idleWeight = 1 - Mathf.SmoothStep(0, 1, Mathf.InverseLerp(.12f, .42f, rpm));

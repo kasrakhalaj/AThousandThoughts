@@ -107,7 +107,7 @@ namespace AfterHours
             if (State == GameState.Playing)
             {
                 float dt = Time.deltaTime;
-                Driver.Tick(Input, Run.TopSpeed, dt); Run.Advance(Driver.transform.position.z, dt); World.Tick(dt);
+                Driver.Tick(Input, Run.TopSpeed, dt, Run.AccelerationScale); Run.Advance(Driver.transform.position.z, dt); World.Tick(dt, Driver.PreviousPosition);
                 if (State == GameState.Playing && Run.Fuel <= 0) EndRun("OUT OF FUEL");
                 tipTime -= dt; if (tipTime <= 0) SetTip(tipIndex + 1);
             }
