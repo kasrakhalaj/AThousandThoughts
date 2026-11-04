@@ -31,6 +31,10 @@ namespace AfterHours
         public AudioClip fuelSound;
         public AudioClip ignitionSound;
         public AudioClip rainSound;
+        public AudioClip[] gearShiftSounds;
+        public AudioClip throttleOnSound;
+        public AudioClip throttleOffSound;
+        public AudioClip downshiftBlipSound;
         public InputActionAsset controls;
     }
 }

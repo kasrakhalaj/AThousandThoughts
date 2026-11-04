@@ -16,6 +16,8 @@ The scene and serialized catalog/prefabs are already authored. `After Hours > Cr
 | A/D or left/right arrows | Change lane |
 | S/down arrow | Brake (takes priority over gas) |
 | R | Select forward or reverse gear |
+| E / right shoulder | Shift up one gear |
+| Q / left shoulder | Shift down one gear |
 | W/up arrow | Hold for gas in the selected gear |
 | Escape | Pause/resume |
 | N / B | Next / previous song |
@@ -23,7 +25,7 @@ The scene and serialized catalog/prefabs are already authored. `After Hours > Cr
 
 Steering follows screen space while the camera faces the road behind the reversing car. The car's orientation remains physically forward. Gamepad D-pad, triggers, west button and Start are also bound; keyboard/mouse is the primary validation target.
 
-The engine starts while the car remains stopped. Hold W to accelerate, release it to coast and press S to brake. R selects forward or reverse gear; W supplies gas in either gear. Braking takes priority when both pedals are held. The dashboard shows actual km/h, a speed bar, gear and gas/coast/brake state. The forward limit is 300 km/h. Gas supplies acceleration against rolling/aerodynamic resistance; the final 100 km/h takes much longer than the first. Base clear-road tuning is approximately 0-100 in 6s, 0-200 in 15s and 0-300 in 37s of continuous gas. Distance progression adds a small acceleration bonus while traffic gets harder. The dashboard shows signed acceleration along travel in m/s²; six simulated gears share their shift ranges with the engine sound.
+The engine starts while the car remains stopped. Hold W to accelerate, release it to coast and press S to brake. R selects forward or reverse gear; W supplies gas in either gear. Braking takes priority when both pedals are held. The dashboard shows actual km/h, a speed bar, gear and gas/coast/brake state. The forward limit is 300 km/h. Gas supplies acceleration against rolling/aerodynamic resistance; the final 100 km/h takes much longer than the first. With well-timed manual shifts, base clear-road tuning is approximately 0-100 in 7s, 0-200 in 16s and 0-300 in 39s. Holding gas alone stays in the selected gear. Distance progression adds a small acceleration bonus while traffic gets harder. The dashboard shows signed acceleration along travel in m/s²; six selected gears drive actual torque, per-gear rev limits and engine RPM. E shifts up, Q shifts down, and an automatic clutch briefly cuts power for 0.36s. First through sixth redlines are approximately 45/85/130/180/240/300 km/h. Early high gears lug; a downshift that would over-rev is rejected. The RPM bar and shift prompts guide the driver.
 
 ## Music
 
@@ -48,7 +50,7 @@ For a Windows player, the `Music` folder belongs **beside the executable**. `Aft
 - Each of the five cars has fitted headlight lenses and road beams, red tail/brake lights and white reverse lamps. Ignition controls them; traffic cars also carry lights. Damage flashes preserve lamp emission.
 - High score uses `PlayerPrefs` key `AfterHours.HighScore.v1`.
 
-Player ignition, idle, mid/load engine layers, traffic engines and rain now use actual CC0 recordings. Engine layers respond to throttle, speed and simulated gear changes; AI sources are quieter and spatial, with distance fade and mild Doppler. Music remains independently controlled. Credits and source excerpts are recorded in `CREDITS.md` and `Docs/RecordedSoundSources.json`. `Tools/prepare_recorded_audio.py` reproduces preparation from the source recordings retained outside the project.
+Player ignition, idle, mid/load engine layers, traffic engines and rain use actual CC0 recordings. Three newly recorded lever-clunk variants, gas-on/off excerpts and a downshift rev blip provide gearbox/pedal feedback. A held gas input does not spam rev one-shots. New source credits are in `Docs/ManualGearSoundSources.json`. Engine layers respond to throttle, speed and simulated gear changes; AI sources are quieter and spatial, with distance fade and mild Doppler. Music remains independently controlled. Credits and source excerpts are recorded in `CREDITS.md` and `Docs/RecordedSoundSources.json`. `Tools/prepare_recorded_audio.py` reproduces preparation from the source recordings retained outside the project.
 
 ## Tests and development
 

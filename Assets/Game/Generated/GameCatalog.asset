@@ -78,4 +78,11 @@ MonoBehaviour:
   fuelSound: {fileID: 8300000, guid: e81fc99fc37e33a41bb4af50115f64d9, type: 3}
   ignitionSound: {fileID: 8300000, guid: 82519643341ea714fb583b93d6111f84, type: 3}
   rainSound: {fileID: 8300000, guid: a765444e1d2b6444b8b531309fc60a9f, type: 3}
+  gearShiftSounds:
+  - {fileID: 8300000, guid: 103d186514273534d8cdc0cf6deca696, type: 3}
+  - {fileID: 8300000, guid: 325411dcef1bf6a42b3b3af4e462b17e, type: 3}
+  - {fileID: 8300000, guid: 0316dbde71660a24db84d1fff49d54c9, type: 3}
+  throttleOnSound: {fileID: 8300000, guid: 77b90dbbc91e0db4784477d574f628af, type: 3}
+  throttleOffSound: {fileID: 8300000, guid: 0ffd6d4dce5dd434dbfa4ddc7b28b750, type: 3}
+  downshiftBlipSound: {fileID: 8300000, guid: 178e2d17a40e15841b7fc87ddddb625d, type: 3}
   controls: {fileID: -944628639613478452, guid: bf3f1f56759b6b24bb56be62e9a7d0a5, type: 3}

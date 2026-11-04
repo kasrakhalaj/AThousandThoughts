@@ -18,6 +18,9 @@ public static class LiveDensityProbe
     static int lastFrame=-1;
     static bool releaseSteering, hadScore, captured;
     static int score;
+    static AudioSource gearTap, pedalTap;
+    static readonly float[] audioTap = new float[512];
+    static float maxGearRms, maxPedalRms;
     public static object Main()
     {
         var g=GameManager.Instance;
@@ -30,6 +33,9 @@ public static class LiveDensityProbe
         g.Input.StartCar.actionMap.asset.devices=new InputDevice[]{keyboard};
         hadScore=PlayerPrefs.HasKey("AfterHours.HighScore.v1");score=PlayerPrefs.GetInt("AfterHours.HighScore.v1");
         random=UnityEngine.Random.state; UnityEngine.Random.InitState(4821);
+        gearTap=(AudioSource)typeof(CarAudio).GetField("shiftEffects", System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic).GetValue(g.Audio);
+        pedalTap=(AudioSource)typeof(CarAudio).GetField("pedalEffects", System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic).GetValue(g.Audio);
+        gearTap.GetOutputData(audioTap,0); pedalTap.GetOutputData(audioTap,0); maxGearRms=maxPedalRms=0;
         samples.Clear();captured=false;start=-1;sampleAt=0;steerAt=0;lastFrame=-1;
         g.StartRun();Time.timeScale=2;
         EditorApplication.update+=Update;
@@ -44,7 +50,11 @@ public static class LiveDensityProbe
         if(start<0)start=Time.time;
         float elapsed=Time.time-start;
         if(g.State!=GameState.Playing || elapsed>=65){Finish(g.State.ToString());return;}
+        maxGearRms=Mathf.Max(maxGearRms,SampleAudio(gearTap)); maxPedalRms=Mathf.Max(maxPedalRms,SampleAudio(pedalTap));
         Key steering=Key.None;
+        bool shiftUp = !g.Driver.IsShifting && g.Driver.Gear < 6 && g.Driver.RpmRatio > .92f;
+        bool shiftDown = !g.Driver.IsShifting && g.Driver.Gear > 1 && g.Driver.RpmRatio < .4f && g.Driver.Speed < VehicleDynamics.GearSpeedLimit(g.Driver.Gear - 1) * .96f;
+        Key gearKey = shiftUp ? Key.E : shiftDown ? Key.Q : Key.None;
         if(!releaseSteering && elapsed>=steerAt)
         {
             steerAt=elapsed+.35f;
@@ -59,7 +69,8 @@ public static class LiveDensityProbe
             if(best!=current){steering=best>current?Key.D:Key.A;releaseSteering=true;}
         }
         else releaseSteering=false;
-        InputSystem.QueueStateEvent(keyboard,steering==Key.None?new KeyboardState(Key.W):new KeyboardState(Key.W,steering));
+        if (gearKey != Key.None) InputSystem.QueueStateEvent(keyboard, steering==Key.None ? new KeyboardState(Key.W,gearKey) : new KeyboardState(Key.W,gearKey,steering));
+        else InputSystem.QueueStateEvent(keyboard,steering==Key.None?new KeyboardState(Key.W):new KeyboardState(Key.W,steering));
         if(!captured && elapsed>=12)
         {
             captured=true;
@@ -76,8 +87,14 @@ public static class LiveDensityProbe
                 if(Mathf.Abs(gap)<180)near++;
                 if(Mathf.Abs(gap)<180 && c is MovingCar m && m.IsMerging)merging++;
             }
-            samples.Add(new {seconds=elapsed,z=g.Driver.transform.position.z,speed=g.Driver.Speed,acceleration=g.Driver.Acceleration,gear=g.Driver.Gear,flow=g.World.Flow.ToString(),ahead,near,visible,merging,total=g.World.ActiveTrafficCount,lives=g.Run.Lives});
+            samples.Add(new {seconds=elapsed,z=g.Driver.transform.position.z,speed=g.Driver.Speed,acceleration=g.Driver.Acceleration,gear=g.Driver.Gear,rpm=g.Driver.EngineRpm,shifting=g.Driver.IsShifting,shiftCues=g.Audio.ShiftCueCount,pedalCues=g.Audio.ThrottleCueCount,flow=g.World.Flow.ToString(),ahead,near,visible,merging,total=g.World.ActiveTrafficCount,lives=g.Run.Lives});
         }
+    }
+    static float SampleAudio(AudioSource source)
+    {
+        if(source==null || !source.isPlaying) return 0;
+        source.GetOutputData(audioTap,0); float sum=0; foreach(float value in audioTap)sum+=value*value;
+        return Mathf.Sqrt(sum/audioTap.Length);
     }
     static float LaneGap(GameManager g,int lane)
     {
@@ -95,7 +112,7 @@ public static class LiveDensityProbe
         EditorApplication.update-=Update;
         var g=GameManager.Instance;
         string output=SessionState.GetString("AfterHours.Density.Output","Temp/DensityBefore.json");
-        File.WriteAllText(output,Newtonsoft.Json.JsonConvert.SerializeObject(new {reason,samples},Newtonsoft.Json.Formatting.Indented));
+        File.WriteAllText(output,Newtonsoft.Json.JsonConvert.SerializeObject(new {reason,maxGearRms,maxPedalRms,samples},Newtonsoft.Json.Formatting.Indented));
         if(g!=null){g.MainMenu();g.Input.StartCar.actionMap.asset.devices=null;}
         if(keyboard!=null)InputSystem.RemoveDevice(keyboard);
         InputSystem.settings.backgroundBehavior=background;InputSystem.settings.editorInputBehaviorInPlayMode=routing;

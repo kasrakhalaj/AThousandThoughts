@@ -90,6 +90,7 @@ public static class AfterHoursBuilder
         NightVisualUpgrade.Apply();
         if (File.Exists("Assets/Art/RealCars2018/NormalCar1.fbx") && File.Exists("Assets/Game/Audio/Recorded/Recorded-player-idle.wav"))
             TrafficAudioUpgrade.Apply();
+        if (File.Exists("Assets/Game/Audio/Recorded/Recorded-gear-shift-1.wav")) ManualGearUpgrade.Apply();
         Debug.Log("AFTER_HOURS_CREATED: " + ScenePath);
     }
     static AudioClip Clip(string name) => AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Game/Audio/" + name + ".wav");
@@ -253,6 +254,8 @@ public static class AfterHoursBuilder
         Bind(drive, "Brake", "<Keyboard>/s", "<Keyboard>/downArrow", "<Gamepad>/leftTrigger");
         Bind(drive, "Forward", "<Keyboard>/w", "<Keyboard>/upArrow", "<Gamepad>/rightTrigger");
         Bind(drive, "Reverse", "<Keyboard>/r", "<Gamepad>/buttonWest");
+        Bind(drive, "ShiftUp", "<Keyboard>/e", "<Gamepad>/rightShoulder");
+        Bind(drive, "ShiftDown", "<Keyboard>/q", "<Gamepad>/leftShoulder");
         var system = asset.AddActionMap("System");
         Bind(system, "Pause", "<Keyboard>/escape", "<Gamepad>/start");
         Bind(system, "StartCar", "<Keyboard>/enter");

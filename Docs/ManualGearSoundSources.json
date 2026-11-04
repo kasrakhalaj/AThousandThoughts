@@ -1,0 +1,116 @@
+[
+  {
+    "name": "gear-lever",
+    "author": "Mihacappy",
+    "freesoundId": 871568,
+    "source": "https://freesound.org/people/Mihacappy/sounds/871568/",
+    "download": "https://cdn.freesound.org/previews/871/871568_10594370-hq.mp3",
+    "license": "CC0-1.0",
+    "bytes": 310416,
+    "asset": "Assets/Game/Audio/Recorded/Recorded-gear-shift-1.wav",
+    "excerpt": [
+      0.26,
+      0.66
+    ],
+    "durationSeconds": 0.4,
+    "rms": 0.0887385755777359,
+    "peak": 0.7200000286102295,
+    "sourceSHA256": "3836bd905b590c620b229c9342d2c0ee3385cdf779b01cf8e1765b6d43e3e147",
+    "processing": "HQ MP3 preview; mono 44.1kHz PCM16, 65Hz high-pass/10kHz low-pass, DC removal, edge fades and gain. No synthesized sound."
+  },
+  {
+    "name": "gear-lever",
+    "author": "Mihacappy",
+    "freesoundId": 871568,
+    "source": "https://freesound.org/people/Mihacappy/sounds/871568/",
+    "download": "https://cdn.freesound.org/previews/871/871568_10594370-hq.mp3",
+    "license": "CC0-1.0",
+    "bytes": 310416,
+    "asset": "Assets/Game/Audio/Recorded/Recorded-gear-shift-2.wav",
+    "excerpt": [
+      2.57,
+      3.07
+    ],
+    "durationSeconds": 0.5,
+    "rms": 0.08749539405107498,
+    "peak": 0.7200000286102295,
+    "sourceSHA256": "3836bd905b590c620b229c9342d2c0ee3385cdf779b01cf8e1765b6d43e3e147",
+    "processing": "HQ MP3 preview; mono 44.1kHz PCM16, 65Hz high-pass/10kHz low-pass, DC removal, edge fades and gain. No synthesized sound."
+  },
+  {
+    "name": "gear-lever",
+    "author": "Mihacappy",
+    "freesoundId": 871568,
+    "source": "https://freesound.org/people/Mihacappy/sounds/871568/",
+    "download": "https://cdn.freesound.org/previews/871/871568_10594370-hq.mp3",
+    "license": "CC0-1.0",
+    "bytes": 310416,
+    "asset": "Assets/Game/Audio/Recorded/Recorded-gear-shift-3.wav",
+    "excerpt": [
+      4.94,
+      5.36
+    ],
+    "durationSeconds": 0.42,
+    "rms": 0.07656972855329514,
+    "peak": 0.7200000286102295,
+    "sourceSHA256": "3836bd905b590c620b229c9342d2c0ee3385cdf779b01cf8e1765b6d43e3e147",
+    "processing": "HQ MP3 preview; mono 44.1kHz PCM16, 65Hz high-pass/10kHz low-pass, DC removal, edge fades and gain. No synthesized sound."
+  },
+  {
+    "name": "throttle-rev",
+    "author": "overmedium",
+    "freesoundId": 651534,
+    "source": "https://freesound.org/people/overmedium/sounds/651534/",
+    "download": "https://cdn.freesound.org/previews/651/651534_2396512-hq.mp3",
+    "license": "CC0-1.0",
+    "bytes": 201292,
+    "asset": "Assets/Game/Audio/Recorded/Recorded-throttle-on.wav",
+    "excerpt": [
+      0.6,
+      1.45
+    ],
+    "durationSeconds": 0.85,
+    "rms": 0.1300000101327896,
+    "peak": 0.4347316324710846,
+    "sourceSHA256": "65d7f1d60ecc276a48ea974a265bbee0715d6b2e0bd0081a45c57362a61a470c",
+    "processing": "HQ MP3 preview; mono 44.1kHz PCM16, 65Hz high-pass/10kHz low-pass, DC removal, edge fades and gain. No synthesized sound."
+  },
+  {
+    "name": "throttle-rev",
+    "author": "overmedium",
+    "freesoundId": 651534,
+    "source": "https://freesound.org/people/overmedium/sounds/651534/",
+    "download": "https://cdn.freesound.org/previews/651/651534_2396512-hq.mp3",
+    "license": "CC0-1.0",
+    "bytes": 201292,
+    "asset": "Assets/Game/Audio/Recorded/Recorded-downshift-blip.wav",
+    "excerpt": [
+      0.7,
+      1.25
+    ],
+    "durationSeconds": 0.5500226757369614,
+    "rms": 0.12999999523162842,
+    "peak": 0.40790024399757385,
+    "sourceSHA256": "65d7f1d60ecc276a48ea974a265bbee0715d6b2e0bd0081a45c57362a61a470c",
+    "processing": "HQ MP3 preview; mono 44.1kHz PCM16, 65Hz high-pass/10kHz low-pass, DC removal, edge fades and gain. No synthesized sound."
+  },
+  {
+    "name": "throttle-rev",
+    "author": "overmedium",
+    "freesoundId": 651534,
+    "source": "https://freesound.org/people/overmedium/sounds/651534/",
+    "download": "https://cdn.freesound.org/previews/651/651534_2396512-hq.mp3",
+    "license": "CC0-1.0",
+    "bytes": 201292,
+    "asset": "Assets/Game/Audio/Recorded/Recorded-throttle-off.wav",
+    "excerpt": [
+      3.8,
+      4.7
+    ],
+    "durationSeconds": 0.9,
+    "rms": 0.12999999523162842,
+    "peak": 0.44340774416923523,
+    "sourceSHA256": "65d7f1d60ecc276a48ea974a265bbee0715d6b2e0bd0081a45c57362a61a470c",
+    "processing": "HQ MP3 preview; mono 44.1kHz PCM16, 65Hz high-pass/10kHz low-pass, DC removal, edge fades and gain. No synthesized sound."
+  }
+]

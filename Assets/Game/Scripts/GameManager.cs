@@ -30,7 +30,8 @@ namespace AfterHours
         static readonly string[] Tips = {
             "A / D or arrows switch lanes. Leave yourself an escape route.",
             "An amber signal warns of merging traffic. Flashing hazards mark a stopped car.",
-            "Hold W to accelerate. Release it to coast. S brakes.",
+            "W supplies gas. E shifts up and Q shifts down. Watch the RPM gauge.",
+            "Shift near the redline. A high gear at low speed makes acceleration sluggish.",
             "R selects forward or reverse gear. Hold W for gas; steering follows the camera.",
             "Fuel cans add 30% fuel. Watch the gauge, even on quiet roads.",
             "N / B change songs. M pauses music. Your artist folders are playlists.",

@@ -13,7 +13,17 @@ namespace AfterHours
         public float HitCooldown { get; private set; }
         public float Throttle { get; private set; }
         public bool Braking { get; private set; }
-        public int Gear => VehicleDynamics.Gear(Speed);
+        readonly ManualTransmission transmission = new ManualTransmission();
+        public int Gear => transmission.Gear;
+        public int PendingGear => transmission.PendingGear;
+        public bool IsShifting => transmission.IsShifting;
+        public bool ShiftRejected => transmission.RejectionRemaining > 0;
+        public int ShiftSequence => transmission.ShiftSequence;
+        public int LastShiftDirection => transmission.LastShiftDirection;
+        public float RpmRatio => Mathf.Clamp01((RearView ? Mathf.Abs(Speed) / VehicleDynamics.ReverseLimit : VehicleDynamics.GearRpmRatio(Speed, Gear)) * (IsShifting ? .65f : 1));
+        public int EngineRpm => Mathf.RoundToInt(Mathf.Lerp(850, 7200, Mathf.Max(RpmRatio, Mathf.Abs(Speed) < 2 && !Braking ? Throttle * .15f : 0)));
+        public bool RevLimiter => !Reversing && !IsShifting && !Braking && Throttle > .5f && Speed >= VehicleDynamics.GearSpeedLimit(Gear) - .05f;
+        public bool Lugging => !Reversing && Gear > 1 && RpmRatio < .25f && Throttle > .2f;
         public const float LaneWidth = 3.6f;
         public const float LaneTime = .24f;
         GameObject[] models;
@@ -66,18 +76,22 @@ namespace AfterHours
         {
             transform.position = new Vector3(0, .08f, 0); Speed = 0; Reversing = false;
             Lane = 1; HitCooldown = 0; Acceleration = 0; Throttle = 0; Braking = false; PreviousPosition = transform.position;
+            transmission.Reset();
             visual.localRotation = Quaternion.identity;
         }
         public void Tick(DriverInput input, float topSpeed, float dt, float power = 1)
         {
             PreviousPosition = transform.position;
             HitCooldown = Mathf.Max(0, HitCooldown - dt);
-            if (input.Reverse.WasPressedThisFrame()) Reversing = !Reversing;
+            transmission.Tick(dt);
+            if (input.Reverse.WasPressedThisFrame()) { Reversing = !Reversing; transmission.Reset(); }
+            int shift = (input.ShiftUp.WasPressedThisFrame() ? 1 : 0) - (input.ShiftDown.WasPressedThisFrame() ? 1 : 0);
+            if (shift != 0) RequestShift(shift);
             Throttle = Mathf.Clamp01(input.Throttle.ReadValue<float>());
             Braking = input.Brake.IsPressed();
             bool changingDirection = Throttle > .001f && (Reversing ? Speed > 0 : Speed < 0);
             float previousSpeed = Speed;
-            Speed = VehicleDynamics.Step(Speed, Throttle, Braking, Reversing, topSpeed, dt, power);
+            Speed = VehicleDynamics.StepInGear(Speed, Throttle, Braking, Reversing, topSpeed, dt, Gear, IsShifting, power);
             Acceleration = dt > 0 ? (Speed - previousSpeed) / dt : 0;
             if (lamps[selected] != null) lamps[selected].SetDrivingState(Braking || changingDirection, Reversing);
             int steering = (input.Right.WasPressedThisFrame() ? 1 : 0) - (input.Left.WasPressedThisFrame() ? 1 : 0);
@@ -101,5 +115,6 @@ namespace AfterHours
             if (HitCooldown > 0) return false;
             HitCooldown = 2.4f; Speed *= .55f; return true;
         }
+        public bool RequestShift(int direction) => transmission.Request(direction, Speed, Reversing);
     }
 }

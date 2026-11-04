@@ -52,6 +52,24 @@ public sealed class DrivingFlowTests
         InputSystem.QueueStateEvent(keyboard, new KeyboardState(key)); yield return new WaitForSecondsRealtime(seconds);
         InputSystem.QueueStateEvent(keyboard, new KeyboardState()); yield return new WaitForSecondsRealtime(.08f);
     }
+    IEnumerator DriveFor(float seconds)
+    {
+        float until = Time.realtimeSinceStartup + seconds;
+        bool releaseShift = false;
+        while (Time.realtimeSinceStartup < until)
+        {
+            var car = GameManager.Instance.Driver;
+            bool up = !releaseShift && !car.IsShifting && car.Gear < 6 && car.RpmRatio > .92f;
+            InputSystem.QueueStateEvent(keyboard, up ? new KeyboardState(Key.W, Key.E) : new KeyboardState(Key.W));
+            releaseShift = up; yield return null;
+        }
+        InputSystem.QueueStateEvent(keyboard, new KeyboardState()); yield return new WaitForSecondsRealtime(.08f);
+    }
+    IEnumerator ShiftWithGas(Key key)
+    {
+        InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.W, key)); yield return new WaitForSecondsRealtime(.08f);
+        InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.W)); yield return new WaitForSecondsRealtime(.08f);
+    }
     IEnumerator WaitForDriving()
     {
         float deadline = Time.realtimeSinceStartup + 7;
@@ -301,7 +319,7 @@ public sealed class DrivingFlowTests
     [UnityTest] public IEnumerator TrafficIsPresentAheadDuringEarlyAcceleration()
     {
         var g = GameManager.Instance; g.StartRun(); yield return WaitForDriving();
-        yield return Hold(Key.W, 8);
+        yield return DriveFor(8);
         int ahead = 0;
         foreach (var car in g.World.Traffic)
         {
@@ -331,13 +349,18 @@ public sealed class DrivingFlowTests
         Assert.That(g.Driver.Speed, Is.InRange(.1f, 4));
         Assert.That(g.Driver.Acceleration, Is.GreaterThan(0));
         // Advance this component on a clear test road; traffic survival is validated separately.
-        for (int i = 0; i < 2250; i++) g.Driver.Tick(g.Input, g.Run.TopSpeed, .02f);
+        for (int i = 0; i < 2250; i++)
+        {
+            if (!g.Driver.IsShifting && g.Driver.Gear < 6 && g.Driver.RpmRatio > .92f) g.Driver.RequestShift(1);
+            g.Driver.Tick(g.Input, g.Run.TopSpeed, .02f);
+        }
         yield return new WaitForSeconds(.15f);
-        Assert.That(g.Driver.Speed * 3.6f, Is.EqualTo(300).Within(.1f));
+        Assert.That(g.Driver.Speed * 3.6f, Is.InRange(299.5f, 300.01f));
         Assert.That(g.Driver.Gear, Is.EqualTo(6));
         var hud = Object.FindAnyObjectByType<GameHud>();
         Assert.That(hud.DisplayedSpeedKph, Is.EqualTo(300));
-        Assert.That(Mathf.Abs(hud.DisplayedAcceleration), Is.LessThan(.1f));
+        Assert.That(g.Driver.RevLimiter, Is.True);
+        Assert.That(Mathf.Abs(hud.DisplayedAcceleration), Is.LessThan(3));
         InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.W, Key.S)); yield return new WaitForSeconds(.4f);
         Assert.That(g.Driver.Speed, Is.LessThan(VehicleDynamics.ForwardLimit - 3));
         Assert.That(hud.DisplayedAcceleration, Is.LessThan(-8));
@@ -345,6 +368,41 @@ public sealed class DrivingFlowTests
         Assert.That(g.Driver.Speed, Is.GreaterThan(0));
         Assert.That(g.Driver.RearView, Is.False, "Selecting reverse at speed must keep the view in the actual travel direction.");
         Assert.That(Camera.main.transform.position.z, Is.LessThan(g.Driver.transform.position.z));
+        InputSystem.QueueStateEvent(keyboard, new KeyboardState()); yield return null;
+    }
+    [UnityTest] public IEnumerator ManualGearKeysAudioAndPauseBehaveAsOneTransmission()
+    {
+        var g = GameManager.Instance;
+        yield return Press(Key.E); Assert.That(g.Driver.Gear, Is.EqualTo(1));
+        g.StartRun(); yield return WaitForDriving();
+        Assert.That(g.Catalog.gearShiftSounds.Length, Is.EqualTo(3));
+        Assert.That(g.Catalog.throttleOnSound.name, Is.EqualTo("Recorded-throttle-on"));
+        InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.W)); yield return new WaitForSeconds(4);
+        Assert.That(g.Driver.Gear, Is.EqualTo(1), "Gas alone must not shift automatically.");
+        Assert.That(g.Driver.Speed * 3.6f, Is.InRange(44.5f, 45.1f));
+        Assert.That(g.Audio.ThrottleCueCount, Is.EqualTo(1), "A held gas pedal must not replay a rev every frame.");
+        yield return ShiftWithGas(Key.E);
+        Assert.That(g.Driver.IsShifting, Is.True); Assert.That(g.Driver.Gear, Is.EqualTo(1));
+        Assert.That(g.Audio.ShiftCueCount, Is.EqualTo(1)); Assert.That(g.Audio.GearCuePlaying, Is.True);
+        g.TogglePause(); yield return new WaitForSecondsRealtime(.3f);
+        Assert.That(g.Driver.IsShifting, Is.True); Assert.That(g.Driver.Gear, Is.EqualTo(1));
+        Assert.That(g.Audio.GearCuePlaying, Is.False);
+        g.TogglePause(); yield return new WaitForSeconds(.7f);
+        Assert.That(g.Driver.Gear, Is.EqualTo(2)); Assert.That(g.Driver.Speed, Is.GreaterThan(13));
+        var hud = Object.FindAnyObjectByType<GameHud>(); Assert.That(hud.DisplayedGear, Is.EqualTo(2));
+        Assert.That(hud.DisplayedRpm, Is.InRange(850, 7200));
+        yield return new WaitForSeconds(3);
+        Assert.That(g.Driver.Gear, Is.EqualTo(2));
+        yield return ShiftWithGas(Key.E); yield return new WaitForSeconds(.5f);
+        Assert.That(g.Driver.Gear, Is.EqualTo(3)); Assert.That(g.Audio.ShiftCueCount, Is.EqualTo(2));
+        yield return ShiftWithGas(Key.Q);
+        Assert.That(g.Driver.ShiftRejected, Is.True); Assert.That(g.Driver.Gear, Is.EqualTo(3));
+        Assert.That(g.Audio.ShiftCueCount, Is.EqualTo(2), "Rejected over-rev downshifts must not play a successful gear change.");
+        yield return Hold(Key.S, 1.2f);
+        yield return ShiftWithGas(Key.Q);
+        Assert.That(g.Driver.IsShifting, Is.True); Assert.That(g.Audio.PedalCuePlaying, Is.True);
+        yield return new WaitForSeconds(.5f);
+        Assert.That(g.Driver.Gear, Is.EqualTo(2)); Assert.That(g.Audio.ShiftCueCount, Is.EqualTo(3));
         InputSystem.QueueStateEvent(keyboard, new KeyboardState()); yield return null;
     }
 }

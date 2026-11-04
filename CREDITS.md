@@ -30,11 +30,20 @@ Active engine, ignition and rain sounds are edited **real field recordings**, do
 - AI engine: **Car engine start up running and turning off.wav**, by **sound_catcher99** — https://freesound.org/people/sound_catcher99/sounds/425158/
 - Rain: **Rainfall**, by **colorsCrimsonTears** — https://freesound.org/people/colorsCrimsonTears/sounds/532681/
 
-License: https://creativecommons.org/publicdomain/zero/1.0/. Source MP3s, downloaded source pages and download manifest are retained in `../SourceAudio/FieldRecordings`. `Docs/RecordedSoundSources.json` records download URLs, excerpts and processing for every active clip. Preparation uses mono conversion, filtering, level adjustment and loop crossfades; no engine or rain tones are synthesized. The player layers come from portions of the same recording with runtime pitch/crossfade changes. They are stylized engine characters, not exact recordings of each depicted vehicle make.
+License: https://creativecommons.org/publicdomain/zero/1.0/. Source MP3s, downloaded source pages and download manifest are retained in `../SourceAudio/FieldRecordings`. `Docs/RecordedSoundSources.json` records download URLs, excerpts and processing for the engine/ignition/rain clips. Preparation uses mono conversion, filtering, level adjustment and loop crossfades; no engine or rain tones are synthesized. The player layers come from portions of the same recording with runtime pitch/crossfade changes. They are stylized engine characters, not exact recordings of each depicted vehicle make.
 
 Collision and pickup effects remain original synthesized audio generated for this project. Their generator is `../Tools/make_drive_audio.py`. Older synthesized engine/ignition/rain files remain as unused development assets; the catalog points to `Audio/Recorded` clips.
 
 The personal MP3 music library was supplied by the student. It is stored outside Unity Assets and read from the local Music folder. Original artist/song filenames are preserved. The music is not part of the Kenney assets. Original-format backups are retained outside the active library.
+
+## Manual gearbox and throttle cues
+
+Additional real recordings downloaded from Freesound public HQ previews on 2026-11-04, both CC0 1.0:
+
+- **412_gearsw.wav**, **Mihacappy** — https://freesound.org/people/Mihacappy/sounds/871568/ — recorded gear changes inside an IZ-412. Three lever/clunk excerpts provide shift variation.
+- **v8 engine rev.wav**, **overmedium** — https://freesound.org/people/overmedium/sounds/651534/ — recorded throttle blips/idling. Short excerpts provide gas-on, gas-off and downshift rev-match cues.
+
+Sources, HTML license evidence and originals are retained outside the Unity project in `../SourceAudio/ManualGears`. `Docs/ManualGearSoundSources.json` records exact URLs, excerpts, checksums and processing; `Tools/prepare_manual_gear_audio.py` reproduces the mono PCM clips. These are stylized layers alongside the existing engine recording, not exact make-matched car sounds. No synthesized gear or throttle sound was generated. Runtime limiter pulse and engine pitch/volume control act on the real recordings.
 
 ## Assistance
 

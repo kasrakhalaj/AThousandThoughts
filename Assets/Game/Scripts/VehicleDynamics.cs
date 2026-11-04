@@ -7,7 +7,27 @@ namespace AfterHours
         public const float ForwardLimit = 300f / 3.6f;
         public const float ReverseLimit = 10;
         const float BrakeDeceleration = 12;
-        static readonly float[] GearBounds = { 0, 30f / 3.6f, 60f / 3.6f, 100f / 3.6f, 150f / 3.6f, 210f / 3.6f, ForwardLimit };
+        static readonly float[] GearBounds = { 0, 45f / 3.6f, 85f / 3.6f, 130f / 3.6f, 180f / 3.6f, 240f / 3.6f, ForwardLimit };
+        public static float GearSpeedLimit(int gear) => GearBounds[Mathf.Clamp(gear, 1, 6)];
+        public static float GearRpmRatio(float speed, int gear) => Mathf.Clamp01(Mathf.Abs(speed) / GearSpeedLimit(gear));
+
+        public static float StepInGear(float speed, float throttle, bool braking, bool reverse, float limit, float seconds, int gear, bool shifting, float power = 1)
+        {
+            float remaining = Mathf.Max(0, seconds);
+            while (remaining > 0)
+            {
+                float dt = Mathf.Min(.05f, remaining); remaining -= dt;
+                float gearLimit = GearSpeedLimit(gear);
+                float rpm = GearRpmRatio(speed, gear);
+                float drive = gear == 1 ? 1 : Mathf.Lerp(.9f / gear, 1, Mathf.InverseLerp(.18f, .6f, rpm));
+                float gas = shifting || !reverse && speed >= gearLimit ? 0 : throttle;
+                float next = Step(speed, gas, braking, reverse, limit, dt, power * drive);
+                // The limiter cuts power, without snapping an already coasting car to a lower speed.
+                if (!reverse && speed >= 0 && speed <= gearLimit && next > gearLimit) next = gearLimit;
+                speed = next;
+            }
+            return speed;
+        }
 
         public static float Step(float speed, float throttle, bool braking, bool reverse, float limit, float seconds, float power = 1)
         {

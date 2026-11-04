@@ -13,6 +13,8 @@ namespace AfterHours
         public InputAction Forward { get; private set; }
         public InputAction Throttle => Forward; // Preserve the serialized action and all existing bindings.
         public InputAction Reverse { get; private set; }
+        public InputAction ShiftUp { get; private set; }
+        public InputAction ShiftDown { get; private set; }
         public InputAction Pause { get; private set; }
         public InputAction StartCar { get; private set; }
         public InputAction NextSong { get; private set; }
@@ -28,6 +30,7 @@ namespace AfterHours
             // Continuous pedals must recognize a key already held when ignition/pause enables driving.
             Forward.wantsInitialStateCheck = true; Brake.wantsInitialStateCheck = true;
             Reverse = driving.FindAction("Reverse", true);
+            ShiftUp = driving.FindAction("ShiftUp", true); ShiftDown = driving.FindAction("ShiftDown", true);
             var system = actions.FindActionMap("System", true);
             Pause = system.FindAction("Pause", true); StartCar = system.FindAction("StartCar", true);
             NextSong = system.FindAction("NextSong", true); PreviousSong = system.FindAction("PreviousSong", true);

@@ -44,7 +44,7 @@ public sealed class VehicleDynamicsTests
     [Test] public void SixGearsMatchTheNewSpeedRange()
     {
         Assert.That(VehicleDynamics.Gear(0), Is.EqualTo(1));
-        Assert.That(VehicleDynamics.Gear(120f / 3.6f), Is.EqualTo(4));
+        Assert.That(VehicleDynamics.Gear(120f / 3.6f), Is.EqualTo(3));
         Assert.That(VehicleDynamics.Gear(VehicleDynamics.ForwardLimit), Is.EqualTo(6));
         Assert.That(VehicleDynamics.GearProgress(VehicleDynamics.ForwardLimit), Is.EqualTo(1));
     }

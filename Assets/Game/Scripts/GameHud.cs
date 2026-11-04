@@ -19,7 +19,10 @@ namespace AfterHours
         UnityEngine.UI.Image speedFill;
         public int DisplayedSpeedKph { get; private set; }
         public float DisplayedAcceleration { get; private set; }
-        TMP_Text acceleration;
+        TMP_Text acceleration, engineRpm, shiftHint;
+        UnityEngine.UI.Image rpmFill;
+        public int DisplayedGear { get; private set; }
+        public int DisplayedRpm { get; private set; }
         UnityEngine.UI.Image[] bars;
         UnityEngine.UI.Button shuffle;
         float refresh;
@@ -49,7 +52,7 @@ namespace AfterHours
 
             hud = Node("Driving HUD", canvas, Vector2.zero, Vector2.zero);
             Stretch(hud);
-            var dashboard = Box("Dashboard", hud, new Vector2(.035f, .96f), new Vector2(550, 166), new Vector2(0, 1), PanelColor);
+            var dashboard = Box("Dashboard", hud, new Vector2(.035f, .96f), new Vector2(550, 210), new Vector2(0, 1), PanelColor);
             speed = Label(dashboard, "000", 65, Cream, 22, -15, 175, 80, FontStyles.Bold);
             speed.gameObject.name = "Speed (kmh)";
             Label(dashboard, "KM/H", 16, Muted, 180, -53, 70, 25);
@@ -60,6 +63,12 @@ namespace AfterHours
             acceleration = Label(dashboard, "ACCEL  +0.0 M/S²", 16, Muted, 26, -135, 245, 23);
             acceleration.gameObject.name = "Acceleration (ms2)";
             Label(dashboard, "LIMIT  300 KM/H", 15, Muted, 290, -135, 225, 23);
+            engineRpm = Label(dashboard, "RPM  850", 16, Muted, 26, -164, 245, 23);
+            shiftHint = Label(dashboard, "Q DOWN   E UP", 15, Amber, 290, -164, 225, 23);
+            var rpmRail = Box("RPM gauge", dashboard, new Vector2(0, 1), new Vector2(220, 4), new Vector2(0, 1), new Color(.2f, .26f, .24f));
+            rpmRail.anchoredPosition = new Vector2(26, -196);
+            rpmFill = Box("RPM", rpmRail, new Vector2(0, 1), new Vector2(0, 4), new Vector2(0, 1), Amber).GetComponent<UnityEngine.UI.Image>();
+            Label(dashboard, "MANUAL / 1 - 6", 13, Muted, 290, -191, 225, 20);
             lives = Label(dashboard, "", 22, Cream, 290, -25, 225, 35);
             Label(dashboard, "FUEL", 14, Muted, 290, -78, 100, 22);
             var fuelBack = Box("Fuel gauge", dashboard, new Vector2(0, 1), new Vector2(220, 8), new Vector2(0, 1), new Color(.2f, .26f, .24f));
@@ -72,7 +81,7 @@ namespace AfterHours
             var wr = (RectTransform)weather.transform; wr.anchorMin = wr.anchorMax = new Vector2(.965f, .79f); wr.pivot = new Vector2(1, 1); wr.anchoredPosition = Vector2.zero; weather.alignment = TextAlignmentOptions.Right;
             tip = Label(hud, "", 18, Cream, 0, 0, 1100, 50, FontStyles.Normal, TextAlignmentOptions.Center);
             var tr = (RectTransform)tip.transform; tr.anchorMin = tr.anchorMax = new Vector2(.5f, .045f); tr.pivot = new Vector2(.5f, 0); tr.anchoredPosition = Vector2.zero;
-            var controls = Label(hud, "W  GAS     S  BRAKE     A / D  STEER     R  REVERSE GEAR     ESC  PAUSE", 15, Muted, 0, 0, 1100, 30, FontStyles.Normal, TextAlignmentOptions.Center);
+            var controls = Label(hud, "W  GAS     S  BRAKE     A / D  STEER     Q / E  GEARS     R  REVERSE     ESC  PAUSE", 15, Muted, 0, 0, 1100, 30, FontStyles.Normal, TextAlignmentOptions.Center);
             var cr = (RectTransform)controls.transform; cr.anchorMin = cr.anchorMax = new Vector2(.5f, .015f); cr.pivot = new Vector2(.5f, 0); cr.anchoredPosition = Vector2.zero;
 
             pause = CenterPanel("Pause", "TAKE A BREATHER", "Your road will be here when you're ready.");
@@ -147,7 +156,12 @@ namespace AfterHours
             speed.text = DisplayedSpeedKph.ToString("000");
             speedFill.rectTransform.sizeDelta = new Vector2(210 * Mathf.Clamp01(Mathf.Abs(game.Driver.Speed) / game.Run.TopSpeed), 5);
             string pedal = game.Driver.Braking ? "BRAKE" : game.Driver.Throttle > .05f ? "GAS" : Mathf.Abs(game.Driver.Speed) > .5f ? "COAST" : "IDLE";
-            direction.text = (game.Driver.Reversing ? "R" : "D" + game.Driver.Gear) + " / " + pedal;
+            direction.text = (game.Driver.Reversing ? "R" : "G" + game.Driver.Gear) + " / " + pedal;
+            DisplayedGear = game.Driver.Gear; DisplayedRpm = game.Driver.EngineRpm;
+            engineRpm.text = "RPM  " + (Mathf.RoundToInt(DisplayedRpm / 50f) * 50).ToString("N0");
+            rpmFill.rectTransform.sizeDelta = new Vector2(220 * Mathf.InverseLerp(850, 7200, DisplayedRpm), 4);
+            rpmFill.color = game.Driver.RpmRatio > .9f ? new Color(1, .38f, .2f) : Amber;
+            shiftHint.text = game.Driver.Reversing ? "REVERSE" : game.Driver.IsShifting ? "SHIFT  " + game.Driver.Gear + " > " + game.Driver.PendingGear : game.Driver.ShiftRejected ? "TOO FAST TO DOWNSHIFT" : game.Driver.Lugging ? "Q  SHIFT DOWN" : game.Driver.RpmRatio > .86f && game.Driver.Gear < 6 ? "E  SHIFT UP" : "Q DOWN   E UP";
             DisplayedAcceleration = game.Driver.Acceleration * (game.Driver.Speed < -.1f ? -1 : 1);
             acceleration.text = "ACCEL  " + DisplayedAcceleration.ToString("+0.0;-0.0;0.0") + " M/S²";
             acceleration.color = DisplayedAcceleration > .1f ? Amber : Muted;
