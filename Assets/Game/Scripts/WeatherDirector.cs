@@ -9,8 +9,11 @@ namespace AfterHours
         float fireworkTimer = 17;
         public float RainAmount { get; private set; }
         public float FogAmount { get; private set; }
+        public float StormAmount { get; private set; }
         public const float ClearFogDensity = .0025f;
         public const float DenseFogDensity = .021f;
+        public const float StormFogDensity = .030f;
+        public float RainEmissionRate => RainAmount * Mathf.Lerp(1700, 3400, StormAmount);
         public string Conditions { get; private set; } = "CLEAR NIGHT";
         public void Initialize(GameManager manager, GameCatalog catalog)
         {
@@ -26,25 +29,42 @@ namespace AfterHours
             var shape = rain.shape; shape.shapeType = ParticleSystemShapeType.Box; shape.scale = new Vector3(40, 65, 1);
             var renderer = rain.GetComponent<ParticleSystemRenderer>(); renderer.renderMode = ParticleSystemRenderMode.Stretch;
             renderer.lengthScale = 5; renderer.velocityScale = .03f;
-            var main = rain.main; main.maxParticles = 2400;
+            var main = rain.main; main.maxParticles = 5000;
+            ResetWeather();
+        }
+        public static float StormTargetAt(float z)
+        {
+            int zone = ((Mathf.FloorToInt(z / 480) % 5) + 5) % 5;
+            float local = Mathf.Repeat(z, 480);
+            return zone == 2 ? Mathf.SmoothStep(0, 1, Mathf.InverseLerp(50, 125, local))
+                * (1 - Mathf.SmoothStep(0, 1, Mathf.InverseLerp(330, 430, local))) : 0;
+        }
+        public void ResetWeather()
+        {
+            RainAmount = FogAmount = StormAmount = 0; fireworkTimer = 17;
+            Conditions = "CLEAR NIGHT"; RenderSettings.fogDensity = ClearFogDensity;
+            Shader.SetGlobalFloat("_AfterHoursFogDensity", ClearFogDensity); Shader.SetGlobalFloat("_AfterHoursFog", 0);
+            rain.Clear(); var emission = rain.emission; emission.rateOverTime = 0;
         }
         public void Tick(float dt)
         {
             float z = game.Driver.transform.position.z;
             int zone = ((Mathf.FloorToInt(z / 480) % 5) + 5) % 5;
-            float targetRain = zone == 1 || zone == 2 ? 1 : zone == 4 ? .35f : 0;
-            RainAmount = Mathf.MoveTowards(RainAmount, targetRain, dt * .12f);
+            float targetRain = zone == 2 ? 1 : zone == 1 ? .65f : zone == 4 ? .35f : 0;
+            RainAmount = Mathf.MoveTowards(RainAmount, targetRain, dt * .22f);
+            StormAmount = Mathf.Lerp(StormAmount, StormTargetAt(z), 1 - Mathf.Exp(-dt * .6f));
             float local = Mathf.Repeat(z, 480);
             float patch = Mathf.SmoothStep(0, 1, Mathf.InverseLerp(110, 185, local)) * (1 - Mathf.SmoothStep(0, 1, Mathf.InverseLerp(270, 350, local)));
             float targetFog = zone == 2 || zone == 3 ? 1 : patch;
             FogAmount = Mathf.Lerp(FogAmount, targetFog, 1 - Mathf.Exp(-dt * .6f));
-            RenderSettings.fogDensity = Mathf.Lerp(ClearFogDensity, DenseFogDensity, FogAmount);
+            RenderSettings.fogDensity = Mathf.Lerp(Mathf.Lerp(ClearFogDensity, DenseFogDensity, FogAmount), StormFogDensity, StormAmount);
             RenderSettings.fogColor = new Color(.065f, .09f, .115f);
             Shader.SetGlobalFloat("_AfterHoursFogDensity", RenderSettings.fogDensity);
             Shader.SetGlobalFloat("_AfterHoursFog", FogAmount);
-            Conditions = zone == 2 ? "RAIN / LOW FOG" : zone == 3 ? "FOG PATCH" : FogAmount > .4f ? RainAmount > .3f ? "RAIN / LOW FOG" : "FOG PATCH" : RainAmount > .3f ? "RAIN" : "CLEAR NIGHT";
+            Conditions = StormAmount > .45f ? "HEAVY RAIN / DENSE FOG" : FogAmount > .4f ? RainAmount > .3f ? "RAIN / LOW FOG" : "FOG PATCH" : RainAmount > .3f ? "RAIN" : "CLEAR NIGHT";
             rain.transform.position = game.Driver.transform.position + new Vector3(0, 16, 12);
-            var emission = rain.emission; emission.rateOverTime = RainAmount * 1700;
+            var emission = rain.emission; emission.rateOverTime = RainEmissionRate;
+            var main = rain.main; main.startSpeed = Mathf.Lerp(25, 34, StormAmount); main.startSize = Mathf.Lerp(.025f, .035f, StormAmount);
             fireworkTimer -= dt;
             if (fireworkTimer <= 0)
             {

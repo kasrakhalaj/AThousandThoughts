@@ -7,6 +7,19 @@ namespace AfterHours
     // Shared safety calculations use metres and seconds for both spawns and driving decisions.
     public static class TrafficRules
     {
+        public const float MaximumTrafficSpeed = 56; // About 200 km/h, before weather/following limits.
+        public static float FastPaceAt(float z)
+        {
+            float local = Mathf.Repeat(z, 1440);
+            return Mathf.SmoothStep(0, 1, Mathf.InverseLerp(210, 300, local))
+                * (1 - Mathf.SmoothStep(0, 1, Mathf.InverseLerp(500, 600, local)));
+        }
+        public static float PaceSpeed(float cruisingSpeed, bool fastDriver, float pace)
+        {
+            float baseline = Mathf.Clamp(cruisingSpeed, 10, 38); pace = Mathf.Clamp01(pace);
+            return Mathf.Min(MaximumTrafficSpeed, fastDriver ? baseline + 12 + 14 * pace : baseline);
+        }
+
         public static TrafficFlow FlowAt(float z)
         {
             int section = Mathf.FloorToInt(z / 60);

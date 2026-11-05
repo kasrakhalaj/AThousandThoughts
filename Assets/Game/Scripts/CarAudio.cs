@@ -88,7 +88,7 @@ namespace AfterHours
             engine.pitch = character * Mathf.Lerp(.88f, 1.08f, rpm);
             midEngine.pitch = character * Mathf.Lerp(.8f, 1.15f, rpm);
             loadEngine.pitch = character * Mathf.Lerp(.84f, 1.16f, rpm);
-            rain.volume = game.Weather.RainAmount * .18f * (game.State == GameState.Paused ? .4f : 1);
+            rain.volume = game.Weather.RainAmount * Mathf.Lerp(.18f, .30f, game.Weather.StormAmount) * (game.State == GameState.Paused ? .4f : 1);
             bool wantTraffic = game.State == GameState.Playing;
             if (wantTraffic != trafficAudible) { trafficAudible = wantTraffic; game.World.SetTrafficAudioPaused(!wantTraffic); }
             bool wantPause = game.State == GameState.Paused;

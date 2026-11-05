@@ -1,0 +1,27 @@
+# Storm pockets and faster traffic
+
+Date: 2026-11-05 (Tehran). Baseline: d02cce7, clean working tree. Unity 6000.6.7f1, URP 17.6.0, Windows x86_64, existing New Input System.
+
+## Behavior
+
+The existing 480m weather zones now distinguish ordinary rain (.65 target), drizzle (.35) and full rain (1). A localized storm pocket within the wet/fog zone ramps between local metres 50–125, peaks through 330, and fades through 430. The first peak is at approximately 1085–1290m, repeating every 2400m, including negative road coordinates. Strength is smoothed over time, so short fast passages may not reach the stationary peak. Existing clear and quiet stretches remain.
+
+At full storm strength: fog density rises from the previous maximum .021 to .030, rain emission rises from 1700 to 3400 drops/second, drop speed rises from 25 to 34m/s, size from .025 to .035, and the existing real recorded rain loop gain rises from .18 to .30. Rain capacity is bounded at 5000 particles (3400/s times 1.1s lifetime fits). The existing fullscreen depth fog pass and sky treatment remain. HUD condition text reflects actual smoothed intensity. Pause freezes weather; menu/restart resets storm, rain, fog, shader density and active rain particles.
+
+Approximately 22% of spawned moving-car candidates are fast drivers; accepted spawns may have a different proportion because safety checks reject unsafe candidates. Fast drivers use assertive AI, keep a higher cruise pace, and accelerate further through smooth fast stretches at 210–600m of each 1440m route cycle. Ordinary drivers retain their regular cruise pace, and the initial nearby cohort is kept regular so accelerating out of ignition does not empty the road. Fast-driver desired speed is capped at 56m/s (201.6km/h) before weather and following limits. Acceleration remains gradual (3.5m/s²), and existing brake, signal, lane reservation and escape rules still apply. Rain/fog slow all AI and lengthen their following distances. A cap is not a promise that congestion or weather allows that speed.
+
+Spawning now validates the actual initial weather/pace-adjusted speed, rather than the raw cruise number. Rear warning gaps use the upper upcoming pace; forward warning gaps account for slower wet-road cars. Reverse escape-corridor estimates use the new maximum. Pooled activation resets the fast-driver flag. Player acceleration, maximum speed, manual gears, input mappings, vehicle lamps, music, scene and prefab assets remain unchanged. No package or source sound downloads are needed.
+
+## Verification
+
+EditMode: **33/33 passed**, zero failures/skips, 0.41s (`Validation/storm-pace-editmode.json`). Includes localized/revisited storm targets, bounded mixed traffic pace, weather reduction and actual fast/reverse closing-distance checks. Runtime and build evidence follows below.
+
+An initial full PlayMode run found a real opening-density regression (19/20 passed): faster nearby cars could pull away before the player accelerated. The correction keeps the initial nearby cohort regular and limits the express pace boost to fast drivers, retaining the original seeded near-traffic layout/speeds. The original density assertion then passed unchanged (`Validation/storm-pace-density-targeted.json`, 1/1, 16.56s). Final full regression results follow below.
+
+Final full PlayMode regression: **20/20 passed**, zero failures/skips, 98.30s (`Validation/storm-pace-playmode.json`). Includes actual storm density/emission/audio, pause/reset/restart, fast-driver acceleration/following/weather reduction/pool reset, original road density, spawn visibility, reverse, manual gears, lights and look-back. Final EditMode rerun: **33/33 passed** in 0.41s. Total: **53 unique checks passed**.
+
+Live synthetic-keyboard drive started normally at z=0 with no route teleport or forced weather. It produced 46 samples, reached z=2078.73m and ended at GameOver. Four cars were ahead at both the 8.1s and 9.1s samples. Maximum actual AI speed was 50.71m/s (182.56km/h); up to four active fast drivers were observed. The storm was reached naturally near 1174m: maximum smoothed storm .925, fog density .029293, emission 3272.58/s and recorded-rain gain .2910 (`Validation/storm-pace-drive.json`). `Images/storm-driving.png` was visually inspected: substantial rain streaks, reduced distant visibility, legible heavy-weather HUD label and visible near-car taillights. This is a visual/driving smoke run, not collision-free endurance or proof that every fast car reaches the cap.
+
+Probe cleanup restored the original high score and input/background settings, exited Play Mode, and reset optional start/capture flags (`Validation/storm-pace-cleanup.json`). No source art, prefab/catalog/input assets, scene, Project Settings or packages changed.
+
+Windows x86_64 build: **Succeeded**, 0 errors, 0 warnings, 35.26s, 115,037,450 bytes reported (`Validation/storm-pace-build.json`). Built runtime assembly contains storm/fast-driver/desired-speed/route-pace code and has a recorded SHA-256 (`Validation/storm-pace-build-identity.json`). Fresh executable initialized Direct3D 12, remained responsive and logged no exception/missing-reference/shader/compiler-error matches (`Validation/storm-pace-player-startup.json`). The owned smoke-test process was stopped. Final compilation reports completed without errors (`Validation/storm-pace-final-compile.json`). Earlier Console Burst startup errors remain recorded separately; no Console was cleared, setting disabled or package changed to hide them.

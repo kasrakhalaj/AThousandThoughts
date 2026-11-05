@@ -14,6 +14,8 @@ namespace AfterHours
         public override float Speed => speed;
         public TrafficBehavior Behavior { get; private set; }
         public TrafficDriverStyle Style { get; private set; }
+        public bool IsFastDriver { get; private set; }
+        public float DesiredSpeed => TrafficRules.PaceSpeed(cruisingSpeed, IsFastDriver, TrafficRules.FastPaceAt(transform.position.z)) * game.World.TrafficWeatherFactor;
         public float Headway => Style == TrafficDriverStyle.Cautious ? 1.8f : Style == TrafficDriverStyle.Assertive ? 1.1f : 1.45f;
         public int Lane => Mathf.Clamp(Mathf.RoundToInt(transform.position.x / CarDriver.LaneWidth) + 1, 0, 2);
         public int ReservedLane => IsMerging ? targetLane : Lane;
@@ -27,6 +29,7 @@ namespace AfterHours
             targetLane = Lane; targetX = position.x;
             signalTime = 0; recoverTime = 0; Behavior = TrafficBehavior.Cruising;
             Style = (TrafficDriverStyle)Random.Range(0, 3);
+            IsFastDriver = false;
             cruisingSpeed = (Random.Range(15f, 26f) + owner.Run.Difficulty * 6) * (Style == TrafficDriverStyle.Cautious ? .9f : Style == TrafficDriverStyle.Assertive ? 1.07f : 1);
             speed = cruisingSpeed;
             decisionTime = Random.Range(1.5f, 3.5f);
@@ -36,7 +39,7 @@ namespace AfterHours
 
         public override void Tick(float dt)
         {
-            float desired = cruisingSpeed * game.World.TrafficWeatherFactor;
+            float desired = DesiredSpeed;
             float safeSpeed = game.World.TrafficSpeed(this, desired);
             braking = safeSpeed < speed - .5f;
             speed = Mathf.MoveTowards(speed, safeSpeed, (braking ? safeSpeed < speed - 6 ? 24 : 7 : 3.5f) * dt);
@@ -93,6 +96,11 @@ namespace AfterHours
             Behavior = TrafficBehavior.Recovering; recoverTime = 1.5f; signalTime = 0;
         }
 
-        public void SetCruisingSpeed(float value) { cruisingSpeed = Mathf.Clamp(value, 10, 38); speed = cruisingSpeed; }
+        public void SetCruisingSpeed(float value, bool fastDriver = false)
+        {
+            cruisingSpeed = Mathf.Clamp(value, 10, 38); IsFastDriver = fastDriver;
+            if (fastDriver) Style = TrafficDriverStyle.Assertive;
+            speed = DesiredSpeed;
+        }
     }
 }

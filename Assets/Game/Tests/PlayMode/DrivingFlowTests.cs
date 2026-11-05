@@ -129,11 +129,55 @@ public sealed class DrivingFlowTests
         g.Music.Toggle(); Assert.That(g.Music.IsPlaying, Is.False); g.Music.Toggle(); Assert.That(g.Music.IsPlaying, Is.True);
         g.Driver.transform.position = new Vector3(0, 0, 1100);
         for (int i = 0; i < 50; i++) g.Weather.Tick(.1f);
-        Assert.That(g.Weather.RainAmount, Is.GreaterThan(.5f)); Assert.That(g.Weather.Conditions, Is.EqualTo("RAIN / LOW FOG"));
-        g.Driver.transform.position = new Vector3(0, 0, 1600); g.Weather.Tick(1);
+        Assert.That(g.Weather.RainAmount, Is.GreaterThan(.5f)); Assert.That(g.Weather.Conditions, Is.EqualTo("HEAVY RAIN / DENSE FOG"));
+        g.Driver.transform.position = new Vector3(0, 0, 1600);
+        for (int i = 0; i < 100; i++) g.Weather.Tick(.1f);
         Assert.That(g.Weather.Conditions, Is.EqualTo("FOG PATCH"));
     }
 
+    [UnityTest] public IEnumerator StormStrengthAudioPauseAndRestartAreConsistent()
+    {
+        var g = GameManager.Instance; g.StartRun(); yield return WaitForDriving();
+        g.Driver.transform.position = new Vector3(0, .08f, 1100);
+        for (int i = 0; i < 100; i++) g.Weather.Tick(.1f);
+        g.Audio.Tick();
+        Assert.That(g.Weather.StormAmount, Is.GreaterThan(.98f));
+        Assert.That(RenderSettings.fogDensity, Is.GreaterThan(.029f));
+        Assert.That(g.Weather.RainEmissionRate, Is.GreaterThan(3300));
+        Assert.That(g.Audio.RainVolume, Is.GreaterThan(.28f));
+        Assert.That(Shader.GetGlobalFloat("_AfterHoursFogDensity"), Is.EqualTo(RenderSettings.fogDensity).Within(.00001f));
+        g.TogglePause(); float rain = g.Weather.RainAmount, storm = g.Weather.StormAmount;
+        yield return new WaitForSecondsRealtime(.15f);
+        Assert.That(g.Weather.RainAmount, Is.EqualTo(rain)); Assert.That(g.Weather.StormAmount, Is.EqualTo(storm));
+        g.MainMenu();
+        Assert.That(g.Weather.RainAmount, Is.Zero); Assert.That(g.Weather.StormAmount, Is.Zero);
+        Assert.That(RenderSettings.fogDensity, Is.EqualTo(WeatherDirector.ClearFogDensity));
+        g.StartRun(); yield return WaitForDriving();
+        Assert.That(g.Weather.StormAmount, Is.Zero); Assert.That(g.Weather.RainEmissionRate, Is.Zero);
+    }
+    [UnityTest] public IEnumerator FastDriverAcceleratesFollowsSlowsForStormAndResetsInPool()
+    {
+        var g = GameManager.Instance;
+        MovingCar car = null;
+        foreach (var t in g.World.Traffic) if (t is MovingCar moving) { car = moving; break; }
+        Assert.That(car, Is.Not.Null);
+        // Move peers away to isolate free cruising, then introduce the player as a real lead vehicle.
+        foreach (var t in g.World.Traffic) if (t != car) t.transform.position = new Vector3(3.6f, .08f, -500);
+        car.transform.position = new Vector3(-3.6f, .08f, 150); car.SetCruisingSpeed(25, true);
+        float entering = car.Speed;
+        car.transform.position = new Vector3(-3.6f, .08f, 400);
+        float before = car.Speed; car.Tick(.2f);
+        Assert.That(car.IsFastDriver, Is.True); Assert.That(car.DesiredSpeed, Is.GreaterThan(50));
+        Assert.That(car.Speed, Is.GreaterThan(entering)); Assert.That(car.Speed - before, Is.LessThanOrEqualTo(.71f));
+        g.Driver.transform.position = new Vector3(-3.6f, .08f, car.transform.position.z + 18);
+        float following = car.Speed; car.Tick(.2f); Assert.That(car.Speed, Is.LessThan(following));
+        g.Driver.transform.position = new Vector3(0, .08f, 1100);
+        for (int i = 0; i < 100; i++) g.Weather.Tick(.1f);
+        Assert.That(car.DesiredSpeed, Is.LessThan(32));
+        car.Activate(g, new Vector3(-3.6f, .08f, 100));
+        Assert.That(car.IsFastDriver, Is.False, "Pooled activation must not inherit a previous fast-driver assignment.");
+        yield return null;
+    }
     [UnityTest] public IEnumerator AllCarsKeepTheirLightsThroughDamageAndReverse()
     {
         var g = GameManager.Instance;

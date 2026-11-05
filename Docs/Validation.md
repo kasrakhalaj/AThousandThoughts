@@ -1,3 +1,5 @@
+Latest storm/fast-traffic update: [StormPaceValidation.md](StormPaceValidation.md).
+
 Latest authored player-lamp correction: [PlayerLampValidation.md](PlayerLampValidation.md).
 
 Latest hold-to-look-back validation: [LookBackValidation.md](LookBackValidation.md).

@@ -58,3 +58,7 @@ Driving.LookBack binds C and Gamepad/rightStickPress, uses held state plus initi
 ## Authored player lamps
 
 PlayerLampUpgrade replaces the primitive player lenses with persistent meshes extracted from the FBXs' gradientEmmisive body submeshes. NightVisualUpgrade delegates to it; Normalize no longer adds Tail lamp cubes. Original model geometry, scale, textures and source files are preserved. Per-model selection excludes glass/paint/accents/plates; headlight spots follow real headlight centers. White reverse lenses exist only on docLorean, Landyroamer and Toyoyo, so Beatall/Tristar have no invented visible reverse bulbs. VehicleLights continues to own ignition, brake and reverse state. Rear spill is a backward/downward spotlight. See Docs/PlayerLampValidation.md.
+
+## Storm and fast-traffic update
+
+WeatherDirector adds smoothed StormAmount for localized pockets in the existing wet/fog zones. Maximum density .030, emission 3400/s, maximum 5000 rain particles, stronger recorded-rain gain; ordinary rain targets .65. ResetWeather is called before run/menu population so previous storms do not leak into new runs. TrafficRules.FastPaceAt/PaceSpeed vary route pace and cap desired AI speed at 56m/s. RoadWorld selects approximately 22% fast candidates, validates actual weather-adjusted initial speed and sizes gaps for upcoming pace. MovingCar.IsFastDriver resets on activation, DesiredSpeed combines route pace and current weather, and existing following/signaling/braking clamps it. See Docs/StormPaceValidation.md.

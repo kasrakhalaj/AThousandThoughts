@@ -126,7 +126,11 @@ namespace AfterHours
                     int lane = (safeLane + 1 + slot % 2) % 3;
                     float carZ = index * 60 + 14 + slot * 20 + (float)random.NextDouble() * 7;
                     bool stopped = slot == 0 && index > 3 && random.NextDouble() < .035;
-                    SpawnTraffic(new Vector3((lane - 1) * CarDriver.LaneWidth, .08f, carZ), 18 + (float)random.NextDouble() * 8, stopped, populatingInitial);
+                    // Preserve nearby opening encounters while the player is still building speed.
+                    // A separate hash keeps the original seeded traffic layout/speeds unchanged.
+                    bool fastDriver = (!populatingInitial || carZ - game.Driver.transform.position.z > 300)
+                        && unchecked((uint)(index * 73856093 + slot * 19349663)) % 100 < 22;
+                    SpawnTraffic(new Vector3((lane - 1) * CarDriver.LaneWidth, .08f, carZ), 18 + (float)random.NextDouble() * 8, stopped, populatingInitial, fastDriver);
                 }
                 if (fresh) for (int c = 0; c < 3; c++) Spawn(2, new Vector3((safeLane - 1) * CarDriver.LaneWidth, .85f, z + c * 4));
             }
@@ -161,7 +165,7 @@ namespace AfterHours
                 for (int lane = 0; lane < 3; lane++) if (OccupiesLane(car, lane)) occupied |= 1 << lane;
             }
             if (occupied == 7) return false;
-            float closing = Mathf.Abs(game.Driver.Speed) + 38;
+            float closing = Mathf.Abs(game.Driver.Speed) + TrafficRules.MaximumTrafficSpeed;
             if (Mathf.Abs(z - game.Driver.transform.position.z) > 25 + closing * 2) return true;
             for (int lane = Mathf.Max(0, game.Driver.Lane - 1); lane <= Mathf.Min(2, game.Driver.Lane + 1); lane++)
                 if ((occupied & (1 << lane)) == 0) return true;
@@ -183,14 +187,15 @@ namespace AfterHours
                 if (OccupiesLane(other, lane) && !TrafficRules.SafeLaneGap(other.transform.position.z - position.z, speed, other.Speed, 1.5f * WeatherHeadway)) return false;
             return HasEscapeLane(position.z, lane, null);
         }
-        StationaryCar SpawnTraffic(Vector3 position, float speed, bool stopped, bool initial)
+        StationaryCar SpawnTraffic(Vector3 position, float speed, bool stopped, bool initial, bool fastDriver = false)
         {
-            if (!CanSpawnTraffic(position, stopped ? 0 : speed, initial)) return null;
+            float actualSpeed = stopped ? 0 : TrafficRules.PaceSpeed(speed, fastDriver, TrafficRules.FastPaceAt(position.z)) * TrafficWeatherFactor;
+            if (!CanSpawnTraffic(position, actualSpeed, initial)) return null;
             var car = Spawn(stopped ? 0 : 1, position) as StationaryCar;
-            if (car is MovingCar moving) moving.SetCruisingSpeed(speed);
+            if (car is MovingCar moving) moving.SetCruisingSpeed(speed, fastDriver);
             return car;
         }
-        public StationaryCar TrySpawnTraffic(Vector3 position, float speed, bool stopped = false) => SpawnTraffic(position, speed, stopped, false);
+        public StationaryCar TrySpawnTraffic(Vector3 position, float speed, bool stopped = false, bool fastDriver = false) => SpawnTraffic(position, speed, stopped, false, fastDriver);
 
         public bool CanMerge(Interactable item, float targetX)
         {
@@ -262,16 +267,20 @@ namespace AfterHours
             {
                 int lane = Random.Range(0, 3);
                 bool behind = Random.value < .25f;
+                bool fastDriver = Random.value < .22f;
                 float speed = Random.Range(16f, 28f) + game.Run.Difficulty * 5;
                 if (behind && !game.Driver.RearView) speed = Mathf.Max(speed, Mathf.Min(38, game.Driver.Speed + Random.Range(3f, 7f)));
-                float rearGap = Mathf.Max(Random.Range(115, 175), 20 + Mathf.Max(0, speed - game.Driver.Speed) * 4.2f);
+                // Size the warning corridor for both ends of the upcoming pace change and the actual wet-road speed.
+                float upperSpeed = TrafficRules.PaceSpeed(speed, fastDriver, 1) * TrafficWeatherFactor;
+                float lowerSpeed = TrafficRules.PaceSpeed(speed, fastDriver, 0) * TrafficWeatherFactor;
+                float rearGap = Mathf.Max(Random.Range(115, 175), 20 + Mathf.Max(0, upperSpeed - game.Driver.Speed) * 4.2f);
                 float hiddenDistance = Mathf.Min(trafficCamera.farClipPlane + 32, 40 + 3.1f / Mathf.Max(.0001f, RenderSettings.fogDensity * Mathf.Exp(-.05f)));
                 float direction = game.Driver.RearView ? -1 : 1;
-                float closing = direction > 0 ? game.Driver.Speed - speed : speed - game.Driver.Speed;
+                float closing = direction > 0 ? game.Driver.Speed - lowerSpeed : upperSpeed - game.Driver.Speed;
                 float warningDistance = Mathf.Max(75, 20 + Mathf.Max(0, closing) * 4.2f);
                 float z = behind ? player.z - rearGap : player.z + direction * (Mathf.Max(hiddenDistance, warningDistance) + Random.Range(5, 30));
                 z = Mathf.Clamp(z, minSection * 60 + 10, (maxSection + 1) * 60 - 10);
-                if (SpawnTraffic(new Vector3((lane - 1) * CarDriver.LaneWidth, .08f, z), speed, false, false) != null) return;
+                if (SpawnTraffic(new Vector3((lane - 1) * CarDriver.LaneWidth, .08f, z), speed, false, false, fastDriver) != null) return;
             }
             // An unsafe attempt is skipped; never force a car into the camera or an occupied gap.
         }

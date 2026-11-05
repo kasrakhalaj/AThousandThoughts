@@ -37,6 +37,8 @@ namespace AfterHours
             "Fuel cans add 30% fuel. Watch the gauge, even on quiet roads.",
             "N / B change songs. M pauses music. Your artist folders are playlists.",
             "Fog rolls in gradually. Watch for silhouettes and tail lights.",
+            "Storm pockets bring heavier rain and thicker fog. Ease off the gas when visibility drops.",
+            "Some drivers pick up speed on fast stretches. Check behind before changing lanes.",
             "Quiet stretches are a chance to breathe. Keep an eye on your fuel."
         };
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -66,7 +68,7 @@ namespace AfterHours
         IEnumerator Ignition()
         {
             State = GameState.Starting; Time.timeScale = 1; Input.EnableDriving(false);
-            Run.Reset(); Driver.Reset(); World.ResetWorld(); Driver.SetIgnition(true); audioRig.Ignition();
+            Run.Reset(); Driver.Reset(); Weather.ResetWeather(); World.ResetWorld(); Driver.SetIgnition(true); audioRig.Ignition();
             SetTip(0); yield return new WaitForSeconds(IgnitionDuration);
             State = GameState.Playing; Input.EnableDriving(true);
         }
@@ -79,7 +81,7 @@ namespace AfterHours
         public void MainMenu()
         {
             StopAllCoroutines(); SaveBest(); Time.timeScale = 1; State = GameState.Menu;
-            Input.EnableDriving(false); Run.Reset(); Driver.Reset(); Driver.SetIgnition(false); World.ResetWorld();
+            Input.EnableDriving(false); Run.Reset(); Driver.Reset(); Driver.SetIgnition(false); Weather.ResetWeather(); World.ResetWorld();
         }
         public void Quit() { SaveBest(); Application.Quit(); }
         public void HitCar(Vector3 position)

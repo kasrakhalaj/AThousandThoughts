@@ -37,7 +37,10 @@ public static class LiveDensityProbe
         pedalTap=(AudioSource)typeof(CarAudio).GetField("pedalEffects", System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic).GetValue(g.Audio);
         gearTap.GetOutputData(audioTap,0); pedalTap.GetOutputData(audioTap,0); maxGearRms=maxPedalRms=0;
         samples.Clear();captured=false;start=-1;sampleAt=0;steerAt=0;lastFrame=-1;
-        g.StartRun();Time.timeScale=2;
+        g.StartRun();
+        float initialZ=SessionState.GetFloat("AfterHours.Probe.StartZ",0);
+        if(initialZ!=0){g.Driver.transform.position=new Vector3(0,.08f,initialZ);g.World.ResetWorld();}
+        Time.timeScale=2;
         EditorApplication.update+=Update;
         return "Started 65-second simulated-time drive using held W and obstacle-avoidance lane keypresses.";
     }
@@ -77,7 +80,8 @@ public static class LiveDensityProbe
         }
         else if (gearKey != Key.None) InputSystem.QueueStateEvent(keyboard, steering==Key.None ? new KeyboardState(Key.W,gearKey) : new KeyboardState(Key.W,gearKey,steering));
         else InputSystem.QueueStateEvent(keyboard,steering==Key.None?new KeyboardState(Key.W):new KeyboardState(Key.W,steering));
-        if(!captured && elapsed>=12)
+        bool captureReady=SessionState.GetBool("AfterHours.Probe.CaptureStorm",false) ? g.Weather.StormAmount>.65f : elapsed>=12;
+        if(!captured && captureReady)
         {
             captured=true;
             ScreenCapture.CaptureScreenshot(Path.GetFullPath(SessionState.GetString("AfterHours.Density.CapturePath", "Docs/Images/density-driving.png")));
@@ -85,15 +89,17 @@ public static class LiveDensityProbe
         if(elapsed>=sampleAt)
         {
             sampleAt=elapsed+1;
-            int ahead=0,near=0,merging=0,visible=0;
+            int ahead=0,near=0,merging=0,visible=0,fastDrivers=0;float maxAiSpeed=0,maxDesiredSpeed=0;
             foreach(var c in g.World.Traffic)
             {
                 float gap=c.transform.position.z-g.Driver.transform.position.z;
+                maxAiSpeed=Mathf.Max(maxAiSpeed,c.Speed);
+                if(c is MovingCar moving){if(moving.IsFastDriver)fastDrivers++;maxDesiredSpeed=Mathf.Max(maxDesiredSpeed,moving.DesiredSpeed);}
                 if(gap>8 && gap<180){ahead++; if(g.World.TrafficVisible(c.transform.position))visible++;}
                 if(Mathf.Abs(gap)<180)near++;
                 if(Mathf.Abs(gap)<180 && c is MovingCar m && m.IsMerging)merging++;
             }
-            samples.Add(new {seconds=elapsed,z=g.Driver.transform.position.z,speed=g.Driver.Speed,acceleration=g.Driver.Acceleration,gear=g.Driver.Gear,lookingBack=g.Driver.LookingBack,reversing=g.Driver.Reversing,cameraZ=Camera.main.transform.position.z,cameraForwardZ=Camera.main.transform.forward.z,rpm=g.Driver.EngineRpm,shifting=g.Driver.IsShifting,shiftCues=g.Audio.ShiftCueCount,pedalCues=g.Audio.ThrottleCueCount,flow=g.World.Flow.ToString(),ahead,near,visible,merging,total=g.World.ActiveTrafficCount,lives=g.Run.Lives});
+            samples.Add(new {seconds=elapsed,z=g.Driver.transform.position.z,speed=g.Driver.Speed,acceleration=g.Driver.Acceleration,gear=g.Driver.Gear,lookingBack=g.Driver.LookingBack,reversing=g.Driver.Reversing,cameraZ=Camera.main.transform.position.z,cameraForwardZ=Camera.main.transform.forward.z,rpm=g.Driver.EngineRpm,shifting=g.Driver.IsShifting,shiftCues=g.Audio.ShiftCueCount,pedalCues=g.Audio.ThrottleCueCount,flow=g.World.Flow.ToString(),rain=g.Weather.RainAmount,storm=g.Weather.StormAmount,fogDensity=RenderSettings.fogDensity,rainEmission=g.Weather.RainEmissionRate,rainVolume=g.Audio.RainVolume,fastDrivers,maxAiSpeed,maxDesiredSpeed,ahead,near,visible,merging,total=g.World.ActiveTrafficCount,lives=g.Run.Lives});
         }
     }
     static float SampleAudio(AudioSource source)
@@ -118,7 +124,7 @@ public static class LiveDensityProbe
         EditorApplication.update-=Update;
         var g=GameManager.Instance;
         string output=SessionState.GetString("AfterHours.Density.Output","Temp/DensityBefore.json");
-        File.WriteAllText(output,Newtonsoft.Json.JsonConvert.SerializeObject(new {reason,maxGearRms,maxPedalRms,samples},Newtonsoft.Json.Formatting.Indented));
+        File.WriteAllText(output,Newtonsoft.Json.JsonConvert.SerializeObject(new {reason,scenarioStartZ=SessionState.GetFloat("AfterHours.Probe.StartZ",0),maxGearRms,maxPedalRms,samples},Newtonsoft.Json.Formatting.Indented));
         if(g!=null){g.MainMenu();g.Input.StartCar.actionMap.asset.devices=null;}
         if(keyboard!=null)InputSystem.RemoveDevice(keyboard);
         InputSystem.settings.backgroundBehavior=background;InputSystem.settings.editorInputBehaviorInPlayMode=routing;

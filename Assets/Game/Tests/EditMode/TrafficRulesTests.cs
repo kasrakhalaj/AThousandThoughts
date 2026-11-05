@@ -3,6 +3,37 @@ using NUnit.Framework;
 
 public sealed class TrafficRulesTests
 {
+    [Test] public void StormPocketsStayLocalAndRepeatWhenRevisitingEitherDirection()
+    {
+        Assert.That(WeatherDirector.StormTargetAt(0), Is.Zero);
+        Assert.That(WeatherDirector.StormTargetAt(700), Is.Zero);
+        Assert.That(WeatherDirector.StormTargetAt(1100), Is.EqualTo(1));
+        Assert.That(WeatherDirector.StormTargetAt(1400), Is.Zero);
+        Assert.That(WeatherDirector.StormTargetAt(1600), Is.Zero);
+        for (int cycle = -4; cycle <= 4; cycle++)
+            Assert.That(WeatherDirector.StormTargetAt(1100 + cycle * 2400), Is.EqualTo(1));
+        for (int z = -5000; z <= 5000; z += 11)
+            Assert.That(WeatherDirector.StormTargetAt(z), Is.InRange(0, 1));
+    }
+    [Test] public void FastTrafficIsMixedBoundedAndStillLimitedByWeather()
+    {
+        Assert.That(TrafficRules.FastPaceAt(400), Is.EqualTo(1));
+        Assert.That(TrafficRules.FastPaceAt(900), Is.Zero);
+        Assert.That(TrafficRules.FastPaceAt(400 - 1440), Is.EqualTo(1));
+        float normal = TrafficRules.PaceSpeed(25, false, 1);
+        float fast = TrafficRules.PaceSpeed(25, true, 1);
+        Assert.That(fast, Is.GreaterThan(normal + 15));
+        Assert.That(TrafficRules.PaceSpeed(25, true, 0), Is.LessThan(fast));
+        Assert.That(TrafficRules.PaceSpeed(38, true, 1), Is.EqualTo(TrafficRules.MaximumTrafficSpeed));
+        Assert.That(fast * TrafficRules.WeatherSpeedFactor(1, 1), Is.InRange(20, fast - 10));
+    }
+    [Test] public void FastRearAndReverseEncountersNeedTheirActualClosingDistance()
+    {
+        Assert.That(TrafficRules.SafePlayerSpawn(-150, 56, 0), Is.False);
+        Assert.That(TrafficRules.SafePlayerSpawn(-250, 56, 0), Is.True);
+        Assert.That(TrafficRules.SafePlayerSpawn(-220, 56, -10), Is.False);
+        Assert.That(TrafficRules.SafePlayerSpawn(-300, 56, -10), Is.True);
+    }
     [Test] public void FastClosingTrafficNeedsMoreSpaceAheadAndBehind()
     {
         Assert.That(TrafficRules.SafeLaneGap(45, 20, 20, 1.4f), Is.True);

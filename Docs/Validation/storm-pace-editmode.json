@@ -1,0 +1,259 @@
+{
+  "success": true,
+  "command": "command",
+  "data": {
+    "command": "test status",
+    "parameters": {},
+    "result": {
+      "status": "completed",
+      "duration": 0.41,
+      "summary": {
+        "total": 33,
+        "passed": 33,
+        "failed": 0,
+        "skipped": 0,
+        "inconclusive": 0
+      },
+      "results": [
+        {
+          "FullName": "ManualTransmissionTests.BoundsReverseAndResetAreSafe",
+          "Status": "Passed",
+          "Duration": 0.0027948,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "ManualTransmissionTests.CorrectManualShiftingCanReach300AndChangesRpm",
+          "Status": "Passed",
+          "Duration": 0.0011077,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "ManualTransmissionTests.DownshiftCannotOverRevOrInstantlyRemoveSpeed",
+          "Status": "Passed",
+          "Duration": 0.0004424,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "ManualTransmissionTests.LowGearHasALimiterAndHighGearLugsAtLowSpeed",
+          "Status": "Passed",
+          "Duration": 0.0003704,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "ManualTransmissionTests.ShiftsRequireARequestAndAClutchInterval",
+          "Status": "Passed",
+          "Duration": 0.0002978,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PlayerLampGeometryTests.PlayerLampsFollowAuthoredBodyVertices(\"Beatall\",0)",
+          "Status": "Passed",
+          "Duration": 0.047103,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PlayerLampGeometryTests.PlayerLampsFollowAuthoredBodyVertices(\"docLorean\",2)",
+          "Status": "Passed",
+          "Duration": 0.0088937,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PlayerLampGeometryTests.PlayerLampsFollowAuthoredBodyVertices(\"Landyroamer\",2)",
+          "Status": "Passed",
+          "Duration": 0.0105326,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PlayerLampGeometryTests.PlayerLampsFollowAuthoredBodyVertices(\"Toyoyo Highlight\",2)",
+          "Status": "Passed",
+          "Duration": 0.0044365,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "PlayerLampGeometryTests.PlayerLampsFollowAuthoredBodyVertices(\"Tristar Racer\",0)",
+          "Status": "Passed",
+          "Duration": 0.0022749,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "RunModelTests.DifficultyRisesAndHasABoundedMaximum",
+          "Status": "Passed",
+          "Duration": 0.0003794,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "RunModelTests.FuelRunsOutAndRefillIsCapped",
+          "Status": "Passed",
+          "Duration": 0.0002002,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "RunModelTests.RestartResetsAllRunState",
+          "Status": "Passed",
+          "Duration": 0.000212,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "RunModelTests.ReversingAndRevisitingRoadNeverFarmDistanceScore",
+          "Status": "Passed",
+          "Duration": 0.000135,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "RunModelTests.ThreeCollisionsEndLivesWithoutGoingNegative",
+          "Status": "Passed",
+          "Duration": 0.0001209,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "TrafficRulesTests.EveryRouteCycleContainsQuietAndBusySectionsInBothDirections",
+          "Status": "Passed",
+          "Duration": 0.0002092,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "TrafficRulesTests.FastClosingTrafficNeedsMoreSpaceAheadAndBehind",
+          "Status": "Passed",
+          "Duration": 0.0001759,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "TrafficRulesTests.FastRearAndReverseEncountersNeedTheirActualClosingDistance",
+          "Status": "Passed",
+          "Duration": 0.0001346,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "TrafficRulesTests.FastTrafficIsMixedBoundedAndStillLimitedByWeather",
+          "Status": "Passed",
+          "Duration": 0.000296,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "TrafficRulesTests.FollowingRespondsToStoppingDistanceAndWeatherHeadway",
+          "Status": "Passed",
+          "Duration": 0.0002011,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "TrafficRulesTests.OnlyFullyOpaqueFogCanHideANewCar",
+          "Status": "Passed",
+          "Duration": 0.0001357,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "TrafficRulesTests.RainAndFogReduceSpeedWithoutStoppingAllTraffic",
+          "Status": "Passed",
+          "Duration": 0.0001621,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "TrafficRulesTests.ReverseDrivingUsesCombinedClosingSpeedForSpawnSafety",
+          "Status": "Passed",
+          "Duration": 0.0001891,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "TrafficRulesTests.StormPocketsStayLocalAndRepeatWhenRevisitingEitherDirection",
+          "Status": "Passed",
+          "Duration": 0.0014268,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "VehicleDynamicsTests.AccelerationIsConsistentAtDifferentFrameRates",
+          "Status": "Passed",
+          "Duration": 0.0008036,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "VehicleDynamicsTests.DiagonalNearMissDoesNotCombineContactsAtDifferentTimes",
+          "Status": "Passed",
+          "Duration": 0.0002554,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "VehicleDynamicsTests.FullGasBuildsSpeedGraduallyAndTheLastHundredTakesLonger",
+          "Status": "Passed",
+          "Duration": 0.0005684,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "VehicleDynamicsTests.GasCoastingAndBrakingProduceDifferentAcceleration",
+          "Status": "Passed",
+          "Duration": 0.000178,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "VehicleDynamicsTests.HighSpeedSweepOnlyHitsWhenTheVehicleActuallyCrosses(35,10,False)",
+          "Status": "Passed",
+          "Duration": 0.0004186,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "VehicleDynamicsTests.HighSpeedSweepOnlyHitsWhenTheVehicleActuallyCrosses(15,-15,True)",
+          "Status": "Passed",
+          "Duration": 4.53e-05,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "VehicleDynamicsTests.HighSpeedSweepOnlyHitsWhenTheVehicleActuallyCrosses(-10,-35,False)",
+          "Status": "Passed",
+          "Duration": 3.33e-05,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "VehicleDynamicsTests.ReverseBrakesBeforeChangingDirectionAndKeepsItsOwnLimit",
+          "Status": "Passed",
+          "Duration": 0.0001994,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "VehicleDynamicsTests.SixGearsMatchTheNewSpeedRange",
+          "Status": "Passed",
+          "Duration": 0.0002754,
+          "Message": null,
+          "StackTrace": null
+        }
+      ]
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "E:\\MyGames\\HW2\\AfterHours"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}
