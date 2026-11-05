@@ -145,7 +145,8 @@ public sealed class DrivingFlowTests
             foreach (var lens in authored.GetComponentsInChildren<Renderer>())
                 Assert.That(lens.sharedMaterial.IsKeywordEnabled("_EMISSION"), Is.True, "Lamp emission shader variant must remain enabled.");
         }
-        g.StartRun(); yield return WaitForDriving();
+        // The docLorean has authored reverse lenses; the classic Beatall has no separate reverse bulbs.
+        g.SelectCar(1); g.StartRun(); yield return WaitForDriving();
         var lamps = g.Driver.GetComponentInChildren<VehicleLights>();
         Assert.That(lamps.IsOn, Is.True);
         g.HitCar(g.Driver.transform.position); yield return null;

@@ -1,3 +1,5 @@
+Latest authored player-lamp correction: [PlayerLampValidation.md](PlayerLampValidation.md).
+
 Latest hold-to-look-back validation: [LookBackValidation.md](LookBackValidation.md).
 
 Latest manual shifting and recorded gear/gas audio validation: [ManualGearValidation.md](ManualGearValidation.md).

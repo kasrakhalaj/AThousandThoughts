@@ -138,10 +138,6 @@ public static class AfterHoursBuilder
             renderer.sharedMaterials = renderer.sharedMaterials.Select(ConvertMaterial).ToArray();
             renderer.shadowCastingMode = car ? ShadowCastingMode.On : ShadowCastingMode.Off;
         }
-        if (car)
-        {
-            for (int i = 0; i < 2; i++) Cube("Tail lamp", root.transform, new Vector3(i == 0 ? -.73f : .73f, .6f, -1.95f), new Vector3(.17f, .08f, .04f), red);
-        }
         return SavePrefab(root, name);
     }
     static Material ConvertMaterial(Material original)

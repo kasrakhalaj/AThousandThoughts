@@ -18,9 +18,7 @@ public static class NightVisualUpgrade
         var white = Material("Headlight lens", new Color(.85f, .84f, .7f));
         var red = Material("Rear light lens", new Color(.55f, .018f, .008f));
         var hill = Material("Distant hills", new Color(.075f, .14f, .11f));
-        Vector2[] front = { new Vector2(.58f,.72f), new Vector2(.57f,.67f), new Vector2(.62f,.87f), new Vector2(.55f,.96f), new Vector2(.68f,.48f) };
-        Vector2[] rear = { new Vector2(.62f,.52f), new Vector2(.61f,.76f), new Vector2(.7f,.55f), new Vector2(.6f,.74f), new Vector2(.7f,.5f) };
-        for (int i = 0; i < catalog.cars.Length; i++) UpgradeCar(catalog.cars[i], front[i], rear[i], white, red, i == 0 || i == 2 || i == 3);
+        foreach (var car in catalog.cars) PlayerLampUpgrade.UpgradeCar(car, white, red);
         if (catalog.movingTrafficVariants == null || catalog.movingTrafficVariants.Length == 0)
         { UpdateTrafficVisual(catalog.stationaryCar, catalog.cars[2]); UpdateTrafficVisual(catalog.movingCar, catalog.cars[0]); }
         if (catalog.shrubs == null || catalog.shrubs.Length == 0) catalog.shrubs = AfterHoursBuilder.BuildRoadsidePlants();
@@ -44,66 +42,6 @@ public static class NightVisualUpgrade
         MaterialEditor.FixupEmissiveFlag(mat);
         if (lamp) mat.EnableKeyword("_EMISSION"); else mat.DisableKeyword("_EMISSION");
         mat.enableInstancing = true; EditorUtility.SetDirty(mat); return mat;
-    }
-    static void UpgradeCar(GameObject prefab, Vector2 front, Vector2 rear, Material white, Material red, bool round)
-    {
-        string path = AssetDatabase.GetAssetPath(prefab);
-        var car = PrefabUtility.LoadPrefabContents(path);
-        // Replace only the generated lamps, retaining the authored model, scale and body materials.
-        for (int i = car.transform.childCount - 1; i >= 1; i--)
-            if (car.transform.GetChild(i).name == "Tail lamp" || car.transform.GetChild(i).name == "Vehicle lighting")
-                UnityEngine.Object.DestroyImmediate(car.transform.GetChild(i).gameObject);
-        var root = new GameObject("Vehicle lighting"); root.transform.SetParent(car.transform, false);
-        var controller = root.AddComponent<VehicleLights>();
-        var fronts = new Renderer[2]; var rears = new Renderer[2]; var reverses = new Renderer[2]; var beams = new Light[2];
-        for (int i = 0; i < 2; i++)
-        {
-            float side = i == 0 ? -1 : 1;
-            float fx = side * front.x, rx = side * rear.x;
-            float fz = SurfaceZ(car.transform.GetChild(0), fx, front.y, true);
-            float rz = SurfaceZ(car.transform.GetChild(0), rx, rear.y, false);
-            var f = Lens("Headlight lens", root.transform, new Vector3(fx, front.y, fz + .04f), white, round ? new Vector3(.22f,.22f,.09f) : new Vector3(.3f,.13f,.08f), round);
-            fronts[i] = f.GetComponent<Renderer>();
-            var light = new GameObject("Headlight beam", typeof(Light)); light.transform.SetParent(root.transform, false);
-            light.transform.localPosition = new Vector3(fx, front.y, fz + .12f); light.transform.localRotation = Quaternion.Euler(7, side * 4, 0);
-            var beam = light.GetComponent<Light>(); beam.type = LightType.Spot; beam.color = new Color(1,.91f,.7f);
-            beam.range = 72; beam.intensity = 24; beam.spotAngle = 54; beam.innerSpotAngle = 28; beam.shadows = LightShadows.None; beams[i] = beam;
-            rears[i] = Lens("Red tail and brake light", root.transform, new Vector3(rx,rear.y,rz-.04f), red, new Vector3(.23f,.13f,.08f), false).GetComponent<Renderer>();
-            float reverseX = rx - side * .17f;
-            float reverseZ = SurfaceZ(car.transform.GetChild(0), reverseX, rear.y, false);
-            reverses[i] = Lens("Reverse light", root.transform, new Vector3(reverseX,rear.y,reverseZ-.04f), white, new Vector3(.09f,.1f,.07f), false).GetComponent<Renderer>();
-        }
-        var back = new GameObject("Rear red glow", typeof(Light)); back.transform.SetParent(root.transform, false); back.transform.localPosition = new Vector3(0,.5f,-2.3f);
-        var backlight = back.GetComponent<Light>(); backlight.type=LightType.Point; backlight.color=new Color(1,.025f,.01f); backlight.range=3.5f; backlight.intensity=.22f;
-        controller.Configure(fronts,rears,reverses,beams,backlight);
-        PrefabUtility.SaveAsPrefabAsset(car,path); PrefabUtility.UnloadPrefabContents(car);
-    }
-    static GameObject Lens(string name, Transform parent, Vector3 position, Material mat, Vector3 scale, bool round)
-    {
-        var go = GameObject.CreatePrimitive(round ? PrimitiveType.Sphere : PrimitiveType.Cube); go.name = name; go.transform.SetParent(parent,false);
-        go.transform.localPosition=position; go.transform.localScale=scale; UnityEngine.Object.DestroyImmediate(go.GetComponent<Collider>());
-        go.GetComponent<Renderer>().sharedMaterial=mat; go.GetComponent<Renderer>().shadowCastingMode=ShadowCastingMode.Off; return go;
-    }
-    // Intersect the model triangles in XY, so each lens sits on its own car's body surface.
-    static float SurfaceZ(Transform model, float x, float y, bool front)
-    {
-        float result = front ? float.NegativeInfinity : float.PositiveInfinity;
-        foreach(var filter in model.GetComponentsInChildren<MeshFilter>())
-        {
-            var mesh=filter.sharedMesh; var vertices=mesh.vertices; var triangles=mesh.triangles;
-            for(int i=0;i<triangles.Length;i+=3)
-            {
-                Vector3 a=filter.transform.TransformPoint(vertices[triangles[i]]), b=filter.transform.TransformPoint(vertices[triangles[i+1]]), c=filter.transform.TransformPoint(vertices[triangles[i+2]]);
-                float det=(b.y-c.y)*(a.x-c.x)+(c.x-b.x)*(a.y-c.y);
-                if(Mathf.Abs(det)<.000001f)continue;
-                float u=((b.y-c.y)*(x-c.x)+(c.x-b.x)*(y-c.y))/det;
-                float v=((c.y-a.y)*(x-c.x)+(a.x-c.x)*(y-c.y))/det;
-                if(u<0 || v<0 || u+v>1)continue;
-                float z=u*a.z+v*b.z+(1-u-v)*c.z;
-                result=front?Mathf.Max(result,z):Mathf.Min(result,z);
-            }
-        }
-        return float.IsInfinity(result) ? (front ? 2.1f : -2.1f) : result;
     }
     static void UpdateTrafficVisual(GameObject prefab, GameObject model)
     {

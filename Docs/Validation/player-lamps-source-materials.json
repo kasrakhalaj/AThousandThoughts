@@ -1,0 +1,23 @@
+{
+  "success": true,
+  "command": "command",
+  "data": {
+    "command": "script eval_file",
+    "parameters": {
+      "file": "Temp/InspectSourceLampMaterials.cs"
+    },
+    "result": {
+      "output": null,
+      "diagnostics": [],
+      "success": true,
+      "result": "Beatall / Beatall: baseGradient.007 | gradientEmmisive.007 | blackGlass.007 | \r\nBeatall / lfWheel: baseGradient.007 | \r\nBeatall / lrWheel: baseGradient.007 | \r\nBeatall / lrWheel.001: baseGradient.007 | \r\nBeatall / rfWheel: baseGradient.007 | \r\ndocLorean / docLorean: baseGradient.005 | blackGlass.005 | gradientEmmisive.005 | \r\ndocLorean / lFAxel: flatBlack.002 | \r\ndocLorean / lFWheel: baseGradient.005 | gradientEmmisive.005 | \r\ndocLorean / lRAxel: flatBlack.002 | \r\ndocLorean / lRWheel: baseGradient.005 | gradientEmmisive.005 | \r\ndocLorean / rfAxel: flatBlack.002 | \r\ndocLorean / rFWheel: baseGradient.005 | gradientEmmisive.005 | \r\ndocLorean / rRAxel: flatBlack.002 | \r\ndocLorean / rRWheel: baseGradient.005 | gradientEmmisive.005 | \r\nLandyroamer / Landyroamer: baseGradient.014 | blackGlass.014 | gradientEmmisive.014 | \r\nLandyroamer / bonnetPlates: baseGradient.014 | \r\nLandyroamer / bullBar: baseGradient.014 | gradientEmmisive.014 | \r\nLandyroamer / lfWheel.003: baseGradient.014 | \r\nLandyroamer / rfWheel.002: baseGradient.014 | \r\nLandyroamer / rfWheel.003: baseGradient.014 | \r\nLandyroamer / roofRack: baseGradient.014 | gradientEmmisive.014 | \r\nLandyroamer / rrWheel.001: baseGradient.014 | \r\nLandyroamer / snorkel: baseGradient.014 | \r\nToyoyo Highlight / Toyoyo Highlight: baseGradient.006 | blackGlass.006 | gradientEmmisive.006 | \r\nToyoyo Highlight / ariel: baseGradient.006 | \r\nToyoyo Highlight / bullbars: baseGradient.006 | \r\nToyoyo Highlight / decals: baseGradient.006 | \r\nToyoyo Highlight / lfWheel.002: baseGradient.006 | \r\nToyoyo Highlight / lrWheel.003: baseGradient.006 | \r\nToyoyo Highlight / rfWheel.001: baseGradient.006 | \r\nToyoyo Highlight / rollbar: baseGradient.006 | \r\nToyoyo Highlight / rrWheel.002: baseGradient.006 | \r\nToyoyo Highlight / skid plate: baseGradient.006 | \r\nToyoyo Highlight / spot covers: baseGradient.006 | \r\nTristar Racer / Tristar Racer: baseGradient.008 | blackGlass.008 | gradientEmmisive.008 | \r\nTristar Racer / lfWheel.001: ImpGradient.003 | \r\nTristar Racer / lrWheel.002: ImpGradient.003 | \r\nTristar Racer / rFWheel.001: ImpGradient.003 | \r\nTristar Racer / rrWheel: ImpGradient.003 | \r\n"
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "E:\\MyGames\\HW2\\AfterHours"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

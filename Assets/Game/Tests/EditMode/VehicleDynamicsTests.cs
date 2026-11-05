@@ -61,3 +61,39 @@ public sealed class VehicleDynamicsTests
         Assert.That(VehicleDynamics.SweptContact(new Vector2(4, 30), new Vector2(0, 0), 1.65f, 4.1f), Is.True);
     }
 }
+
+public sealed class PlayerLampGeometryTests
+{
+    [TestCase("Beatall", 0)]
+    [TestCase("docLorean", 2)]
+    [TestCase("Landyroamer", 2)]
+    [TestCase("Toyoyo Highlight", 2)]
+    [TestCase("Tristar Racer", 0)]
+    public void PlayerLampsFollowAuthoredBodyVertices(string name, int reverseCount)
+    {
+        var car = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Generated/Car-" + name + ".prefab");
+        var lighting = car.GetComponentInChildren<VehicleLights>();
+        Assert.That(lighting.HeadlightCount, Is.EqualTo(2)); Assert.That(lighting.TailLightCount, Is.EqualTo(2));
+        var source = car.transform.GetChild(0).GetComponent<MeshFilter>();
+        var points = source.sharedMesh.vertices;
+        var toRoot = car.transform.worldToLocalMatrix * source.transform.localToWorldMatrix;
+        for (int i = 0; i < points.Length; i++) points[i] = toRoot.MultiplyPoint3x4(points[i]);
+        int reverseLenses = 0;
+        foreach (var filter in lighting.GetComponentsInChildren<MeshFilter>())
+        {
+            var mesh = filter.sharedMesh;
+            Assert.That(UnityEditor.AssetDatabase.GetAssetPath(mesh), Does.StartWith("Assets/Game/Generated/PlayerLamps/"), "Built-in cube/sphere lamps are forbidden.");
+            Assert.That(mesh.vertexCount, Is.GreaterThan(0));
+            if (filter.name == "Reverse light") reverseLenses++;
+            foreach (var vertex in mesh.vertices)
+            {
+                float nearest = float.PositiveInfinity;
+                foreach (var point in points) nearest = Mathf.Min(nearest, (point - vertex).sqrMagnitude);
+                Assert.That(nearest, Is.LessThan(.0022f * .0022f), name + "/" + filter.name + " must match an original FBX vertex within the 2mm surface offset.");
+            }
+        }
+        Assert.That(reverseLenses, Is.EqualTo(reverseCount), "Do not invent lenses on cars with no authored reverse bulb.");
+        foreach (var beam in lighting.GetComponentsInChildren<Light>())
+            if (beam.name == "Headlight beam") Assert.That(beam.transform.localPosition.z, Is.GreaterThan(1.4f));
+    }
+}
