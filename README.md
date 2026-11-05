@@ -1,6 +1,6 @@
 # After Hours
 
-A low-poly endless night drive for Game Design HW2. Select one of five cars, start the engine, dodge traffic, collect coins and fuel, and listen to a personal music library through changing rain and fog.
+A low-poly endless night drive for Game Design HW2. Tristar Racer is selected by default. Choose from five cars, start the engine, dodge traffic, collect coins and fuel, and listen to a personal music library through changing rain and fog.
 
 ## Open and play
 
@@ -30,7 +30,7 @@ The engine starts while the car remains stopped. Hold W to accelerate, release i
 
 ## Music
 
-In the Editor the game reads **`../Music`**, the existing HW2 music folder. Each nested folder becomes a playlist; root-level tracks belong to Singles. All Music combines the library. Supported runtime files are MP3. Only the active track is loaded. Category controls, shuffle, volume, track progress and an audio-reactive spectrum are included. The library is scanned at startup; restart the game after adding or removing files.
+In the Editor the game reads **`../Music`**, the existing HW2 music folder. Singles is the opening playlist: Kavinsky - Nightcall first, then DVRST - Tell Me What Alternative, followed by the remaining singles. The DVRST track also stays in its artist playlist. Each nested folder becomes an artist playlist; root-level tracks belong to Singles. All Music combines the library. Supported runtime files are MP3. Only the active track is loaded. Category controls, shuffle, volume, track progress and an audio-reactive spectrum are included. The library is scanned at startup; restart the game after adding or removing files.
 
 For a Windows player, the `Music` folder belongs **beside the executable**. `After Hours > Build Windows player` creates `../Build/AfterHours` and copies the active MP3 library there. Original lossless files and backups in `../SourceAudio` are not game content and are not copied.
 

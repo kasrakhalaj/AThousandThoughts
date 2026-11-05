@@ -66,3 +66,7 @@ WeatherDirector adds smoothed StormAmount for localized pockets in the existing 
 ## Traffic formation-gap correction
 
 TrafficRules.RowSpacing/StaggerSpeed and a 4s forecast prevent a faster third car from joining a two-car row. RoadWorld.HasEscapeLane now projects speeds/reserved lanes for spawning and nearby merges. TrafficSpeed adds continuous longitudinal formation following: only the current trailing car yields, with stable traffic-list tie order. Projected pair convergence uses virtual lead positions rather than waiting until a wall already exists. Fixed 96-entry snapshots are refreshed once per world tick and for direct queries outside Tick. Keep the existing density, same-lane following, fast pace, weather and visibility guards. See Docs/TrafficGapValidation.md.
+
+## Default car and radio order
+
+GameManager selects TRISTAR RACER by catalog name at initialization. MusicPlayer starts in Singles, pins Kavinsky - Nightcall then DVRST Tell Me What Alternative, keeps the latter in DVRST as well, and places All Music second with each source file only once. Remaining artist categories/tracks sort alphabetically. Audio files and catalog ordering are unchanged. See Docs/DefaultSelectionValidation.md.

@@ -81,7 +81,8 @@ public sealed class DrivingFlowTests
         var g = GameManager.Instance;
         Assert.That(g.State, Is.EqualTo(GameState.Menu)); Assert.That(g.Driver.Speed, Is.Zero);
         Assert.That(g.Catalog.cars.Length, Is.EqualTo(5));
-        g.SelectCar(1); Assert.That(g.SelectedCar, Is.EqualTo(1));
+        Assert.That(g.Catalog.carNames[g.SelectedCar], Is.EqualTo("TRISTAR RACER"));
+        int selected = g.SelectedCar; g.SelectCar(1); Assert.That(g.SelectedCar, Is.EqualTo((selected + 1) % g.Catalog.cars.Length));
         Assert.That(Object.FindObjectsByType<UnityEngine.EventSystems.EventSystem>(FindObjectsSortMode.None).Length, Is.EqualTo(1));
         yield return Press(Key.Enter); Assert.That(g.State, Is.EqualTo(GameState.Starting));
         Assert.That(g.Driver.Speed, Is.Zero); yield return WaitForDriving();
@@ -120,13 +121,18 @@ public sealed class DrivingFlowTests
     [UnityTest] public IEnumerator MusicCategoriesPlaybackAndWeatherZones()
     {
         var g = GameManager.Instance;
-        Assert.That(g.Music.TrackCount, Is.GreaterThanOrEqualTo(26)); Assert.That(g.Music.Categories, Does.Contain("Pink Floyd"));
+        Assert.That(g.Music.Category, Is.EqualTo("Singles")); Assert.That(g.Music.Categories[0], Is.EqualTo("Singles"));
+        Assert.That(g.Music.Categories, Does.Contain("Pink Floyd"));
         float deadline = Time.realtimeSinceStartup + 10;
         while (!g.Music.IsPlaying && Time.realtimeSinceStartup < deadline) yield return null;
         Assert.That(g.Music.IsPlaying, Is.True, g.Music.Status);
+        Assert.That(g.Music.TrackName, Does.StartWith("Kavinsky - Nightcall"));
         string original = g.Music.TrackName; g.Music.Next(1);
         yield return new WaitForSecondsRealtime(2); Assert.That(g.Music.TrackName, Is.Not.EqualTo(original));
+        Assert.That(g.Music.TrackName, Does.Contain("DVRST").And.Contain("Tell Me What"));
         g.Music.Toggle(); Assert.That(g.Music.IsPlaying, Is.False); g.Music.Toggle(); Assert.That(g.Music.IsPlaying, Is.True);
+        g.Music.ChangeCategory(1); Assert.That(g.Music.Category, Is.EqualTo("All Music"));
+        Assert.That(g.Music.TrackCount, Is.GreaterThanOrEqualTo(26));
         g.Driver.transform.position = new Vector3(0, 0, 1100);
         for (int i = 0; i < 50; i++) g.Weather.Tick(.1f);
         Assert.That(g.Weather.RainAmount, Is.GreaterThan(.5f)); Assert.That(g.Weather.Conditions, Is.EqualTo("HEAVY RAIN / DENSE FOG"));
@@ -190,7 +196,7 @@ public sealed class DrivingFlowTests
                 Assert.That(lens.sharedMaterial.IsKeywordEnabled("_EMISSION"), Is.True, "Lamp emission shader variant must remain enabled.");
         }
         // The docLorean has authored reverse lenses; the classic Beatall has no separate reverse bulbs.
-        g.SelectCar(1); g.StartRun(); yield return WaitForDriving();
+        g.SelectCar(1 - g.SelectedCar); g.StartRun(); yield return WaitForDriving();
         var lamps = g.Driver.GetComponentInChildren<VehicleLights>();
         Assert.That(lamps.IsOn, Is.True);
         g.HitCar(g.Driver.transform.position); yield return null;

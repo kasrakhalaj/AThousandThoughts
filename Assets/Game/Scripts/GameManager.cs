@@ -50,6 +50,8 @@ namespace AfterHours
             Instance = this; Catalog = catalog; HighScore = PlayerPrefs.GetInt(HighScoreKey, 0);
             Input = gameObject.AddComponent<DriverInput>(); Input.Initialize(catalog.controls);
             Driver = new GameObject("Player car").AddComponent<CarDriver>(); Driver.Initialize(catalog);
+            SelectedCar = Mathf.Max(0, System.Array.FindIndex(catalog.carNames, name => string.Equals(name, "TRISTAR RACER", System.StringComparison.OrdinalIgnoreCase)));
+            Driver.Select(SelectedCar);
             Effects = new GameObject("Pooled effects").AddComponent<DriveEffects>(); Effects.Initialize(catalog);
             World = new GameObject("Endless road").AddComponent<RoadWorld>(); World.Initialize(this, catalog); World.ResetWorld();
             Weather = new GameObject("Weather").AddComponent<WeatherDirector>(); Weather.Initialize(this, catalog);

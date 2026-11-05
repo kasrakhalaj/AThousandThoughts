@@ -9,7 +9,7 @@ namespace AfterHours
 {
     public sealed class MusicPlayer : MonoBehaviour
     {
-        public readonly List<string> Categories = new List<string> { "All Music" };
+        public readonly List<string> Categories = new List<string> { "Singles", "All Music" };
         readonly Dictionary<string, List<string>> library = new Dictionary<string, List<string>>();
         AudioSource source;
         AudioClip loaded;
@@ -36,6 +36,7 @@ namespace AfterHours
             string folder = Path.Combine(Path.GetDirectoryName(Application.dataPath), "Music");
             if (Application.isEditor) folder = Path.GetFullPath(Path.Combine(Application.dataPath, "..", "..", "Music"));
             library["All Music"] = new List<string>();
+            library["Singles"] = new List<string>();
             try
             {
                 if (Directory.Exists(folder))
@@ -48,13 +49,24 @@ namespace AfterHours
                         artist = artist.Replace(Path.DirectorySeparatorChar, '/');
                         if (!library.ContainsKey(artist)) { Categories.Add(artist); library[artist] = new List<string>(); }
                         library[artist].Add(file); library["All Music"].Add(file);
+                        // Pin the requested opening tracks in Singles while retaining their artist playlists.
+                        if (artist != "Singles" && OpeningTrackPriority(file) < 2) library["Singles"].Add(file);
                     }
-                foreach (var tracks in library.Values) tracks.Sort(StringComparer.OrdinalIgnoreCase);
-                Categories.Sort(1, Categories.Count - 1, StringComparer.OrdinalIgnoreCase);
+                foreach (var tracks in library.Values)
+                    tracks.Sort((a, b) => { int priority = OpeningTrackPriority(a).CompareTo(OpeningTrackPriority(b)); return priority != 0 ? priority : StringComparer.OrdinalIgnoreCase.Compare(a, b); });
+                Categories.Sort(2, Categories.Count - 2, StringComparer.OrdinalIgnoreCase);
+                if (library["Singles"].Count == 0) category = 1;
                 if (TrackCount > 0) Next(1); else Status = "Add MP3 files to the Music folder";
             }
             catch (IOException e) { Status = "Music folder unavailable"; Debug.LogWarning(e.Message); }
             catch (UnauthorizedAccessException e) { Status = "Music folder unavailable"; Debug.LogWarning(e.Message); }
+        }
+        static int OpeningTrackPriority(string path)
+        {
+            string name = Path.GetFileNameWithoutExtension(path);
+            if (name.StartsWith("Kavinsky - Nightcall", StringComparison.OrdinalIgnoreCase)) return 0;
+            if (name.IndexOf("DVRST", StringComparison.OrdinalIgnoreCase) >= 0 && name.IndexOf("Tell Me What", StringComparison.OrdinalIgnoreCase) >= 0) return 1;
+            return 2;
         }
         public void ChangeCategory(int step)
         {

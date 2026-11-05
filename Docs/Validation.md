@@ -1,3 +1,5 @@
+Latest startup car/music preferences: [DefaultSelectionValidation.md](DefaultSelectionValidation.md).
+
 Latest traffic formation-gap fix: [TrafficGapValidation.md](TrafficGapValidation.md).
 
 Latest storm/fast-traffic update: [StormPaceValidation.md](StormPaceValidation.md).
