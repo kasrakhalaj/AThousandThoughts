@@ -8,6 +8,16 @@ namespace AfterHours
     public static class TrafficRules
     {
         public const float MaximumTrafficSpeed = 56; // About 200 km/h, before weather/following limits.
+        public const float FormationLookahead = 4;
+        public static float RowSpacing(float playerSpeed, float rowSpeed) =>
+            Mathf.Clamp(16 + Mathf.Abs(playerSpeed - rowSpeed) * (.4f + 2 * CarDriver.LaneTime), 24, 90);
+        public static float StaggerSpeed(float desired, float rowSpeed, float gap, float spacing)
+        {
+            float lead = Mathf.Max(0, rowSpeed);
+            float target = lead + (gap - spacing) * .8f;
+            float stopping = Mathf.Sqrt(lead * lead + 14 * Mathf.Max(0, gap - spacing));
+            return Mathf.Clamp(Mathf.Min(target, stopping), 0, desired);
+        }
         public static float FastPaceAt(float z)
         {
             float local = Mathf.Repeat(z, 1440);

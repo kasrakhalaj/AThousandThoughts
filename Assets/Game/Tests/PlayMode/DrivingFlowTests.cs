@@ -271,6 +271,55 @@ public sealed class DrivingFlowTests
         }
         return cars;
     }
+    [UnityTest] public IEnumerator ThreeLaneConvergenceKeepsAStaggeredGap()
+    {
+        var g = GameManager.Instance; g.StartRun(); yield return WaitForDriving(); g.TogglePause();
+        var cars = TrafficForScenario(g);
+        cars[0].transform.position = new Vector3(-3.6f, .08f, 120); cars[0].SetCruisingSpeed(38);
+        cars[1].transform.position = new Vector3(0, .08f, 190); cars[1].SetCruisingSpeed(10);
+        cars[2].transform.position = new Vector3(3.6f, .08f, 190); cars[2].SetCruisingSpeed(10);
+        for (int i = 0; i < 40; i++)
+        {
+            foreach (var car in cars) car.Tick(.05f);
+            float rowZ = Mathf.Min(cars[1].transform.position.z, cars[2].transform.position.z);
+            Assert.That(rowZ - cars[0].transform.position.z, Is.GreaterThan(18),
+                "A faster third car must not catch the two-car row and close all three lanes.");
+        }
+        Assert.That(cars[0].Speed, Is.GreaterThan(0), "Yield by changing pace, not by removing or freezing traffic.");
+        yield return null;
+    }
+    [UnityTest] public IEnumerator ThreeLaneForecastAlsoCatchesConvergingPairs()
+    {
+        var g = GameManager.Instance; g.StartRun(); yield return WaitForDriving(); g.TogglePause();
+        var cars = TrafficForScenario(g);
+        cars[0].transform.position = new Vector3(-3.6f, .08f, 60); cars[0].SetCruisingSpeed(38, true);
+        cars[1].transform.position = new Vector3(0, .08f, 100); cars[1].SetCruisingSpeed(38);
+        cars[2].transform.position = new Vector3(3.6f, .08f, 190); cars[2].SetCruisingSpeed(10);
+        for (int i = 0; i < 70; i++)
+        {
+            foreach (var car in cars) car.Tick(.05f);
+            float low = float.PositiveInfinity, high = float.NegativeInfinity; int lanes = 0;
+            foreach (var car in cars)
+            {
+                low = Mathf.Min(low, car.transform.position.z); high = Mathf.Max(high, car.transform.position.z);
+                for (int lane = 0; lane < 3; lane++) if (car.OccupiesLane(lane)) lanes |= 1 << lane;
+            }
+            Assert.That(lanes == 7 && high - low < 18, Is.False,
+                "Cars at three different speeds must not converge into a full-width row.");
+            Assert.That(cars[2].Speed, Is.GreaterThan(9.5f), "The leading car must keep moving while the trailing car yields.");
+        }
+        yield return null;
+    }
+    [UnityTest] public IEnumerator ThreeLaneFutureAlignmentIsRejectedBeforeSpawning()
+    {
+        var g = GameManager.Instance; g.StartRun(); yield return WaitForDriving(); g.TogglePause();
+        var cars = TrafficForScenario(g);
+        cars[0].transform.position = new Vector3(-3.6f, .08f, -180); cars[0].SetCruisingSpeed(10);
+        cars[1].transform.position = new Vector3(0, .08f, -180); cars[1].SetCruisingSpeed(10);
+        Assert.That(g.World.TrySpawnTraffic(new Vector3(3.6f, .08f, -240), 38), Is.Null,
+            "An empty tile now is unsafe if its faster car will immediately complete a three-lane wall.");
+        yield return null;
+    }
     [UnityTest] public IEnumerator TrafficReservesMergesAndCancelsForPlayer()
     {
         var g = GameManager.Instance; g.StartRun(); yield return WaitForDriving(); g.TogglePause();

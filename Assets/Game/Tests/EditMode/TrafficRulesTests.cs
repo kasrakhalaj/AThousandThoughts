@@ -3,6 +3,20 @@ using NUnit.Framework;
 
 public sealed class TrafficRulesTests
 {
+    [Test] public void RowGapsAllowMoreManeuverTimeAtHighClosingSpeedAndInReverse()
+    {
+        Assert.That(TrafficRules.RowSpacing(83, 20), Is.GreaterThan(TrafficRules.RowSpacing(30, 20) + 40));
+        Assert.That(TrafficRules.RowSpacing(-10, 56), Is.GreaterThan(70));
+        Assert.That(TrafficRules.RowSpacing(20, 20), Is.EqualTo(24));
+        Assert.That(TrafficRules.RowSpacing(83, 0), Is.InRange(85, 90));
+    }
+    [Test] public void FormationPaceLeavesRoomBehindARowWithoutSlowingFreeTraffic()
+    {
+        Assert.That(TrafficRules.StaggerSpeed(38, 10, 200, 30), Is.EqualTo(38));
+        Assert.That(TrafficRules.StaggerSpeed(38, 10, 70, 30), Is.LessThan(38));
+        Assert.That(TrafficRules.StaggerSpeed(38, 10, 30, 30), Is.EqualTo(10));
+        Assert.That(TrafficRules.StaggerSpeed(38, 10, 5, 30), Is.Zero);
+    }
     [Test] public void StormPocketsStayLocalAndRepeatWhenRevisitingEitherDirection()
     {
         Assert.That(WeatherDirector.StormTargetAt(0), Is.Zero);

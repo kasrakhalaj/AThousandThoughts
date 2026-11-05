@@ -62,3 +62,7 @@ PlayerLampUpgrade replaces the primitive player lenses with persistent meshes ex
 ## Storm and fast-traffic update
 
 WeatherDirector adds smoothed StormAmount for localized pockets in the existing wet/fog zones. Maximum density .030, emission 3400/s, maximum 5000 rain particles, stronger recorded-rain gain; ordinary rain targets .65. ResetWeather is called before run/menu population so previous storms do not leak into new runs. TrafficRules.FastPaceAt/PaceSpeed vary route pace and cap desired AI speed at 56m/s. RoadWorld selects approximately 22% fast candidates, validates actual weather-adjusted initial speed and sizes gaps for upcoming pace. MovingCar.IsFastDriver resets on activation, DesiredSpeed combines route pace and current weather, and existing following/signaling/braking clamps it. See Docs/StormPaceValidation.md.
+
+## Traffic formation-gap correction
+
+TrafficRules.RowSpacing/StaggerSpeed and a 4s forecast prevent a faster third car from joining a two-car row. RoadWorld.HasEscapeLane now projects speeds/reserved lanes for spawning and nearby merges. TrafficSpeed adds continuous longitudinal formation following: only the current trailing car yields, with stable traffic-list tie order. Projected pair convergence uses virtual lead positions rather than waiting until a wall already exists. Fixed 96-entry snapshots are refreshed once per world tick and for direct queries outside Tick. Keep the existing density, same-lane following, fast pace, weather and visibility guards. See Docs/TrafficGapValidation.md.

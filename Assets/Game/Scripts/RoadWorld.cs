@@ -18,6 +18,15 @@ namespace AfterHours
         int windowCenter = int.MinValue, windowDirection, minSection, maxSection;
         float trafficTimer;
         bool populatingInitial;
+        struct TrafficSample
+        {
+            public StationaryCar Car;
+            public float Z, Speed;
+            public int Lanes, Id;
+        }
+        readonly TrafficSample[] trafficSamples = new TrafficSample[96];
+        int sampleCount;
+        bool tickingTraffic;
         public int ActiveCount => active.Count;
         public int ActiveTrafficCount => traffic.Count;
         public int PooledCount => poolKeys.Count;
@@ -139,6 +148,21 @@ namespace AfterHours
         }
 
         bool OccupiesLane(StationaryCar car, int lane) => car is MovingCar moving ? moving.OccupiesLane(lane) : Mathf.Abs(car.transform.position.x - (lane - 1) * CarDriver.LaneWidth) < 2.05f;
+        int LaneMask(StationaryCar car)
+        {
+            int mask = 0;
+            for (int lane = 0; lane < 3; lane++) if (OccupiesLane(car, lane)) mask |= 1 << lane;
+            return mask;
+        }
+        void CaptureTraffic()
+        {
+            sampleCount = traffic.Count;
+            for (int i = 0; i < sampleCount; i++)
+            {
+                var car = traffic[i];
+                trafficSamples[i] = new TrafficSample { Car = car, Z = car.transform.position.z, Speed = car.Speed, Lanes = LaneMask(car), Id = i };
+            }
+        }
         bool PlayerOccupiesLane(int lane) => game.Driver.Lane == lane || Mathf.Abs(game.Driver.transform.position.x - (lane - 1) * CarDriver.LaneWidth) < 2.05f;
         public bool TrafficVisible(Vector3 position)
         {
@@ -147,29 +171,36 @@ namespace AfterHours
             bool inView = view.z > -6 && view.z < trafficCamera.farClipPlane + 8 && view.x > -.18f && view.x < 1.18f && view.y > -.25f && view.y < 1.25f;
             return inView && !TrafficRules.HiddenByFog(Vector3.Distance(trafficCamera.transform.position, position), RenderSettings.fogDensity);
         }
-        bool HasEscapeLane(float z, int proposedLane, StationaryCar ignored)
+        bool HasEscapeLane(float z, float speed, int proposedLane, StationaryCar ignored)
         {
-            float playerGap = z - game.Driver.transform.position.z;
-            if (ignored != null)
+            int proposed = (1 << proposedLane) | (ignored == null ? 0 : LaneMask(ignored));
+            for (int step = 0; step <= 8; step++)
             {
-                float mergeClosing = playerGap > 0 ? game.Driver.Speed - ignored.Speed : ignored.Speed - game.Driver.Speed;
-                // A merge far away can briefly occupy three lanes; protect the player's actual reaction corridor.
-                if (Mathf.Abs(playerGap) > Mathf.Max(40, 15 + Mathf.Max(0, mergeClosing) * 3.2f)) return true;
+                float time = step * (TrafficRules.FormationLookahead / 8);
+                float rowZ = z + speed * time;
+                float playerGap = rowZ - (game.Driver.transform.position.z + game.Driver.Speed * time);
+                float closing = playerGap >= 0 ? game.Driver.Speed - speed : speed - game.Driver.Speed;
+                bool nearby = Mathf.Abs(playerGap) < Mathf.Max(45, 20 + Mathf.Max(0, closing) * 1.5f);
+                // Distant overtakes can finish before the player arrives; spawning must always leave a gap.
+                if (ignored != null && !nearby) continue;
+                int occupied = proposed;
+                foreach (var car in traffic)
+                {
+                    if (car == ignored) continue;
+                    float spacing = TrafficRules.RowSpacing(game.Driver.Speed, Mathf.Min(speed, car.Speed));
+                    if (Mathf.Abs(car.transform.position.z + car.Speed * time - rowZ) > spacing) continue;
+                    occupied |= LaneMask(car);
+                }
+                if (occupied == 7) return false;
+                if (nearby)
+                {
+                    bool reachable = false;
+                    for (int lane = Mathf.Max(0, game.Driver.Lane - 1); lane <= Mathf.Min(2, game.Driver.Lane + 1); lane++)
+                        if ((occupied & (1 << lane)) == 0) reachable = true;
+                    if (!reachable) return false;
+                }
             }
-            int occupied = 1 << proposedLane;
-            if (ignored != null)
-                for (int lane = 0; lane < 3; lane++) if (OccupiesLane(ignored, lane)) occupied |= 1 << lane;
-            foreach (var car in traffic)
-            {
-                if (car == ignored || Mathf.Abs(car.transform.position.z - z) > 22) continue;
-                for (int lane = 0; lane < 3; lane++) if (OccupiesLane(car, lane)) occupied |= 1 << lane;
-            }
-            if (occupied == 7) return false;
-            float closing = Mathf.Abs(game.Driver.Speed) + TrafficRules.MaximumTrafficSpeed;
-            if (Mathf.Abs(z - game.Driver.transform.position.z) > 25 + closing * 2) return true;
-            for (int lane = Mathf.Max(0, game.Driver.Lane - 1); lane <= Mathf.Min(2, game.Driver.Lane + 1); lane++)
-                if ((occupied & (1 << lane)) == 0) return true;
-            return false;
+            return true;
         }
         public bool CanSpawnTraffic(Vector3 position, float speed)
         {
@@ -185,7 +216,7 @@ namespace AfterHours
             if (!TrafficRules.SafePlayerSpawn(gap, speed, game.Driver.Speed)) return false;
             foreach (var other in traffic)
                 if (OccupiesLane(other, lane) && !TrafficRules.SafeLaneGap(other.transform.position.z - position.z, speed, other.Speed, 1.5f * WeatherHeadway)) return false;
-            return HasEscapeLane(position.z, lane, null);
+            return HasEscapeLane(position.z, speed, lane, null);
         }
         StationaryCar SpawnTraffic(Vector3 position, float speed, bool stopped, bool initial, bool fastDriver = false)
         {
@@ -213,7 +244,7 @@ namespace AfterHours
                 if (other is MovingCar reserved && reserved.IsMerging && Mathf.Abs(gap) < 24) return false;
                 if (!TrafficRules.SafeLaneGap(gap, car.Speed, other.Speed, headway, 1.8f)) return false;
             }
-            return HasEscapeLane(z, lane, car);
+            return HasEscapeLane(z, car.Speed, lane, car);
         }
         public bool TryChooseTrafficLane(MovingCar car, float desired, float currentSafe, out int lane)
         {
@@ -235,6 +266,44 @@ namespace AfterHours
         {
             float result = cruising;
             for (int lane = 0; lane < 3; lane++) if (OccupiesLane(car, lane)) result = Mathf.Min(result, TrafficSpeedInLane(car, cruising, lane));
+            return FormationSpeed(car, result);
+        }
+        float FormationSpeed(StationaryCar car, float desired)
+        {
+            // One bounded snapshot per world tick avoids native Transform calls inside the forecast loops.
+            // Direct queries outside Tick refresh it, including scene/test authoring moves.
+            if (!tickingTraffic) CaptureTraffic();
+            TrafficSample self = default;
+            bool found = false;
+            for (int i = 0; i < sampleCount; i++) if (trafficSamples[i].Car == car) { self = trafficSamples[i]; found = true; break; }
+            if (!found) return desired;
+            float result = desired;
+            for (int a = 0; a < sampleCount; a++)
+            {
+                var first = trafficSamples[a]; if (first.Car == car) continue;
+                for (int b = a; b < sampleCount; b++)
+                {
+                    var second = trafficSamples[b]; if (second.Car == car || (self.Lanes | first.Lanes | second.Lanes) != 7) continue;
+                    // The current trailing car owns the yield. Do not brake a leading car merely
+                    // because a forecast assumes the cars behind it will overtake it.
+                    if (self.Z > first.Z + .25f || self.Z > second.Z + .25f) continue;
+                    if (Mathf.Abs(self.Z - first.Z) <= .25f && self.Id < first.Id) continue;
+                    if (Mathf.Abs(self.Z - second.Z) <= .25f && self.Id < second.Id) continue;
+                    float rowSpeed = Mathf.Min(first.Speed, second.Speed);
+                    float spacing = TrafficRules.RowSpacing(game.Driver.Speed, rowSpeed);
+                    for (int step = 0; step <= 8; step++)
+                    {
+                        float time = step * (TrafficRules.FormationLookahead / 8);
+                        float firstZ = first.Z + first.Speed * time, secondZ = second.Z + second.Speed * time;
+                        if (Mathf.Abs(firstZ - secondZ) > spacing) continue;
+                        float selfZ = self.Z + self.Speed * time;
+                        // A pass that clears the row before it forms does not need a pace reduction.
+                        if (selfZ > firstZ + .25f || selfZ > secondZ + .25f) continue;
+                        float virtualGap = Mathf.Min(firstZ, secondZ) - rowSpeed * time - self.Z;
+                        result = Mathf.Min(result, TrafficRules.StaggerSpeed(result, rowSpeed, virtualGap, spacing));
+                    }
+                }
+            }
             return result;
         }
         float TrafficSpeedInLane(StationaryCar car, float cruising, int lane)
@@ -289,24 +358,29 @@ namespace AfterHours
             Vector3 player = game.Driver.transform.position;
             MaintainWindow(player.z);
             if (dt > 0) StreamTraffic(dt, player);
-            for (int i = active.Count - 1; i >= 0; i--)
+            CaptureTraffic(); tickingTraffic = true;
+            try
             {
-                var item = active[i];
-                if (!item.gameObject.activeSelf) { Release(i); continue; }
-                Vector3 previousItemPosition = item.transform.position;
-                item.Tick(dt);
-                Vector3 p = item.transform.position;
-                float halfLength = item is StationaryCar ? 4.1f : 2.5f;
-                Vector3 before = previousItemPosition - (previousPlayerPosition ?? player);
-                Vector3 after = p - player;
-                if (VehicleDynamics.SweptContact(new Vector2(before.x, before.z), new Vector2(after.x, after.z), item is StationaryCar ? 1.65f : 1.3f, halfLength)) item.Contact();
-                // Quiet sections drain traffic only beyond the view; visible cars never disappear to meet a budget.
-                bool drain = item is StationaryCar && Flow == TrafficFlow.Quiet && Mathf.Abs(p.z - player.z) > 75;
-                float travelGap = (p.z - player.z) * (game.Driver.RearView ? -1 : 1);
-                bool passed = item is StationaryCar && travelGap < -180;
-                if ((OutsideWindow(p.z) || drain || passed) && !TrafficVisible(p)) Release(i);
-                if (game.State != GameState.Playing) break;
+                for (int i = active.Count - 1; i >= 0; i--)
+                {
+                    var item = active[i];
+                    if (!item.gameObject.activeSelf) { Release(i); continue; }
+                    Vector3 previousItemPosition = item.transform.position;
+                    item.Tick(dt);
+                    Vector3 p = item.transform.position;
+                    float halfLength = item is StationaryCar ? 4.1f : 2.5f;
+                    Vector3 before = previousItemPosition - (previousPlayerPosition ?? player);
+                    Vector3 after = p - player;
+                    if (VehicleDynamics.SweptContact(new Vector2(before.x, before.z), new Vector2(after.x, after.z), item is StationaryCar ? 1.65f : 1.3f, halfLength)) item.Contact();
+                    // Quiet sections drain traffic only beyond the view; visible cars never disappear to meet a budget.
+                    bool drain = item is StationaryCar && Flow == TrafficFlow.Quiet && Mathf.Abs(p.z - player.z) > 75;
+                    float travelGap = (p.z - player.z) * (game.Driver.RearView ? -1 : 1);
+                    bool passed = item is StationaryCar && travelGap < -180;
+                    if ((OutsideWindow(p.z) || drain || passed) && !TrafficVisible(p)) Release(i);
+                    if (game.State != GameState.Playing) break;
+                }
             }
+            finally { tickingTraffic = false; }
         }
     }
 }

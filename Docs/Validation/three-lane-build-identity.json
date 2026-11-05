@@ -1,0 +1,10 @@
+{
+  "assembly": "E:\\MyGames\\HW2\\Build\\AfterHours-TrafficGaps\\AfterHours_Data\\Managed\\AfterHours.Runtime.dll",
+  "sha256": "5a1c1aa7f3336262e932d467514d403de8a3a632cb4c83b2d27a443ace68285b",
+  "formationFollowing": true,
+  "rowSpacing": true,
+  "staggerSpeed": true,
+  "snapshot": true,
+  "musicFiles": 27,
+  "musicSizeMismatches": []
+}

@@ -16,6 +16,7 @@ public static class LiveDensityProbe
     static readonly List<object> samples = new List<object>();
     static float start=-1, sampleAt, steerAt;
     static int lastFrame=-1;
+    static int monitoredFrames, blockedRowFrames;
     static bool releaseSteering, hadScore, captured;
     static int score;
     static AudioSource gearTap, pedalTap;
@@ -32,11 +33,11 @@ public static class LiveDensityProbe
         keyboard=InputSystem.AddDevice<Keyboard>();
         g.Input.StartCar.actionMap.asset.devices=new InputDevice[]{keyboard};
         hadScore=PlayerPrefs.HasKey("AfterHours.HighScore.v1");score=PlayerPrefs.GetInt("AfterHours.HighScore.v1");
-        random=UnityEngine.Random.state; UnityEngine.Random.InitState(4821);
+        random=UnityEngine.Random.state; UnityEngine.Random.InitState(SessionState.GetInt("AfterHours.Probe.Seed",4821));
         gearTap=(AudioSource)typeof(CarAudio).GetField("shiftEffects", System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic).GetValue(g.Audio);
         pedalTap=(AudioSource)typeof(CarAudio).GetField("pedalEffects", System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic).GetValue(g.Audio);
         gearTap.GetOutputData(audioTap,0); pedalTap.GetOutputData(audioTap,0); maxGearRms=maxPedalRms=0;
-        samples.Clear();captured=false;start=-1;sampleAt=0;steerAt=0;lastFrame=-1;
+        samples.Clear();captured=false;start=-1;sampleAt=0;steerAt=0;lastFrame=-1;monitoredFrames=blockedRowFrames=0;
         g.StartRun();
         float initialZ=SessionState.GetFloat("AfterHours.Probe.StartZ",0);
         if(initialZ!=0){g.Driver.transform.position=new Vector3(0,.08f,initialZ);g.World.ResetWorld();}
@@ -54,6 +55,7 @@ public static class LiveDensityProbe
         float elapsed=Time.time-start;
         if(g.State!=GameState.Playing || elapsed>=65){Finish(g.State.ToString());return;}
         maxGearRms=Mathf.Max(maxGearRms,SampleAudio(gearTap)); maxPedalRms=Mathf.Max(maxPedalRms,SampleAudio(pedalTap));
+        monitoredFrames++; if(HasNearFullRow(g))blockedRowFrames++;
         Key steering=Key.None;
         bool shiftUp = !g.Driver.IsShifting && g.Driver.Gear < 6 && g.Driver.RpmRatio > .92f;
         bool shiftDown = !g.Driver.IsShifting && g.Driver.Gear > 1 && g.Driver.RpmRatio < .4f && g.Driver.Speed < VehicleDynamics.GearSpeedLimit(g.Driver.Gear - 1) * .96f;
@@ -102,6 +104,25 @@ public static class LiveDensityProbe
             samples.Add(new {seconds=elapsed,z=g.Driver.transform.position.z,speed=g.Driver.Speed,acceleration=g.Driver.Acceleration,gear=g.Driver.Gear,lookingBack=g.Driver.LookingBack,reversing=g.Driver.Reversing,cameraZ=Camera.main.transform.position.z,cameraForwardZ=Camera.main.transform.forward.z,rpm=g.Driver.EngineRpm,shifting=g.Driver.IsShifting,shiftCues=g.Audio.ShiftCueCount,pedalCues=g.Audio.ThrottleCueCount,flow=g.World.Flow.ToString(),rain=g.Weather.RainAmount,storm=g.Weather.StormAmount,fogDensity=RenderSettings.fogDensity,rainEmission=g.Weather.RainEmissionRate,rainVolume=g.Audio.RainVolume,fastDrivers,maxAiSpeed,maxDesiredSpeed,ahead,near,visible,merging,total=g.World.ActiveTrafficCount,lives=g.Run.Lives});
         }
     }
+    static bool HasNearFullRow(GameManager g)
+    {
+        float playerZ=g.Driver.transform.position.z;
+        foreach(var anchor in g.World.Traffic)
+        {
+            float gap=anchor.transform.position.z-playerZ;
+            float closing=gap>=0?g.Driver.Speed-anchor.Speed:anchor.Speed-g.Driver.Speed;
+            if(Mathf.Abs(gap)>Mathf.Max(45,20+Mathf.Max(0,closing)*2))continue;
+            int occupied=0;
+            foreach(var c in g.World.Traffic)
+            {
+                if(Mathf.Abs(c.transform.position.z-anchor.transform.position.z)>8)continue;
+                for(int lane=0;lane<3;lane++)
+                    if(Mathf.Abs(c.transform.position.x-(lane-1)*CarDriver.LaneWidth)<1.65f)occupied|=1<<lane;
+            }
+            if(occupied==7)return true;
+        }
+        return false;
+    }
     static float SampleAudio(AudioSource source)
     {
         if(source==null || !source.isPlaying) return 0;
@@ -124,7 +145,7 @@ public static class LiveDensityProbe
         EditorApplication.update-=Update;
         var g=GameManager.Instance;
         string output=SessionState.GetString("AfterHours.Density.Output","Temp/DensityBefore.json");
-        File.WriteAllText(output,Newtonsoft.Json.JsonConvert.SerializeObject(new {reason,scenarioStartZ=SessionState.GetFloat("AfterHours.Probe.StartZ",0),maxGearRms,maxPedalRms,samples},Newtonsoft.Json.Formatting.Indented));
+        File.WriteAllText(output,Newtonsoft.Json.JsonConvert.SerializeObject(new {reason,seed=SessionState.GetInt("AfterHours.Probe.Seed",4821),monitoredFrames,blockedRowFrames,scenarioStartZ=SessionState.GetFloat("AfterHours.Probe.StartZ",0),maxGearRms,maxPedalRms,samples},Newtonsoft.Json.Formatting.Indented));
         if(g!=null){g.MainMenu();g.Input.StartCar.actionMap.asset.devices=null;}
         if(keyboard!=null)InputSystem.RemoveDevice(keyboard);
         InputSystem.settings.backgroundBehavior=background;InputSystem.settings.editorInputBehaviorInPlayMode=routing;

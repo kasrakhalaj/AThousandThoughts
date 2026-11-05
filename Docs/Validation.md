@@ -1,3 +1,5 @@
+Latest traffic formation-gap fix: [TrafficGapValidation.md](TrafficGapValidation.md).
+
 Latest storm/fast-traffic update: [StormPaceValidation.md](StormPaceValidation.md).
 
 Latest authored player-lamp correction: [PlayerLampValidation.md](PlayerLampValidation.md).
