@@ -76,6 +76,47 @@ public sealed class DrivingFlowTests
         while (GameManager.Instance.State == GameState.Starting && Time.realtimeSinceStartup < deadline) yield return null;
         Assert.That(GameManager.Instance.State, Is.EqualTo(GameState.Playing));
     }
+    [UnityTest] public IEnumerator PerformanceVoicesFollowCarSelectionAndReturnToTheDefault()
+    {
+        var g = GameManager.Instance;
+        Assert.That(g.Audio.ActiveLoadClip.name, Is.EqualTo("Tristar-load"));
+        g.SelectCar(1 - g.SelectedCar); yield return null;
+        Assert.That(g.Audio.ActiveLoadClip.name, Is.EqualTo("docLorean-load"));
+        g.SelectCar(-g.SelectedCar); yield return null;
+        Assert.That(g.Audio.ActiveLoadClip, Is.EqualTo(g.Catalog.engineLoadSound));
+        g.SelectCar(4); yield return null; g.StartRun(); yield return WaitForDriving();
+        yield return Hold(Key.W, 2);
+        Assert.That(g.Audio.EnginePlaying, Is.True);
+        Assert.That(g.Audio.EngineVolume, Is.GreaterThan(.05f));
+        Assert.That(g.Audio.ThrottleCueCount, Is.GreaterThan(0));
+        Assert.That(g.Audio.ActiveLoadClip.name, Is.EqualTo("Tristar-load"));
+    }
+    [UnityTest] public IEnumerator ReverseFromHighSpeedCrossesZeroWithHeldGas()
+    {
+        var g = GameManager.Instance; g.StartRun(); yield return WaitForDriving();
+        g.enabled = false; // Isolate pedals/camera from traffic contacts while reproducing the transition.
+        try
+        {
+            InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.W)); yield return null;
+            for (int i = 0; i < 2250; i++)
+            {
+                if (!g.Driver.IsShifting && g.Driver.Gear < 6 && g.Driver.RpmRatio > .92f) g.Driver.RequestShift(1);
+                g.Driver.Tick(g.Input, g.Run.TopSpeed, .02f);
+            }
+            Assert.That(g.Driver.Speed, Is.GreaterThan(80));
+            InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.W, Key.R)); yield return null;
+            g.Driver.Tick(g.Input, g.Run.TopSpeed, .02f);
+            Assert.That(g.Driver.Reversing, Is.True);
+            InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.W)); yield return null;
+            for (int i = 0; i < 500; i++) g.Driver.Tick(g.Input, g.Run.TopSpeed, .02f);
+            Assert.That(g.Driver.Speed, Is.LessThan(-5), "Held W must accelerate backward after braking through zero.");
+            Assert.That(g.Driver.RearView, Is.True);
+            Camera.main.transform.position = g.Driver.transform.position + new Vector3(0, 4.8f, -10.5f);
+            yield return new WaitForSecondsRealtime(1.2f);
+            Assert.That(Camera.main.transform.position.z, Is.GreaterThan(g.Driver.transform.position.z));
+        }
+        finally { g.enabled = true; }
+    }
     [UnityTest] public IEnumerator SelectionIgnitionSteeringReversePausePoolingAndRestart()
     {
         var g = GameManager.Instance;

@@ -165,7 +165,7 @@ namespace AfterHours
             engineRpm.text = "RPM  " + (Mathf.RoundToInt(DisplayedRpm / 50f) * 50).ToString("N0");
             rpmFill.rectTransform.sizeDelta = new Vector2(220 * Mathf.InverseLerp(850, 7200, DisplayedRpm), 4);
             rpmFill.color = game.Driver.RpmRatio > .9f ? new Color(1, .38f, .2f) : Amber;
-            shiftHint.text = game.Driver.Reversing ? "REVERSE" : game.Driver.IsShifting ? "SHIFT  " + game.Driver.Gear + " > " + game.Driver.PendingGear : game.Driver.ShiftRejected ? "TOO FAST TO DOWNSHIFT" : game.Driver.Lugging ? "Q  SHIFT DOWN" : game.Driver.RpmRatio > .86f && game.Driver.Gear < 6 ? "E  SHIFT UP" : "Q DOWN   E UP";
+            shiftHint.text = game.Driver.Reversing ? game.Driver.Speed > .1f ? "BRAKING TO REVERSE" : game.Driver.Braking ? "RELEASE S, HOLD W" : "W GAS / R FORWARD" : game.Driver.IsShifting ? "SHIFT  " + game.Driver.Gear + " > " + game.Driver.PendingGear : game.Driver.ShiftRejected ? "TOO FAST TO DOWNSHIFT" : game.Driver.Lugging ? "Q  SHIFT DOWN" : game.Driver.RpmRatio > .86f && game.Driver.Gear < 6 ? "E  SHIFT UP" : "Q DOWN   E UP";
             DisplayedAcceleration = game.Driver.Acceleration * (game.Driver.Speed < -.1f ? -1 : 1);
             acceleration.text = "ACCEL  " + DisplayedAcceleration.ToString("+0.0;-0.0;0.0") + " M/S²";
             acceleration.color = DisplayedAcceleration > .1f ? Amber : Muted;

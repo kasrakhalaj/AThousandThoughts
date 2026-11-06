@@ -48,3 +48,7 @@ Sources, HTML license evidence and originals are retained outside the Unity proj
 ## Assistance
 
 OpenAI Codex assisted with planning, C# implementation, asset preparation, audio conversion, synthesized effects, documentation and validation. The student directs the game design and supplies the music and vehicle assets. This acknowledgement follows the assignment's external-source disclosure requirement.
+
+## Performance-car engine voices — 2026-11-06
+
+Tristar Racer and docLorean use separately prepared idle, mid/load engine loops, gas-on/off cues and downshift blips from **Acceleration 1.wav**, a real Ferrari acceleration recording by **biholao**: https://freesound.org/people/biholao/sounds/370278/ . The publisher lists CC0 1.0. These are stylized racing voices, not exact make-matched vehicle recordings. Tristar uses a sharper high-register load excerpt; docLorean uses lower, heavier excerpts and pitch tuning. The original downloaded HQ preview and license-page HTML remain outside the project in `../SourceAudio/PerformanceCars`. `Docs/PerformanceCarSoundSources.json` records excerpts/checksums and `Tools/prepare_performance_audio.py` reproduces preparation. Other cars retain their existing recordings.

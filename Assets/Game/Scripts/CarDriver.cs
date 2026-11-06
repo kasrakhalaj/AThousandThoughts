@@ -93,7 +93,7 @@ namespace AfterHours
             if (shift != 0) RequestShift(shift);
             Throttle = Mathf.Clamp01(input.Throttle.ReadValue<float>());
             Braking = input.Brake.IsPressed();
-            bool changingDirection = Throttle > .001f && (Reversing ? Speed > 0 : Speed < 0);
+            bool changingDirection = Reversing ? Speed > 0 : Speed < 0;
             float previousSpeed = Speed;
             Speed = VehicleDynamics.StepInGear(Speed, Throttle, Braking, Reversing, topSpeed, dt, Gear, IsShifting, power);
             Acceleration = dt > 0 ? (Speed - previousSpeed) / dt : 0;

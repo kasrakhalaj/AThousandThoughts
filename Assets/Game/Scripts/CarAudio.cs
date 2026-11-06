@@ -11,6 +11,9 @@ namespace AfterHours
         bool trafficAudible, paused, gasHeld;
         int observedShift;
         float pedalCooldown;
+        int voiceCar = -1;
+        CarEngineVoice voice;
+        public AudioClip ActiveLoadClip => loadEngine.clip;
         public int ShiftCueCount { get; private set; }
         public int ThrottleCueCount { get; private set; }
         public bool GearCuePlaying => shiftEffects.isPlaying;
@@ -29,6 +32,24 @@ namespace AfterHours
             rain = Loop(catalog.rainSound, 90);
             shiftEffects = gameObject.AddComponent<AudioSource>(); shiftEffects.playOnAwake = false; shiftEffects.volume = .45f; shiftEffects.priority = 22;
             pedalEffects = gameObject.AddComponent<AudioSource>(); pedalEffects.playOnAwake = false; pedalEffects.volume = .23f; pedalEffects.priority = 25;
+            SelectVoice();
+        }
+        void SelectVoice()
+        {
+            if (voiceCar == game.SelectedCar) return;
+            voiceCar = game.SelectedCar; voice = null;
+            if (catalog.performanceVoices != null)
+                foreach (var candidate in catalog.performanceVoices)
+                    if (candidate != null && string.Equals(candidate.carName, catalog.carNames[voiceCar], System.StringComparison.OrdinalIgnoreCase)) { voice = candidate; break; }
+            SetLoop(engine, voice != null && voice.idle != null ? voice.idle : catalog.engineSound);
+            SetLoop(midEngine, voice != null && voice.mid != null ? voice.mid : catalog.engineMidSound != null ? catalog.engineMidSound : catalog.engineSound);
+            SetLoop(loadEngine, voice != null && voice.load != null ? voice.load : catalog.engineLoadSound != null ? catalog.engineLoadSound : catalog.engineSound);
+            pedalEffects.Stop(); gasHeld = false;
+        }
+        static void SetLoop(AudioSource source, AudioClip clip)
+        {
+            source.Stop(); source.clip = clip; source.volume = 0;
+            if (clip != null) source.Play();
         }
         AudioSource Loop(AudioClip clip, int priority)
         {
@@ -46,6 +67,7 @@ namespace AfterHours
         public void Fuel() { effects.PlayOneShot(catalog.fuelSound, .5f); }
         public void Tick()
         {
+            SelectVoice();
             float dt = Time.unscaledDeltaTime;
             ignitionRemaining = Mathf.Max(0, ignitionRemaining - dt);
             float speed = Mathf.Abs(game.Driver.Speed);
@@ -61,16 +83,19 @@ namespace AfterHours
                     var clip = catalog.gearShiftSounds[(driver.ShiftSequence - 1) % catalog.gearShiftSounds.Length];
                     if (clip != null) { shiftEffects.PlayOneShot(clip); ShiftCueCount++; }
                 }
-                if (driver.LastShiftDirection < 0 && catalog.downshiftBlipSound != null)
+                var blip = voice != null && voice.downshift != null ? voice.downshift : catalog.downshiftBlipSound;
+                if (driver.LastShiftDirection < 0 && blip != null)
                 {
-                    pedalEffects.Stop(); pedalEffects.PlayOneShot(catalog.downshiftBlipSound, Mathf.Lerp(.45f, .8f, Mathf.InverseLerp(0, 20, speed)));
+                    pedalEffects.Stop(); pedalEffects.PlayOneShot(blip, Mathf.Lerp(.45f, .8f, Mathf.InverseLerp(0, 20, speed)));
                     pedalCooldown = .5f;
                 }
             }
             observedShift = driver.ShiftSequence;
             if (playing && gas != gasHeld && pedalCooldown <= 0 && !driver.Braking && !driver.IsShifting)
             {
-                var clip = gas ? catalog.throttleOnSound : speed > 3 ? catalog.throttleOffSound : null;
+                var on = voice != null && voice.gasOn != null ? voice.gasOn : catalog.throttleOnSound;
+                var off = voice != null && voice.gasOff != null ? voice.gasOff : catalog.throttleOffSound;
+                var clip = gas ? on : speed > 3 ? off : null;
                 if (clip != null) { pedalEffects.Stop(); pedalEffects.PlayOneShot(clip); ThrottleCueCount++; pedalCooldown = .65f; }
             }
             gasHeld = gas;
@@ -80,11 +105,11 @@ namespace AfterHours
             float midWeight = 1 - Mathf.Max(idleWeight, loadWeight);
             float running = game.State == GameState.Playing ? 1 : game.State == GameState.Starting ? Mathf.InverseLerp(.65f, 0, ignitionRemaining) : 0;
             float limiterPulse = driver.RevLimiter ? .72f + .28f * Mathf.Max(0, Mathf.Sin(Time.time * 42)) : 1;
-            float gain = Mathf.Lerp(.22f, .3f, driver.Throttle) * running * (driver.IsShifting ? .55f : 1) * limiterPulse;
+            float gain = Mathf.Lerp(.22f, .3f, driver.Throttle) * running * (driver.IsShifting ? .55f : 1) * limiterPulse * (voice != null ? voice.gain : 1);
             engine.volume = Mathf.MoveTowards(engine.volume, idleWeight * gain, dt * 1.5f);
             midEngine.volume = Mathf.MoveTowards(midEngine.volume, midWeight * gain, dt * 1.5f);
             loadEngine.volume = Mathf.MoveTowards(loadEngine.volume, loadWeight * gain, dt * 1.5f);
-            float character = game.SelectedCar == 2 ? .84f : game.SelectedCar == 3 ? .91f : game.SelectedCar == 4 ? 1.09f : 1;
+            float character = voice != null ? voice.pitch : game.SelectedCar == 2 ? .84f : game.SelectedCar == 3 ? .91f : game.SelectedCar == 4 ? 1.09f : 1;
             engine.pitch = character * Mathf.Lerp(.88f, 1.08f, rpm);
             midEngine.pitch = character * Mathf.Lerp(.8f, 1.15f, rpm);
             loadEngine.pitch = character * Mathf.Lerp(.84f, 1.16f, rpm);

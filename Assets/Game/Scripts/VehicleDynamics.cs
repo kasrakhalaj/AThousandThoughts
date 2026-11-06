@@ -37,7 +37,7 @@ namespace AfterHours
             while (remaining > 0)
             {
                 float dt = Mathf.Min(.05f, remaining); remaining -= dt;
-                bool changingDirection = throttle > .001f && (reverse ? speed > 0 : speed < 0);
+                bool changingDirection = reverse ? speed > 0 : speed < 0;
                 if (braking || changingDirection) { speed = Mathf.MoveTowards(speed, 0, BrakeDeceleration * dt); continue; }
                 float magnitude = Mathf.Abs(speed);
                 float drag = .32f + .00011f * magnitude * magnitude;

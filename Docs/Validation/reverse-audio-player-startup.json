@@ -1,0 +1,9 @@
+{
+  "path": "E:\\MyGames\\HW2\\Build\\AfterHours-Performance\\AfterHours.exe",
+  "pid": 7372,
+  "responding": true,
+  "direct3D12": true,
+  "errorMatches": [],
+  "coverage": "Standalone startup only; driving and audio behavior covered by PlayMode tests",
+  "graphicsDiagnostic": "D3D12 info queue query returned 0x80004002; graphics initialization continued successfully"
+}

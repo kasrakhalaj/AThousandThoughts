@@ -19,6 +19,15 @@ public sealed class VehicleDynamicsTests
         Assert.That(threeHundred - twoHundred, Is.GreaterThan(hundred * 2));
         Assert.That(speed * 3.6f, Is.EqualTo(300).Within(.01f));
     }
+    [TestCase(55f, true)]
+    [TestCase(-8f, false)]
+    public void SelectingOppositeDirectionStopsWithoutNeedingGas(float speed, bool reverse)
+    {
+        float next = VehicleDynamics.StepInGear(speed, 0, false, reverse, VehicleDynamics.ForwardLimit, 5, 1, false);
+        Assert.That(next, Is.Zero, "A direction request must brake to rest before W supplies gas in the selected direction.");
+        float driven = VehicleDynamics.StepInGear(next, 1, false, reverse, VehicleDynamics.ForwardLimit, 2, 1, false);
+        Assert.That(reverse ? driven < 0 : driven > 0, Is.True);
+    }
     [Test] public void GasCoastingAndBrakingProduceDifferentAcceleration()
     {
         float gas = VehicleDynamics.Step(20, 1, false, false, VehicleDynamics.ForwardLimit, 1);

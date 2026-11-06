@@ -3,6 +3,14 @@ using UnityEngine.InputSystem;
 
 namespace AfterHours
 {
+    [System.Serializable]
+    public sealed class CarEngineVoice
+    {
+        public string carName;
+        public AudioClip idle, mid, load, gasOn, gasOff, downshift;
+        public float pitch = 1, gain = 1;
+    }
+
     [CreateAssetMenu(menuName = "After Hours/Game Catalog")]
     public sealed class GameCatalog : ScriptableObject
     {
@@ -42,6 +50,7 @@ namespace AfterHours
         public AudioClip throttleOnSound;
         public AudioClip throttleOffSound;
         public AudioClip downshiftBlipSound;
+        public CarEngineVoice[] performanceVoices;
         public InputActionAsset controls;
     }
 }

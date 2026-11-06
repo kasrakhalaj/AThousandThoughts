@@ -1,0 +1,35 @@
+{
+  "success": true,
+  "command": "command",
+  "data": {
+    "command": "test status",
+    "parameters": {},
+    "result": {
+      "status": "completed",
+      "duration": 10.74,
+      "summary": {
+        "total": 1,
+        "passed": 0,
+        "failed": 1,
+        "skipped": 0,
+        "inconclusive": 0
+      },
+      "results": [
+        {
+          "FullName": "DrivingFlowTests.ReverseFromHighSpeedCrossesZeroWithHeldGas",
+          "Status": "Failed",
+          "Duration": 10.7143917,
+          "Message": "  Expected: greater than 2937.81323f\r\n  But was:  2884.83032f\r\n",
+          "StackTrace": "at DrivingFlowTests+<ReverseFromHighSpeedCrossesZeroWithHeldGas>d__13.MoveNext () [0x00307] in E:\\MyGames\\HW2\\AfterHours\\Assets\\Game\\Tests\\PlayMode\\DrivingFlowTests.cs:100\r\nat UnityEngine.TestTools.TestEnumerator+<Execute>d__8.MoveNext () [0x0003a] in .\\Library\\PackageCache\\com.unity.test-framework@ee3fe9477490\\UnityEngine.TestRunner\\NUnitExtensions\\Attributes\\TestEnumerator.cs:52\r\n"
+        }
+      ]
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "E:\\MyGames\\HW2\\AfterHours"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

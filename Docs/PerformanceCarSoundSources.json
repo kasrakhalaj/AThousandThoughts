@@ -1,0 +1,142 @@
+{
+  "page": "https://freesound.org/people/biholao/sounds/370278/",
+  "author": "biholao",
+  "title": "Acceleration 1.wav",
+  "license": "CC0 1.0",
+  "sourceSHA256": "11e775d507012816b58fc40e56a9c2afab70dad0c7476e20cf49ea22eafe9fe3",
+  "processing": "HQ preview, mono PCM16 44.1kHz, high/low pass, DC removal, 120ms loop overlap, cue fades, gain normalization. Stylized voices, not make-matched recordings.",
+  "clips": [
+    {
+      "asset": "Assets/Game/Audio/Performance/Tristar-idle.wav",
+      "excerpt": [
+        114.2,
+        116.3
+      ],
+      "loop": true,
+      "duration": 1.98,
+      "rms": 0.14,
+      "peak": 0.3764019196515734
+    },
+    {
+      "asset": "Assets/Game/Audio/Performance/Tristar-mid.wav",
+      "excerpt": [
+        0.3,
+        1.8
+      ],
+      "loop": true,
+      "duration": 1.38,
+      "rms": 0.14000000000000004,
+      "peak": 0.5996983380773517
+    },
+    {
+      "asset": "Assets/Game/Audio/Performance/Tristar-load.wav",
+      "excerpt": [
+        10.2,
+        11.8
+      ],
+      "loop": true,
+      "duration": 1.4800226757369614,
+      "rms": 0.14,
+      "peak": 0.44016383477032367
+    },
+    {
+      "asset": "Assets/Game/Audio/Performance/Tristar-gas-on.wav",
+      "excerpt": [
+        9.4,
+        10.2
+      ],
+      "loop": false,
+      "duration": 0.7999773242630386,
+      "rms": 0.14000000059604645,
+      "peak": 0.44395512342453003
+    },
+    {
+      "asset": "Assets/Game/Audio/Performance/Tristar-gas-off.wav",
+      "excerpt": [
+        12.8,
+        13.5
+      ],
+      "loop": false,
+      "duration": 0.7,
+      "rms": 0.14000000059604645,
+      "peak": 0.41045063734054565
+    },
+    {
+      "asset": "Assets/Game/Audio/Performance/Tristar-downshift.wav",
+      "excerpt": [
+        9.6,
+        10.1
+      ],
+      "loop": false,
+      "duration": 0.5,
+      "rms": 0.14000000059604645,
+      "peak": 0.41053080558776855
+    },
+    {
+      "asset": "Assets/Game/Audio/Performance/docLorean-idle.wav",
+      "excerpt": [
+        116.5,
+        118.7
+      ],
+      "loop": true,
+      "duration": 2.08,
+      "rms": 0.14,
+      "peak": 0.43636482796776516
+    },
+    {
+      "asset": "Assets/Game/Audio/Performance/docLorean-mid.wav",
+      "excerpt": [
+        128.1,
+        129.9
+      ],
+      "loop": true,
+      "duration": 1.68,
+      "rms": 0.13999999999999999,
+      "peak": 0.43252084597989254
+    },
+    {
+      "asset": "Assets/Game/Audio/Performance/docLorean-load.wav",
+      "excerpt": [
+        170.2,
+        172.2
+      ],
+      "loop": true,
+      "duration": 1.88,
+      "rms": 0.14,
+      "peak": 0.45173508149298874
+    },
+    {
+      "asset": "Assets/Game/Audio/Performance/docLorean-gas-on.wav",
+      "excerpt": [
+        169.3,
+        170
+      ],
+      "loop": false,
+      "duration": 0.7,
+      "rms": 0.14000000059604645,
+      "peak": 0.42672961950302124
+    },
+    {
+      "asset": "Assets/Game/Audio/Performance/docLorean-gas-off.wav",
+      "excerpt": [
+        172.4,
+        173.2
+      ],
+      "loop": false,
+      "duration": 0.7999773242630386,
+      "rms": 0.14000000059604645,
+      "peak": 0.47192448377609253
+    },
+    {
+      "asset": "Assets/Game/Audio/Performance/docLorean-downshift.wav",
+      "excerpt": [
+        169.5,
+        170.1
+      ],
+      "loop": false,
+      "duration": 0.6,
+      "rms": 0.14000000059604645,
+      "peak": 0.4243201017379761
+    }
+  ]
+}

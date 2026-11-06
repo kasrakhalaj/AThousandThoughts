@@ -113,4 +113,23 @@ MonoBehaviour:
   throttleOnSound: {fileID: 8300000, guid: 77b90dbbc91e0db4784477d574f628af, type: 3}
   throttleOffSound: {fileID: 8300000, guid: 0ffd6d4dce5dd434dbfa4ddc7b28b750, type: 3}
   downshiftBlipSound: {fileID: 8300000, guid: 178e2d17a40e15841b7fc87ddddb625d, type: 3}
+  performanceVoices:
+  - carName: TRISTAR RACER
+    idle: {fileID: 8300000, guid: 846df896bb986f546990f9c72fb24787, type: 3}
+    mid: {fileID: 8300000, guid: 4bfdeefdb9c7e9c4f9886b0d33c290b5, type: 3}
+    load: {fileID: 8300000, guid: 1f945f68a8302dc4a9ef1ef9b4a925b4, type: 3}
+    gasOn: {fileID: 8300000, guid: 87ed9b2a846b33f4fbd85da8b13aa5f9, type: 3}
+    gasOff: {fileID: 8300000, guid: 5ddfb9d5bb68ed249b38a4802281012d, type: 3}
+    downshift: {fileID: 8300000, guid: b041478403331204990e64599ad98074, type: 3}
+    pitch: 1.12
+    gain: 1.1
+  - carName: DOCLOREAN
+    idle: {fileID: 8300000, guid: f2487f4049f230e44b37932eb87dd311, type: 3}
+    mid: {fileID: 8300000, guid: e683236d0ec01c046a187b0b74a2371b, type: 3}
+    load: {fileID: 8300000, guid: b0064cea497425944baac099944fa85c, type: 3}
+    gasOn: {fileID: 8300000, guid: 3962bdb3a2bc50949b6cf8611389b0eb, type: 3}
+    gasOff: {fileID: 8300000, guid: d0c0384b490e4a447b8fca69d89509c8, type: 3}
+    downshift: {fileID: 8300000, guid: 24927039ad3977f4e9202411f11a7f7a, type: 3}
+    pitch: 0.88
+    gain: 1.1
   controls: {fileID: -944628639613478452, guid: bf3f1f56759b6b24bb56be62e9a7d0a5, type: 3}

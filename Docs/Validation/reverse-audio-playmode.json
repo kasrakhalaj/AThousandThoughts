@@ -1,0 +1,210 @@
+{
+  "success": true,
+  "command": "command",
+  "data": {
+    "command": "test status",
+    "parameters": {},
+    "result": {
+      "status": "completed",
+      "duration": 119.46,
+      "summary": {
+        "total": 26,
+        "passed": 26,
+        "failed": 0,
+        "skipped": 0,
+        "inconclusive": 0
+      },
+      "results": [
+        {
+          "FullName": "DrivingFlowTests.AllCarsKeepTheirLightsThroughDamageAndReverse",
+          "Status": "Passed",
+          "Duration": 6.2806647,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.DamageCooldownGameOverAndPersistentBest",
+          "Status": "Passed",
+          "Duration": 3.0366593,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.DistantPassingDoesNotReserveAnEscapeLaneForAPlayerFarBehind",
+          "Status": "Passed",
+          "Duration": 3.0562156,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.DistrictSceneryRecyclesWithoutGrowthAndRevisitsTheSameLayout",
+          "Status": "Passed",
+          "Duration": 0.356187,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.EarlyFogAndDenseRoadsideSurviveRecycling",
+          "Status": "Passed",
+          "Duration": 0.3619395,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.FastDriverAcceleratesFollowsSlowsForStormAndResetsInPool",
+          "Status": "Passed",
+          "Duration": 0.3494597,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.GasHeldDuringIgnitionWorksWhenDrivingBecomesEnabled",
+          "Status": "Passed",
+          "Duration": 4.9854455,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.HeldGasReaches300WithSixGearsAndAccelerationHud",
+          "Status": "Passed",
+          "Duration": 3.9792863,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.HoldLookBackWhileDrivingKeepsForwardMotionGearAndSteering",
+          "Status": "Passed",
+          "Duration": 5.3301812,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.LookBackCameraKeepsPlayerInFrontDuringFastForwardTravel",
+          "Status": "Passed",
+          "Duration": 3.2965502,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.LookBackHeldThroughIgnitionPauseAndMenuResetsCorrectly",
+          "Status": "Passed",
+          "Duration": 3.8241339,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.ManualGearKeysAudioAndPauseBehaveAsOneTransmission",
+          "Status": "Passed",
+          "Duration": 14.2532651,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.MusicCategoriesPlaybackAndWeatherZones",
+          "Status": "Passed",
+          "Duration": 2.3643357,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.PerformanceVoicesFollowCarSelectionAndReturnToTheDefault",
+          "Status": "Passed",
+          "Duration": 5.2037721,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.QuietRoadDrainsHiddenCarsAndKeepsVisibleCars",
+          "Status": "Passed",
+          "Duration": 3.1280623,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.RecordedEngineTrafficMovementAndPause",
+          "Status": "Passed",
+          "Duration": 4.6779281,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.ReverseFromHighSpeedCrossesZeroWithHeldGas",
+          "Status": "Passed",
+          "Duration": 4.3126126,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.SelectionIgnitionSteeringReversePausePoolingAndRestart",
+          "Status": "Passed",
+          "Duration": 13.171352,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.StormStrengthAudioPauseAndRestartAreConsistent",
+          "Status": "Passed",
+          "Duration": 5.9591024,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.ThreeLaneConvergenceKeepsAStaggeredGap",
+          "Status": "Passed",
+          "Duration": 3.1144425,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.ThreeLaneForecastAlsoCatchesConvergingPairs",
+          "Status": "Passed",
+          "Duration": 3.1151212,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.ThreeLaneFutureAlignmentIsRejectedBeforeSpawning",
+          "Status": "Passed",
+          "Duration": 3.1033376,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.TrafficIsPresentAheadDuringEarlyAcceleration",
+          "Status": "Passed",
+          "Duration": 11.2014706,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.TrafficReservesMergesAndCancelsForPlayer",
+          "Status": "Passed",
+          "Duration": 3.1289601,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.TrafficSpawnRejectsVisibleOccupiedAndBlockedRoad",
+          "Status": "Passed",
+          "Duration": 4.7065576,
+          "Message": null,
+          "StackTrace": null
+        },
+        {
+          "FullName": "DrivingFlowTests.WeatherChangesTrafficSpeedAndFollowingDistance",
+          "Status": "Passed",
+          "Duration": 3.1284751,
+          "Message": null,
+          "StackTrace": null
+        }
+      ]
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "E:\\MyGames\\HW2\\AfterHours"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}
