@@ -1,0 +1,11 @@
+{
+  "output": null,
+  "diagnostics": [],
+  "success": true,
+  "result": {
+    "playing": false,
+    "compiling": false,
+    "score": 19,
+    "background": "ResetAndDisableNonBackgroundDevices"
+  }
+}

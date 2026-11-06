@@ -1,0 +1,20 @@
+{
+  "status": "completed",
+  "duration": 17.47,
+  "summary": {
+    "total": 1,
+    "passed": 1,
+    "failed": 0,
+    "skipped": 0,
+    "inconclusive": 0
+  },
+  "results": [
+    {
+      "FullName": "DrivingFlowTests.PerformanceVoicesFollowCarSelectionAndReturnToTheDefault",
+      "Status": "Passed",
+      "Duration": 17.422971,
+      "Message": null,
+      "StackTrace": null
+    }
+  ]
+}

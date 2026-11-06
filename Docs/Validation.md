@@ -1,5 +1,7 @@
 Latest reverse transition / car engine voices: [ReversePerformanceValidation.md](ReversePerformanceValidation.md).
 
+Latest audio replacement: [R34/R35 recording validation](GtrAudioValidation.md).
+
 Latest district city scenery: [CitySceneryValidation.md](CitySceneryValidation.md).
 
 Latest startup car/music preferences: [DefaultSelectionValidation.md](DefaultSelectionValidation.md).

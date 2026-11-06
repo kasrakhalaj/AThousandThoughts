@@ -2,6 +2,8 @@
 
 Date: 2026-11-06. Baseline b9d37c3.
 
+Historical pass: the Ferrari audio described below was subsequently replaced by R34/R35 recordings at the user's request. See GtrAudioValidation.md for the current audio and build.
+
 The user's reported symptom is stopping after selecting reverse without moving backward. The serialized R action and New Input System remain unchanged. The isolated held-W high-speed reproduction reached negative speed on the baseline; the first camera assertion failed because the staged test jumped the driver kilometres in one frame and allowed only 0.5s for a smoothed camera turn. That diagnostic was corrected by placing the camera near the final position and allowing 1.2s. This does not establish a production camera defect.
 
 A separate confirmed transition problem existed: selecting the opposite direction without gas applied only coasting drag. Two failing baseline checks recorded 55 m/s becoming 51.83 m/s after 5 s and -8 m/s becoming -6.37 m/s. Direction selection now automatically brakes to zero, independent of gas. W then accelerates in the selected direction; S retains brake priority. Brake lamps also reflect this transition. The HUD explicitly shows BRAKING TO REVERSE, RELEASE S HOLD W, or W GAS / R FORWARD. The exact user's stopped/held-W symptom was not reproduced in isolation; validation covers this sequence and the confirmed coasting issue without attributing both to one unproven cause.

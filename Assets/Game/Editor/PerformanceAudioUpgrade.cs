@@ -10,7 +10,7 @@ public static class PerformanceAudioUpgrade
         AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
         var catalog = AssetDatabase.LoadAssetAtPath<GameCatalog>("Assets/Game/Generated/GameCatalog.asset");
         Undo.RecordObject(catalog, "Performance engine voices");
-        catalog.performanceVoices = new[] { Voice("TRISTAR RACER", "Tristar", 1.12f, 1.1f), Voice("DOCLOREAN", "docLorean", .88f, 1.1f) };
+        catalog.performanceVoices = new[] { Voice("TRISTAR RACER", "Tristar", 1f, 1.1f), Voice("DOCLOREAN", "docLorean", 1f, 1.1f) };
         EditorUtility.SetDirty(catalog); AssetDatabase.SaveAssetIfDirty(catalog);
     }
     static CarEngineVoice Voice(string car, string prefix, float pitch, float gain)

@@ -1,142 +1,180 @@
 {
-  "page": "https://freesound.org/people/biholao/sounds/370278/",
-  "author": "biholao",
-  "title": "Acceleration 1.wav",
-  "license": "CC0 1.0",
-  "sourceSHA256": "11e775d507012816b58fc40e56a9c2afab70dad0c7476e20cf49ea22eafe9fe3",
-  "processing": "HQ preview, mono PCM16 44.1kHz, high/low pass, DC removal, 120ms loop overlap, cue fades, gain normalization. Stylized voices, not make-matched recordings.",
-  "clips": [
+  "prepared": "2026-11-06",
+  "processing": "Real recording excerpts, mono PCM16 44.1kHz, high/low pass, DC removal, 80ms loop overlap, cue fades, RMS normalization capped at 0.82 peak. Source vehicle recordings used as stylized voices for the fictional player cars.",
+  "profiles": [
     {
-      "asset": "Assets/Game/Audio/Performance/Tristar-idle.wav",
-      "excerpt": [
-        114.2,
-        116.3
-      ],
-      "loop": true,
-      "duration": 1.98,
-      "rms": 0.14,
-      "peak": 0.3764019196515734
+      "car": "Tristar",
+      "recording": "Nissan Skyline GT-R R34",
+      "file": "R34-LowFps.opus",
+      "author": "LowFps",
+      "page": "https://commons.wikimedia.org/wiki/File:Nissan_Skyline_GT-R_-_engine_and_exhaust_sound_(YouTube_NpqxDM7pejs).opus",
+      "original": "https://www.youtube.com/watch?v=NpqxDM7pejs",
+      "license": "CC BY 3.0",
+      "licenseURL": "https://creativecommons.org/licenses/by/3.0/",
+      "highpass": 90,
+      "lowpass": 6500,
+      "sourceSHA256": "abb964b151d1d4ef680b47fda9edb58c693e4dfad5620a9b045260c5641cbb47",
+      "clips": [
+        {
+          "asset": "Assets/Game/Audio/Performance/Tristar-idle.wav",
+          "excerpt": [
+            20.55,
+            21.8
+          ],
+          "loop": true,
+          "duration": 1.17,
+          "rms": 0.14,
+          "peak": 0.42208187849886225,
+          "assetSHA256": "3136d408be03fe1fccdefb844b3427568bd8b36c90b3cd9bb3a72ab9faddc080"
+        },
+        {
+          "asset": "Assets/Game/Audio/Performance/Tristar-mid.wav",
+          "excerpt": [
+            33.5,
+            34.7
+          ],
+          "loop": true,
+          "duration": 1.12,
+          "rms": 0.13999999999999999,
+          "peak": 0.4539803713572313,
+          "assetSHA256": "48d8f420390147364a11971df674e4613dc7b4d0a2476799159addafe4c27867"
+        },
+        {
+          "asset": "Assets/Game/Audio/Performance/Tristar-load.wav",
+          "excerpt": [
+            477.4,
+            479.0
+          ],
+          "loop": true,
+          "duration": 1.52,
+          "rms": 0.14000000000000004,
+          "peak": 0.5394984643645053,
+          "assetSHA256": "81636a757cfa3c0a98d7b4958e0f64735dc6910462b675db3ee48c96318d4100"
+        },
+        {
+          "asset": "Assets/Game/Audio/Performance/Tristar-gas-on.wav",
+          "excerpt": [
+            23.85,
+            24.45
+          ],
+          "loop": false,
+          "duration": 0.6,
+          "rms": 0.14000000059604645,
+          "peak": 0.4412072002887726,
+          "assetSHA256": "86366347849a562812cc189da39c58044e86fd35aefd2c03ad6a216d925feb60"
+        },
+        {
+          "asset": "Assets/Game/Audio/Performance/Tristar-gas-off.wav",
+          "excerpt": [
+            29.02,
+            29.55
+          ],
+          "loop": false,
+          "duration": 0.53,
+          "rms": 0.14000000059604645,
+          "peak": 0.45624977350234985,
+          "assetSHA256": "47b2ff40fa990ed2e6a9385f7f5b89a53b966ce4c64d91b90edacc74b50af104"
+        },
+        {
+          "asset": "Assets/Game/Audio/Performance/Tristar-downshift.wav",
+          "excerpt": [
+            19.45,
+            20.05
+          ],
+          "loop": false,
+          "duration": 0.6,
+          "rms": 0.14000000059604645,
+          "peak": 0.30137884616851807,
+          "assetSHA256": "d7358b0e150fd261011f3c7b150359d0ecd9c9470a4cdf4a5628922c398de317"
+        }
+      ]
     },
     {
-      "asset": "Assets/Game/Audio/Performance/Tristar-mid.wav",
-      "excerpt": [
-        0.3,
-        1.8
-      ],
-      "loop": true,
-      "duration": 1.38,
-      "rms": 0.14000000000000004,
-      "peak": 0.5996983380773517
-    },
-    {
-      "asset": "Assets/Game/Audio/Performance/Tristar-load.wav",
-      "excerpt": [
-        10.2,
-        11.8
-      ],
-      "loop": true,
-      "duration": 1.4800226757369614,
-      "rms": 0.14,
-      "peak": 0.44016383477032367
-    },
-    {
-      "asset": "Assets/Game/Audio/Performance/Tristar-gas-on.wav",
-      "excerpt": [
-        9.4,
-        10.2
-      ],
-      "loop": false,
-      "duration": 0.7999773242630386,
-      "rms": 0.14000000059604645,
-      "peak": 0.44395512342453003
-    },
-    {
-      "asset": "Assets/Game/Audio/Performance/Tristar-gas-off.wav",
-      "excerpt": [
-        12.8,
-        13.5
-      ],
-      "loop": false,
-      "duration": 0.7,
-      "rms": 0.14000000059604645,
-      "peak": 0.41045063734054565
-    },
-    {
-      "asset": "Assets/Game/Audio/Performance/Tristar-downshift.wav",
-      "excerpt": [
-        9.6,
-        10.1
-      ],
-      "loop": false,
-      "duration": 0.5,
-      "rms": 0.14000000059604645,
-      "peak": 0.41053080558776855
-    },
-    {
-      "asset": "Assets/Game/Audio/Performance/docLorean-idle.wav",
-      "excerpt": [
-        116.5,
-        118.7
-      ],
-      "loop": true,
-      "duration": 2.08,
-      "rms": 0.14,
-      "peak": 0.43636482796776516
-    },
-    {
-      "asset": "Assets/Game/Audio/Performance/docLorean-mid.wav",
-      "excerpt": [
-        128.1,
-        129.9
-      ],
-      "loop": true,
-      "duration": 1.68,
-      "rms": 0.13999999999999999,
-      "peak": 0.43252084597989254
-    },
-    {
-      "asset": "Assets/Game/Audio/Performance/docLorean-load.wav",
-      "excerpt": [
-        170.2,
-        172.2
-      ],
-      "loop": true,
-      "duration": 1.88,
-      "rms": 0.14,
-      "peak": 0.45173508149298874
-    },
-    {
-      "asset": "Assets/Game/Audio/Performance/docLorean-gas-on.wav",
-      "excerpt": [
-        169.3,
-        170
-      ],
-      "loop": false,
-      "duration": 0.7,
-      "rms": 0.14000000059604645,
-      "peak": 0.42672961950302124
-    },
-    {
-      "asset": "Assets/Game/Audio/Performance/docLorean-gas-off.wav",
-      "excerpt": [
-        172.4,
-        173.2
-      ],
-      "loop": false,
-      "duration": 0.7999773242630386,
-      "rms": 0.14000000059604645,
-      "peak": 0.47192448377609253
-    },
-    {
-      "asset": "Assets/Game/Audio/Performance/docLorean-downshift.wav",
-      "excerpt": [
-        169.5,
-        170.1
-      ],
-      "loop": false,
-      "duration": 0.6,
-      "rms": 0.14000000059604645,
-      "peak": 0.4243201017379761
+      "car": "docLorean",
+      "recording": "Nissan GT-R R35 2012",
+      "file": "R35-PolePosition.wav",
+      "author": "Pole Position Production",
+      "page": "https://sonniss.com/gameaudiogdc/",
+      "original": "Sonniss GDC 2020, Part 8: Pole Position - Nissan GT-R R35 2012/Nissan_GTR_t6_Onbrd_Drive_Ramps_Engine_Left_Valve_DPA4062.wav",
+      "license": "Sonniss GDC Game Audio Bundle license v2.0 (2026-08-27)",
+      "licenseURL": "https://sonniss.com/gdc-bundle-license/",
+      "highpass": 65,
+      "lowpass": 7500,
+      "sourceSHA256": "aa06a7caaf09eeaf548ec31e72f72e2538a04c6a004305fa15d6dc68676bb6a6",
+      "clips": [
+        {
+          "asset": "Assets/Game/Audio/Performance/docLorean-idle.wav",
+          "excerpt": [
+            2.0,
+            4.5
+          ],
+          "loop": true,
+          "duration": 2.42,
+          "rms": 0.14,
+          "peak": 0.4472102145720892,
+          "assetSHA256": "b355abcb3798c884b29232398cc9a7db2bc1178e6dc3f46af8f086485270d515"
+        },
+        {
+          "asset": "Assets/Game/Audio/Performance/docLorean-mid.wav",
+          "excerpt": [
+            17.15,
+            18.95
+          ],
+          "loop": true,
+          "duration": 1.7200226757369614,
+          "rms": 0.14,
+          "peak": 0.360724548604449,
+          "assetSHA256": "7faba79b7eb02d69725ac6d72e151747fd28b65c0fbdec9ef0842ceeff539d14"
+        },
+        {
+          "asset": "Assets/Game/Audio/Performance/docLorean-load.wav",
+          "excerpt": [
+            146.1,
+            147.2
+          ],
+          "loop": true,
+          "duration": 1.0199773242630386,
+          "rms": 0.14000000000000004,
+          "peak": 0.5010130467384318,
+          "assetSHA256": "7d896e5dcd7d5709b2488344f0603885225a8d2d5ae64cce4b0fc3a5567b0031"
+        },
+        {
+          "asset": "Assets/Game/Audio/Performance/docLorean-gas-on.wav",
+          "excerpt": [
+            27.0,
+            27.65
+          ],
+          "loop": false,
+          "duration": 0.65,
+          "rms": 0.14000000059604645,
+          "peak": 0.5354018211364746,
+          "assetSHA256": "1289b856ba33e6456274c3c3b176930709b8aedc3ce944a11582db79ad3cbc75"
+        },
+        {
+          "asset": "Assets/Game/Audio/Performance/docLorean-gas-off.wav",
+          "excerpt": [
+            148.1,
+            148.8
+          ],
+          "loop": false,
+          "duration": 0.7,
+          "rms": 0.14000000059604645,
+          "peak": 0.710834801197052,
+          "assetSHA256": "98be072d8b4e837109a1a16848a782a466d85c95529f2ca9cd91cbadb64fa892"
+        },
+        {
+          "asset": "Assets/Game/Audio/Performance/docLorean-downshift.wav",
+          "excerpt": [
+            10.3,
+            11.0
+          ],
+          "loop": false,
+          "duration": 0.7,
+          "rms": 0.13999998569488525,
+          "peak": 0.30189043283462524,
+          "assetSHA256": "d0255e0d7548b7c77ac4c25bec34707e2e527409d9bcf213be4d3ccd90aa1a5b"
+        }
+      ]
     }
   ]
 }
