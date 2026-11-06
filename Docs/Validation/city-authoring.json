@@ -1,0 +1,137 @@
+{
+  "litWindowGroups": 186,
+  "prefabs": [
+    {
+      "name": "Block-Downtown-0",
+      "sourceRenderers": 98,
+      "combinedRenderers": 8,
+      "lights": 0
+    },
+    {
+      "name": "Block-Downtown-1",
+      "sourceRenderers": 108,
+      "combinedRenderers": 11,
+      "lights": 0
+    },
+    {
+      "name": "Block-Downtown-2",
+      "sourceRenderers": 57,
+      "combinedRenderers": 8,
+      "lights": 0
+    },
+    {
+      "name": "Block-Residential-0",
+      "sourceRenderers": 95,
+      "combinedRenderers": 9,
+      "lights": 0
+    },
+    {
+      "name": "Block-Residential-1",
+      "sourceRenderers": 102,
+      "combinedRenderers": 11,
+      "lights": 0
+    },
+    {
+      "name": "Block-Residential-2",
+      "sourceRenderers": 61,
+      "combinedRenderers": 9,
+      "lights": 0
+    },
+    {
+      "name": "Block-Industrial-0",
+      "sourceRenderers": 106,
+      "combinedRenderers": 8,
+      "lights": 0
+    },
+    {
+      "name": "Block-Industrial-1",
+      "sourceRenderers": 136,
+      "combinedRenderers": 11,
+      "lights": 0
+    },
+    {
+      "name": "Block-Industrial-2",
+      "sourceRenderers": 70,
+      "combinedRenderers": 7,
+      "lights": 0
+    },
+    {
+      "name": "Block-Woodland",
+      "sourceRenderers": 4,
+      "combinedRenderers": 2,
+      "lights": 0
+    },
+    {
+      "name": "Transition-Downtown",
+      "sourceRenderers": 105,
+      "combinedRenderers": 9,
+      "lights": 0
+    },
+    {
+      "name": "Entrance-Downtown",
+      "sourceRenderers": 4,
+      "combinedRenderers": 2,
+      "lights": 0
+    },
+    {
+      "name": "Transition-Residential",
+      "sourceRenderers": 138,
+      "combinedRenderers": 12,
+      "lights": 0
+    },
+    {
+      "name": "Entrance-Residential",
+      "sourceRenderers": 4,
+      "combinedRenderers": 2,
+      "lights": 0
+    },
+    {
+      "name": "Transition-Industrial",
+      "sourceRenderers": 94,
+      "combinedRenderers": 7,
+      "lights": 0
+    },
+    {
+      "name": "Entrance-Industrial",
+      "sourceRenderers": 4,
+      "combinedRenderers": 2,
+      "lights": 0
+    },
+    {
+      "name": "Transition-Woodland",
+      "sourceRenderers": 59,
+      "combinedRenderers": 8,
+      "lights": 0
+    },
+    {
+      "name": "Entrance-Woodland",
+      "sourceRenderers": 4,
+      "combinedRenderers": 2,
+      "lights": 0
+    },
+    {
+      "name": "Landmark-Night-Owl-Cafe",
+      "sourceRenderers": 40,
+      "combinedRenderers": 12,
+      "lights": 1
+    },
+    {
+      "name": "Landmark-Maple-Pocket-Park",
+      "sourceRenderers": 28,
+      "combinedRenderers": 8,
+      "lights": 1
+    },
+    {
+      "name": "Landmark-East-Works-Service",
+      "sourceRenderers": 45,
+      "combinedRenderers": 10,
+      "lights": 1
+    },
+    {
+      "name": "Landmark-Cross-City-Overpass",
+      "sourceRenderers": 43,
+      "combinedRenderers": 6,
+      "lights": 0
+    }
+  ]
+}

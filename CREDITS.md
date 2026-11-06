@@ -9,7 +9,7 @@ Kenney environment packs, downloaded from the publisher on 2026-11-03. License f
 - City Kit (Suburban): https://kenney.nl/assets/city-kit-suburban
 - City Kit (Commercial): https://kenney.nl/assets/city-kit-commercial
 
-These packs are CC0. The download manifest and archive checksums are retained outside the Unity project in `../SourceAssets/Kenney/sources.json`. Three-lane road geometry and road paint are original procedural geometry; Kenney models provide the surrounding scenery and props.
+These packs are CC0. The download manifest and archive checksums are retained outside the Unity project in `../SourceAssets/Kenney/sources.json`. Three-lane road geometry and road paint are original procedural geometry; Kenney models provide the surrounding scenery and props. The district city pass reuses these four packs; sidewalks, service structures, the café canopy, furniture, utility wires and overpass approaches are original procedural geometry. Selected lit windows follow existing imported glass faces.
 
 ## Vehicles
 

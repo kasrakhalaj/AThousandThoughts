@@ -15,6 +15,13 @@ namespace AfterHours
         public GameObject[] roadProps;
         public GameObject[] shrubs;
         public GameObject[] hills;
+        public GameObject[] downtownBlocks;
+        public GameObject[] residentialBlocks;
+        public GameObject[] industrialBlocks;
+        public GameObject woodlandBlock;
+        public GameObject[] districtTransitions;
+        public GameObject[] districtEntrances;
+        public GameObject[] cityLandmarks;
         public GameObject roadSegment;
         public GameObject stationaryCar;
         public GameObject movingCar;

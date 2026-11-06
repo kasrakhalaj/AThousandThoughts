@@ -209,6 +209,41 @@ public sealed class DrivingFlowTests
         Assert.That(properties.GetColor("_EmissionColor").b, Is.GreaterThan(1));
     }
 
+    [UnityTest] public IEnumerator DistrictSceneryRecyclesWithoutGrowthAndRevisitsTheSameLayout()
+    {
+        var g = GameManager.Instance;
+        var chunk = Object.FindFirstObjectByType<RoadChunk>();
+        int descendants = chunk.GetComponentsInChildren<Transform>(true).Length;
+        int pool = g.World.PooledCount;
+        chunk.Place(2);
+        var first = chunk.GetComponentsInChildren<Transform>(true);
+        var positions = new Vector3[first.Length]; var active = new bool[first.Length];
+        for (int i = 0; i < first.Length; i++) { positions[i] = first[i].localPosition; active[i] = first[i].gameObject.activeSelf; }
+        for (int index = -40; index <= 40; index++)
+        {
+            chunk.Place(index);
+            Assert.That(chunk.District, Is.EqualTo(CityRoute.DistrictAt(index)));
+            int blocks = 0, features = 0;
+            foreach (Transform child in chunk.transform)
+            {
+                if (!child.gameObject.activeSelf) continue;
+                if (child.name.StartsWith("Block-") || child.name.StartsWith("Transition-")) blocks++;
+                if (child.name.StartsWith("Landmark-")) features++;
+            }
+            Assert.That(blocks, Is.EqualTo(1), "Exactly one district or transition should be visible.");
+            Assert.That(features, Is.EqualTo(CityRoute.LandmarkAt(index) >= 0 ? 1 : 0));
+        }
+        chunk.Place(2);
+        Assert.That(chunk.GetComponentsInChildren<Transform>(true).Length, Is.EqualTo(descendants));
+        for (int i = 0; i < first.Length; i++)
+        {
+            Assert.That(first[i].localPosition, Is.EqualTo(positions[i]));
+            Assert.That(first[i].gameObject.activeSelf, Is.EqualTo(active[i]));
+        }
+        Assert.That(g.World.PooledCount, Is.EqualTo(pool));
+        yield return null;
+    }
+
     [UnityTest] public IEnumerator EarlyFogAndDenseRoadsideSurviveRecycling()
     {
         var g = GameManager.Instance;

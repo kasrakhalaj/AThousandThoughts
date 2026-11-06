@@ -100,3 +100,55 @@ public sealed class TrafficRulesTests
         Assert.That(TrafficRules.HiddenByFog(200, .021f), Is.True);
     }
 }
+
+public sealed class CityRouteTests
+{
+    [Test] public void DistrictsAndLandmarksRepeatConsistentlyInBothDirections()
+    {
+        for (int cycle = -4; cycle <= 4; cycle++)
+        for (int local = 0; local < CityRoute.CycleChunks; local++)
+        {
+            int chunk = cycle * CityRoute.CycleChunks + local;
+            Assert.That((int)CityRoute.DistrictAt(chunk), Is.EqualTo(local / 8));
+            Assert.That(CityRoute.Phase(chunk), Is.EqualTo(local % 8));
+            Assert.That(CityRoute.IsTransition(chunk), Is.EqualTo(local % 8 == 7));
+            Assert.That(CityRoute.LandmarkAt(chunk), Is.EqualTo(CityRoute.LandmarkAt(local)));
+            Assert.That(CityRoute.BlockVariantAt(chunk), Is.EqualTo(CityRoute.BlockVariantAt(local)));
+            Assert.That((int)CityRoute.NextDistrict(chunk), Is.EqualTo((local / 8 + 1) % 4));
+        }
+        foreach (int chunk in new[] { 2, 11, 19 })
+            Assert.That(CityRoute.BlockVariantAt(chunk), Is.EqualTo(2), "Landmarks need a vacant frontage lot.");
+        Assert.That(CityRoute.BlockVariantAt(6), Is.EqualTo(1));
+    }
+
+    [Test] public void BakedCityAssetsHaveNoGameplayComponentsAndKeepTheRoadClear()
+    {
+        var catalog = UnityEditor.AssetDatabase.LoadAssetAtPath<GameCatalog>("Assets/Game/Generated/GameCatalog.asset");
+        var prefabs = new System.Collections.Generic.List<UnityEngine.GameObject>();
+        prefabs.AddRange(catalog.downtownBlocks); prefabs.AddRange(catalog.residentialBlocks); prefabs.AddRange(catalog.industrialBlocks);
+        prefabs.Add(catalog.woodlandBlock); prefabs.AddRange(catalog.districtTransitions); prefabs.AddRange(catalog.districtEntrances); prefabs.AddRange(catalog.cityLandmarks);
+        Assert.That(prefabs.Count, Is.EqualTo(22)); int occupiedWindowVertices = 0;
+        foreach (var prefab in prefabs)
+        {
+            Assert.That(prefab, Is.Not.Null);
+            Assert.That(prefab.GetComponentsInChildren<UnityEngine.Collider>(true), Is.Empty, prefab.name);
+            Assert.That(prefab.GetComponentsInChildren<UnityEngine.MonoBehaviour>(true), Is.Empty, prefab.name);
+            Assert.That(prefab.GetComponentsInChildren<UnityEngine.Light>(true).Length, Is.LessThanOrEqualTo(1), prefab.name);
+            foreach (var filter in prefab.GetComponentsInChildren<UnityEngine.MeshFilter>(true))
+            {
+                Assert.That(filter.sharedMesh, Is.Not.Null, prefab.name);
+                var renderer = filter.GetComponent<UnityEngine.MeshRenderer>();
+                Assert.That(renderer.sharedMaterial, Is.Not.Null, prefab.name);
+                Assert.That(renderer.sharedMaterial.shader.isSupported, Is.True, prefab.name);
+                if (renderer.sharedMaterial.name.StartsWith("Occupied")) occupiedWindowVertices += filter.sharedMesh.vertexCount;
+                foreach (var local in filter.sharedMesh.vertices)
+                {
+                    var vertex = prefab.transform.InverseTransformPoint(filter.transform.TransformPoint(local));
+                    Assert.That(UnityEngine.Mathf.Abs(vertex.x) < 6.1f && vertex.y > .3f && vertex.y < 6.5f, Is.False,
+                        prefab.name + " must leave the driving and chase-camera corridor clear.");
+                }
+            }
+        }
+        Assert.That(occupiedWindowVertices, Is.GreaterThan(0), "The authored buildings should have some occupied windows.");
+    }
+}

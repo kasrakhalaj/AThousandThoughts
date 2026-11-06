@@ -1,0 +1,20 @@
+{
+  "changedExistingCatalogSections": [],
+  "addedCatalogSections": [
+    "cityLandmarks",
+    "districtEntrances",
+    "districtTransitions",
+    "downtownBlocks",
+    "industrialBlocks",
+    "residentialBlocks",
+    "woodlandBlock"
+  ],
+  "metaIdentifiers": 1187,
+  "missingMetas": [],
+  "duplicateGuids": {},
+  "sourceRenderers": 1405,
+  "combinedRenderers": 164,
+  "prefabCount": 22,
+  "litWindowGroups": 186,
+  "cityAssetBytes": 22365800
+}

@@ -1,0 +1,143 @@
+{
+  "exe": "E:\\MyGames\\HW2\\Build\\AfterHours-City\\AfterHours.exe",
+  "runtimeAssemblySha256": "f63fa8f4c2869b1ce3684ae2c1bc8a4120c65c8597eabf37bc26dcab1de13ac7",
+  "musicCount": 27,
+  "musicMismatch": [],
+  "tracks": [
+    {
+      "file": "DVRST\\DVRST  Tell Me What Alternative.mp3",
+      "sha256": "0c2c091f42b0d6ac6f11590eaebd5df48c667a0bcd5ca02a0ece6b5565abcfbb",
+      "matches": true
+    },
+    {
+      "file": "DVRST\\DVRST - Dream Space.mp3",
+      "sha256": "1e99f8a5e91558ba1ac52ba35a988ad0e56a8495f94272cfbbc4fd55e9e5196b",
+      "matches": true
+    },
+    {
+      "file": "DVRST\\DVRST - Every Time Again.mp3",
+      "sha256": "ac7e95cfa115b688832214a716e6ab8355ae09d8b566dbb567c15a4b0d35af3e",
+      "matches": true
+    },
+    {
+      "file": "Enya\\Caribbean Blue 2009 Remaster Enya.mp3",
+      "sha256": "c71d34ba0058435741865c3ce00734acb8626a0c983ec6e702d555bc267a2f44",
+      "matches": true
+    },
+    {
+      "file": "Enya\\Enya - Only Time.mp3",
+      "sha256": "cc57dcd233a4d9d4571b83b5d42189e97c755985ba9c023e58447418ff684583",
+      "matches": true
+    },
+    {
+      "file": "Enya\\Enya - Sumiregusa (Wild Violet).mp3",
+      "sha256": "ba079feeaef9036995a281bb6f1a700e31e86d22a8eb2b6c4e96e3af9756e136",
+      "matches": true
+    },
+    {
+      "file": "Hylics\\hylics-ost-draw-a-dog-yzugei.mp3",
+      "sha256": "6f45a05ee10ba2bf75b91ca0eaa4a692ba19adc891fa5a281d3bf62e9757a8a6",
+      "matches": true
+    },
+    {
+      "file": "Hylics\\hylics-ost-map-1-vjwq-1-v.mp3",
+      "sha256": "35f3530e449d5dbafd9291c48fbe50e6e8bda7f268f99fa8cff92dbc8899a231",
+      "matches": true
+    },
+    {
+      "file": "Hylics\\hylics-ost-map-2-m-4-vysj.mp3",
+      "sha256": "b6ec6c1b8e75af634480bcaa524bd750997eb04674b4590ac9b45bb86ba66ccd",
+      "matches": true
+    },
+    {
+      "file": "Hylics\\hylics-ost-piano-hhx-3-ul.mp3",
+      "sha256": "45e595146dd1d06d99978ed425f32060ad11ad069167a29301ef823ab373ec10",
+      "matches": true
+    },
+    {
+      "file": "Kavinsky - Nightcall.mp3",
+      "sha256": "1dafa9d6ff547d15654a1ed5f093b573c8875c412e9f4462dbf14186068438e0",
+      "matches": true
+    },
+    {
+      "file": "Mockingbird Eminem.mp3",
+      "sha256": "71acc40c0ab6110c2de2c551a5cdb5efa5790374e2fce0443e35f269a87074d8",
+      "matches": true
+    },
+    {
+      "file": "Pink Floyd\\01 Wish You Were Here.mp3",
+      "sha256": "842cc48e35db40164e183cae7405061267ba3f11a77d7a57adf8c1612f012ad6",
+      "matches": true
+    },
+    {
+      "file": "Pink Floyd\\03 Hey You.mp3",
+      "sha256": "1c1121deb7fb77acec58cbe8f2230acc425c8432740321416fc84332de4465c6",
+      "matches": true
+    },
+    {
+      "file": "Pink Floyd\\04 Shine On You Crazy Diamond (Pts. 1-5).mp3",
+      "sha256": "6c099474b34974c5c52c4f2c48d4a38bd92c0a486638dbe16d2b85d7b45b1adf",
+      "matches": true
+    },
+    {
+      "file": "Pink Floyd\\06 Another Brick in the Wall, Pt. 2.mp3",
+      "sha256": "86d49f687e71a670fa31a055c71fc01635694a9e2d4c1d3b430dca07c144b0d4",
+      "matches": true
+    },
+    {
+      "file": "Pink Floyd\\09 Comfortably Numb.mp3",
+      "sha256": "f10978e4745a5f8efca9bbc7548d965fe0fea480f1100dc223901d31a61acadb",
+      "matches": true
+    },
+    {
+      "file": "Pink Floyd\\10 Mother.mp3",
+      "sha256": "a39561a1a55ede4db1d0e7a5d510591bf4f8e6fe57482ab27abd13bfe08d6563",
+      "matches": true
+    },
+    {
+      "file": "Pink Floyd\\15 High Hopes.mp3",
+      "sha256": "e93316b1dd25cbfff36a782a18d81e07528015585e579c8c018b58ebf22cd8cb",
+      "matches": true
+    },
+    {
+      "file": "Pink Floyd\\17 Goodbye Blue Sky.mp3",
+      "sha256": "33ae90aed6ed2a0d811e0d517219cd7eb02ea9964cef932db198edb17f4e840a",
+      "matches": true
+    },
+    {
+      "file": "Pink Floyd\\21 Young Lust.mp3",
+      "sha256": "3773a920a2748306324c0089952f106f0c02d19034cdab59da9e85786d9b7cba",
+      "matches": true
+    },
+    {
+      "file": "Pink Floyd\\25 The Happiest Days of Our Lives.mp3",
+      "sha256": "fb6a238630549681e921b487ef28b5349279736fa4d70ac17abde47b83b575f8",
+      "matches": true
+    },
+    {
+      "file": "Pink Floyd\\Pink Floyd - Hey you.mp3",
+      "sha256": "c4ea3bb0cdddbd05b4db305c5028b18349e218af3f217dd17d4a5723adffe8de",
+      "matches": true
+    },
+    {
+      "file": "Pink Floyd\\Pink Floyd - The Happiest Days Of Our Life.mp3",
+      "sha256": "f3a72a0519fade54d214a07226f800f34f78fc4b7591d875859de8167a5ffd9e",
+      "matches": true
+    },
+    {
+      "file": "Pink Floyd\\Pink Floyd - Wish You Were Here (2011 Remaster).mp3",
+      "sha256": "eac9bf12b07b4412bc113de63b4eae9c62cb3bb05126e3041dc37d4d1d3be6a6",
+      "matches": true
+    },
+    {
+      "file": "Pink Floyd\\Pink Floyd – Sheep.mp3",
+      "sha256": "e713ab8d9cf31f5804f73926c2fb50ff379591c799158de0bcb27fe382119cde",
+      "matches": true
+    },
+    {
+      "file": "The Cure - A Forest.mp3",
+      "sha256": "80576992d6eb44be2fe7180e2ec5ab2036f8d69aee2f7997c5019d26bfeb481d",
+      "matches": true
+    }
+  ]
+}

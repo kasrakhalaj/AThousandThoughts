@@ -92,6 +92,7 @@ public static class AfterHoursBuilder
             TrafficAudioUpgrade.Apply();
         if (File.Exists("Assets/Game/Audio/Recorded/Recorded-gear-shift-1.wav")) ManualGearUpgrade.Apply();
         LookBackUpgrade.Apply();
+        CitySceneryUpgrade.Apply();
         Debug.Log("AFTER_HOURS_CREATED: " + ScenePath);
     }
     static AudioClip Clip(string name) => AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Game/Audio/" + name + ".wav");

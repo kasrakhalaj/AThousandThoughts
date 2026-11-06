@@ -1,3 +1,5 @@
+Latest district city scenery: [CitySceneryValidation.md](CitySceneryValidation.md).
+
 Latest startup car/music preferences: [DefaultSelectionValidation.md](DefaultSelectionValidation.md).
 
 Latest traffic formation-gap fix: [TrafficGapValidation.md](TrafficGapValidation.md).

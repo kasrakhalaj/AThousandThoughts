@@ -55,6 +55,34 @@ MonoBehaviour:
   - {fileID: 954372148789000457, guid: f33713248bdd2d5459bc522ff2d7c41b, type: 3}
   hills:
   - {fileID: 757151204220337394, guid: e59cd7aaa7bb99c40a3178d1b18ecaf0, type: 3}
+  downtownBlocks:
+  - {fileID: 8223949208705302010, guid: 662a9bb31f69e78439c1db8d57345252, type: 3}
+  - {fileID: 342860750064432589, guid: 519a4659900c247498f86b14fd10b55a, type: 3}
+  - {fileID: 5666810851262505518, guid: 7ab836b5ccb704142bee88d1284ebb2d, type: 3}
+  residentialBlocks:
+  - {fileID: 5215180993598377906, guid: 8d382b6c7b40175489f3800c7b567326, type: 3}
+  - {fileID: 874908730384953156, guid: d1fd2f16e82188e47ac70c7a3c4c2704, type: 3}
+  - {fileID: 2832961618992438923, guid: 632cab842e1f5a34eba78330458e6bb3, type: 3}
+  industrialBlocks:
+  - {fileID: 5073788770652820945, guid: 9ed5086cf07bb404aac61f3122e78561, type: 3}
+  - {fileID: 426283578333415476, guid: c9d88a7a3fb231f478387a99b9c9f0a1, type: 3}
+  - {fileID: 5213143050150482719, guid: 56c871e3fa36ea04aaed8e204e1073eb, type: 3}
+  woodlandBlock: {fileID: 5639926949489382730, guid: 2467593736eca1b419f754a510dc35f2, type: 3}
+  districtTransitions:
+  - {fileID: 8623460388526930019, guid: e0a14d281384d984fa3c161fd68e8527, type: 3}
+  - {fileID: 4004875491121763641, guid: 48461db1013efdf47a727b5203da7328, type: 3}
+  - {fileID: 8416563743714652598, guid: 246ea5812252aea4fa35e63d78b92c21, type: 3}
+  - {fileID: 6166591515854897493, guid: 7651d37610bc7064e81d872ad07a8ae2, type: 3}
+  districtEntrances:
+  - {fileID: 5076687504217031699, guid: b942723aa6c94cf4881cbbb005e4b60a, type: 3}
+  - {fileID: 2925071283349639046, guid: 9d3a20b27620f2442bf979fe2a6380d8, type: 3}
+  - {fileID: 1214968369208011690, guid: 5b84b5670213e804ea1d8ffdf67f6615, type: 3}
+  - {fileID: 8307484721064136301, guid: af556512ad0561c4faf6a4db6cb6c83b, type: 3}
+  cityLandmarks:
+  - {fileID: 1834894598752629568, guid: 3bd260f7e64d3b24e821799d824da09b, type: 3}
+  - {fileID: 4340265892434266611, guid: cc3defcec74a0e34ea5eaaf17d8f1c18, type: 3}
+  - {fileID: 8040863809316553557, guid: 9e7fe6a3a145613418ec6af49f80b371, type: 3}
+  - {fileID: 8080802748436745567, guid: 262a71f28a919284b918c5554a434e30, type: 3}
   roadSegment: {fileID: 2181480157689992295, guid: 9bd18214320d0e14fac07ccc5669bc1a, type: 3}
   stationaryCar: {fileID: 7037924977903871474, guid: e5c3e6c63cf91c749b1e4bdf7bfa4ab7, type: 3}
   movingCar: {fileID: 8507804363255772803, guid: ee1b345bb84db194aa12143dcdc89912, type: 3}

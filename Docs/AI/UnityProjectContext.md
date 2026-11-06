@@ -70,3 +70,9 @@ TrafficRules.RowSpacing/StaggerSpeed and a 4s forecast prevent a faster third ca
 ## Default car and radio order
 
 GameManager selects TRISTAR RACER by catalog name at initialization. MusicPlayer starts in Singles, pins Kavinsky - Nightcall then DVRST Tell Me What Alternative, keeps the latter in DVRST as well, and places All Music second with each source file only once. Remaining artist categories/tracks sort alphabetically. Audio files and catalog ordering are unchanged. See Docs/DefaultSelectionValidation.md.
+
+## District city scenery
+
+CityRoute maps 32 recycled road chunks (1,920m) into City Center / Maple Heights / East Works / Pine Ridge, eight chunks per district. Phase7 is a half-current/half-next transition. Cafe/park/service landmarks at cycle chunks2/11/19 reserve the right-side lot; chunk6 has an overpass and matching side-street frontage. Reverse travel uses the same modulo-safe deterministic layout. Roads remain straight three-lane gameplay; the side streets/landmarks are decorative.
+
+CitySceneryUpgrade.Apply authors 22 prefabs in Generated/City using existing Kenney models, code-built landmark details and exact authored glass faces for selected warm windows. It combines static meshes by material, checks the ±6.1m driving/camera corridor below6.5m, saves only generated assets/catalog and preserves GUIDs on reapply. The overpass deck clears7.7m. Three landmarks each have one point light. No original source art/materials, input bindings, scene or package files change. RoadChunk prewarms/toggles district banks and reuses existing nature objects; road/traffic/pickup pool sizes remain unchanged. See Docs/CitySceneryValidation.md for evidence and limitations. Latest city player path is ../Build/AfterHours-City/AfterHours.exe after successful validation/build.
