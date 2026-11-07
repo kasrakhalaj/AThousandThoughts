@@ -76,23 +76,27 @@ public sealed class DrivingFlowTests
         while (GameManager.Instance.State == GameState.Starting && Time.realtimeSinceStartup < deadline) yield return null;
         Assert.That(GameManager.Instance.State, Is.EqualTo(GameState.Playing));
     }
-    [UnityTest] public IEnumerator MenuCameraOrbitsTheSelectionAndReturnsToDrivingView()
+    [UnityTest] public IEnumerator MenuCameraCutsBetweenAnglesAndReturnsToDrivingView()
     {
         var game = GameManager.Instance;
         var camera = Camera.main;
         Vector3 player = game.Driver.transform.position;
-        Vector3 initialOffset = camera.transform.position - player;
-        game.SelectCar(1);
-        yield return new WaitForSecondsRealtime(2);
+        Assert.That(camera.transform.position.z - player.z, Is.GreaterThan(4));
+        yield return new WaitForSecondsRealtime(2.75f);
+        Assert.That(camera.transform.position.x - player.x, Is.LessThan(-5));
+        Assert.That(Mathf.Abs(camera.transform.position.z - player.z), Is.LessThan(1));
+        yield return new WaitForSecondsRealtime(2.6f);
+        Assert.That(camera.transform.position.z - player.z, Is.LessThan(-5));
 
-        Vector3 offset = camera.transform.position - player;
         Assert.That(game.Driver.transform.position, Is.EqualTo(player));
-        Assert.That(Vector3.Angle(initialOffset, offset), Is.GreaterThan(20));
-        Assert.That(offset.magnitude, Is.EqualTo(initialOffset.magnitude).Within(.02f));
         Vector3 framed = camera.WorldToViewportPoint(player + Vector3.up * .8f);
         Assert.That(framed.x, Is.InRange(.53f, .8f));
         Assert.That(framed.y, Is.InRange(.25f, .6f));
 
+        game.SelectCar(1);
+        yield return null;
+        yield return null;
+        Assert.That(camera.transform.position.z - player.z, Is.GreaterThan(4));
         game.StartRun();
         yield return WaitForDriving();
         Assert.That(Mathf.Abs(camera.transform.position.x - player.x), Is.LessThan(.1f));
