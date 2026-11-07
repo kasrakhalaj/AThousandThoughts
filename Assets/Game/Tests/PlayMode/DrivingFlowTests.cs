@@ -76,6 +76,29 @@ public sealed class DrivingFlowTests
         while (GameManager.Instance.State == GameState.Starting && Time.realtimeSinceStartup < deadline) yield return null;
         Assert.That(GameManager.Instance.State, Is.EqualTo(GameState.Playing));
     }
+    [UnityTest] public IEnumerator MenuCameraOrbitsTheSelectionAndReturnsToDrivingView()
+    {
+        var game = GameManager.Instance;
+        var camera = Camera.main;
+        Vector3 player = game.Driver.transform.position;
+        Vector3 initialOffset = camera.transform.position - player;
+        game.SelectCar(1);
+        yield return new WaitForSecondsRealtime(2);
+
+        Vector3 offset = camera.transform.position - player;
+        Assert.That(game.Driver.transform.position, Is.EqualTo(player));
+        Assert.That(Vector3.Angle(initialOffset, offset), Is.GreaterThan(20));
+        Assert.That(offset.magnitude, Is.EqualTo(initialOffset.magnitude).Within(.02f));
+        Vector3 framed = camera.WorldToViewportPoint(player + Vector3.up * .8f);
+        Assert.That(framed.x, Is.InRange(.53f, .8f));
+        Assert.That(framed.y, Is.InRange(.25f, .6f));
+
+        game.StartRun();
+        yield return WaitForDriving();
+        Assert.That(Mathf.Abs(camera.transform.position.x - player.x), Is.LessThan(.1f));
+        Assert.That(camera.transform.position.z, Is.LessThan(player.z - 9));
+    }
+
     [UnityTest] public IEnumerator PerformanceVoicesFollowCarSelectionAndReturnToTheDefault()
     {
         var g = GameManager.Instance;
@@ -192,11 +215,20 @@ public sealed class DrivingFlowTests
         Assert.That(RenderSettings.fogDensity, Is.GreaterThan(.029f));
         Assert.That(g.Weather.RainEmissionRate, Is.GreaterThan(3300));
         Assert.That(g.Audio.RainVolume, Is.GreaterThan(.28f));
+        Assert.That(Shader.GetGlobalFloat("_AfterHoursCloudCover"), Is.GreaterThan(.98f));
+        var thunder = System.Array.Find(g.Audio.GetComponents<AudioSource>(),
+            source => System.Array.IndexOf(g.Catalog.thunderSounds, source.clip) >= 0);
+        Assert.That(thunder, Is.Not.Null);
+        Assert.That(thunder.isPlaying, Is.True);
         Assert.That(Shader.GetGlobalFloat("_AfterHoursFogDensity"), Is.EqualTo(RenderSettings.fogDensity).Within(.00001f));
         g.TogglePause(); float rain = g.Weather.RainAmount, storm = g.Weather.StormAmount;
         yield return new WaitForSecondsRealtime(.15f);
         Assert.That(g.Weather.RainAmount, Is.EqualTo(rain)); Assert.That(g.Weather.StormAmount, Is.EqualTo(storm));
+        Assert.That(thunder.isPlaying, Is.False);
         g.MainMenu();
+        g.Audio.Tick();
+        Assert.That(thunder.isPlaying, Is.False);
+        Assert.That(Shader.GetGlobalFloat("_AfterHoursCloudCover"), Is.Zero);
         Assert.That(g.Weather.RainAmount, Is.Zero); Assert.That(g.Weather.StormAmount, Is.Zero);
         Assert.That(RenderSettings.fogDensity, Is.EqualTo(WeatherDirector.ClearFogDensity));
         g.StartRun(); yield return WaitForDriving();
@@ -306,7 +338,8 @@ public sealed class DrivingFlowTests
         Assert.That(g.Catalog.movingTrafficVariants.Length, Is.EqualTo(7));
         Assert.That(g.Catalog.engineSound.name, Is.EqualTo("Recorded-player-idle"));
         Assert.That(g.Catalog.trafficEngineSound.name, Is.EqualTo("Recorded-traffic-engine"));
-        Assert.That(g.Catalog.rainSound.name, Is.EqualTo("Recorded-rain"));
+        Assert.That(g.Catalog.rainSound.name, Is.EqualTo("Weather-street-rain"));
+        Assert.That(g.Catalog.heavyRainSound.name, Is.EqualTo("Weather-heavy-rain"));
         g.StartRun(); yield return WaitForDriving(); yield return new WaitForSeconds(.4f);
         Assert.That(g.Driver.Speed, Is.Zero);
         Assert.That(g.Audio.EnginePlaying, Is.True); Assert.That(g.Audio.EngineVolume, Is.GreaterThan(.1f));

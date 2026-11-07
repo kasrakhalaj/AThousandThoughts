@@ -1,0 +1,86 @@
+[
+  {
+    "name": "street-rain",
+    "source": "https://freesound.org/people/Garuda1982/sounds/852917/",
+    "download": "https://cdn.freesound.org/previews/852/852917_2061858-hq.mp3",
+    "author": "Garuda1982",
+    "title": "gentle steady spring rain city",
+    "license": "CC0 1.0",
+    "sha256": "a3474afd0e2edcb5fd47c64435505fe07194727111ab7a2d20ce997ce8867229",
+    "asset": "Assets/Game/Audio/Weather/Weather-street-rain.wav",
+    "excerpt": [
+      8,
+      38
+    ],
+    "duration": 29.25,
+    "loopOverlapSeconds": 0.75,
+    "highPassHz": 70,
+    "rms": 0.10489796102046967,
+    "peak": 0.8199998736381531,
+    "assetSha256": "0a14589eebfb55c07b6b696d23eb14eb0e06df450da4a15963857e796c7a9da0",
+    "processing": "Stereo PCM16, high-pass, loop crossfade, level matching with soft peak limiting"
+  },
+  {
+    "name": "heavy-rain",
+    "source": "https://freesound.org/people/Doc%20Jon/sounds/420635/",
+    "download": "https://cdn.freesound.org/previews/420/420635_1090951-hq.mp3",
+    "author": "Doc Jon",
+    "title": "Tropical Rain 1.wav",
+    "license": "CC BY 4.0",
+    "sha256": "f250b36b7cd9bc43c8201fc2a5301ef4a53acca42555b1e502616c40823a00cf",
+    "asset": "Assets/Game/Audio/Weather/Weather-heavy-rain.wav",
+    "excerpt": [
+      12,
+      46
+    ],
+    "duration": 33.15,
+    "loopOverlapSeconds": 0.85,
+    "highPassHz": 45,
+    "rms": 0.11998149752616882,
+    "peak": 0.819931149482727,
+    "assetSha256": "330ddc7539950a3f1a63e277ecdd84b2b467b37c41ab2a52b49256782a63861c",
+    "processing": "Stereo PCM16, high-pass, loop crossfade, level matching with soft peak limiting"
+  },
+  {
+    "name": "thunder-close",
+    "source": "https://freesound.org/people/cognito%20perceptu/sounds/347853/",
+    "download": "https://cdn.freesound.org/previews/347/347853_57789-hq.mp3",
+    "author": "cognito perceptu",
+    "title": "thunder crack.wav",
+    "license": "CC0 1.0",
+    "sha256": "14afbb6954a1c3980a60fa833d2e2d14e28fb97c33f30a00e001a9e07ad74795",
+    "asset": "Assets/Game/Audio/Weather/Weather-thunder-close.wav",
+    "excerpt": [
+      0.84,
+      12.8
+    ],
+    "duration": 11.96,
+    "loopOverlapSeconds": 0,
+    "highPassHz": 24,
+    "rms": 0.06985065340995789,
+    "peak": 0.8199999928474426,
+    "assetSha256": "cc3185c4ca1825e8f075db88b34fd903d7ee1271539de1ff9dff0d468f0201ba",
+    "processing": "Stereo PCM16, high-pass, trimmed lead-in, edge fades and gain"
+  },
+  {
+    "name": "thunder-roll",
+    "source": "https://freesound.org/people/cognito%20perceptu/sounds/347854/",
+    "download": "https://cdn.freesound.org/previews/347/347854_57789-hq.mp3",
+    "author": "cognito perceptu",
+    "title": "thunder crack 2.wav",
+    "license": "CC0 1.0",
+    "sha256": "55512e7e096bfc76d88b13784d0091b84456df81d0c82394fce7fcd6098b5656",
+    "asset": "Assets/Game/Audio/Weather/Weather-thunder-roll.wav",
+    "excerpt": [
+      0.84,
+      10.2
+    ],
+    "duration": 9.36,
+    "loopOverlapSeconds": 0,
+    "highPassHz": 24,
+    "rms": 0.04773133993148804,
+    "peak": 0.8199999928474426,
+    "assetSha256": "34fd99d0dc82f3753d48cdb376d4d6f4677e4b1fed403a15dd9eae7bbfa01977",
+    "processing": "Stereo PCM16, high-pass, trimmed lead-in, edge fades and gain"
+  }
+]

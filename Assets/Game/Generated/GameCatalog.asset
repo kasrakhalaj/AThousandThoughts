@@ -105,7 +105,11 @@ MonoBehaviour:
   coinSound: {fileID: 8300000, guid: 075dd9a0ffbe037419898f4f634f3a69, type: 3}
   fuelSound: {fileID: 8300000, guid: e81fc99fc37e33a41bb4af50115f64d9, type: 3}
   ignitionSound: {fileID: 8300000, guid: 82519643341ea714fb583b93d6111f84, type: 3}
-  rainSound: {fileID: 8300000, guid: a765444e1d2b6444b8b531309fc60a9f, type: 3}
+  rainSound: {fileID: 8300000, guid: 63484efa0f2c8d24c984d23fd1398dbe, type: 3}
+  heavyRainSound: {fileID: 8300000, guid: 87d3156254e4623499879372e22fa37a, type: 3}
+  thunderSounds:
+  - {fileID: 8300000, guid: f0e62a0517309f14ebf6ea92cc143df8, type: 3}
+  - {fileID: 8300000, guid: 2f8bef2312805e141aa2941393f351cf, type: 3}
   gearShiftSounds:
   - {fileID: 8300000, guid: 103d186514273534d8cdc0cf6deca696, type: 3}
   - {fileID: 8300000, guid: 325411dcef1bf6a42b3b3af4e462b17e, type: 3}

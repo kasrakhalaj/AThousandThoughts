@@ -7,6 +7,9 @@ namespace AfterHours
         GameManager game;
         GameCatalog catalog;
         AudioSource engine, midEngine, loadEngine, effects, rain, shiftEffects, pedalEffects;
+        AudioSource heavyRain, thunder;
+        float thunderCooldown;
+        int nextThunder;
         float rpm, ignitionRemaining;
         bool trafficAudible, paused, gasHeld;
         int observedShift;
@@ -19,7 +22,7 @@ namespace AfterHours
         public bool GearCuePlaying => shiftEffects.isPlaying;
         public bool PedalCuePlaying => pedalEffects.isPlaying;
         public float EngineVolume => engine.volume + midEngine.volume + loadEngine.volume;
-        public float RainVolume => rain.volume;
+        public float RainVolume => rain.volume + heavyRain.volume;
         public bool EnginePlaying => engine.isPlaying;
         public void Initialize(GameManager manager, GameCatalog data)
         {
@@ -30,6 +33,10 @@ namespace AfterHours
             effects = gameObject.AddComponent<AudioSource>(); effects.volume = .55f;
             effects.priority = 20;
             rain = Loop(catalog.rainSound, 90);
+            heavyRain = Loop(catalog.heavyRainSound, 91);
+            thunder = gameObject.AddComponent<AudioSource>();
+            thunder.playOnAwake = false;
+            thunder.priority = 48;
             shiftEffects = gameObject.AddComponent<AudioSource>(); shiftEffects.playOnAwake = false; shiftEffects.volume = .45f; shiftEffects.priority = 22;
             pedalEffects = gameObject.AddComponent<AudioSource>(); pedalEffects.playOnAwake = false; pedalEffects.volume = .23f; pedalEffects.priority = 25;
             SelectVoice();
@@ -54,11 +61,15 @@ namespace AfterHours
         AudioSource Loop(AudioClip clip, int priority)
         {
             var source = gameObject.AddComponent<AudioSource>(); source.clip = clip; source.loop = true;
-            source.volume = 0; source.priority = priority; source.playOnAwake = false; source.Play(); return source;
+            source.volume = 0; source.priority = priority; source.playOnAwake = false;
+            if (clip != null) source.Play();
+            return source;
         }
         public void Ignition()
         {
             effects.Stop(); shiftEffects.Stop(); pedalEffects.Stop();
+            thunder.Stop();
+            thunderCooldown = 0;
             ShiftCueCount = ThrottleCueCount = observedShift = 0; gasHeld = false; pedalCooldown = 0;
             ignitionRemaining = game.IgnitionDuration; effects.PlayOneShot(catalog.ignitionSound, .7f);
         }
@@ -113,18 +124,44 @@ namespace AfterHours
             engine.pitch = character * Mathf.Lerp(.88f, 1.08f, rpm);
             midEngine.pitch = character * Mathf.Lerp(.8f, 1.15f, rpm);
             loadEngine.pitch = character * Mathf.Lerp(.84f, 1.16f, rpm);
-            rain.volume = game.Weather.RainAmount * Mathf.Lerp(.18f, .30f, game.Weather.StormAmount) * (game.State == GameState.Paused ? .4f : 1);
             bool wantTraffic = game.State == GameState.Playing;
             if (wantTraffic != trafficAudible) { trafficAudible = wantTraffic; game.World.SetTrafficAudioPaused(!wantTraffic); }
             bool wantPause = game.State == GameState.Paused;
             if (paused != wantPause)
             {
                 paused = wantPause;
-                if (paused) { effects.Pause(); shiftEffects.Pause(); pedalEffects.Pause(); }
-                else { effects.UnPause(); shiftEffects.UnPause(); pedalEffects.UnPause(); }
+                if (paused) { effects.Pause(); shiftEffects.Pause(); pedalEffects.Pause(); thunder.Pause(); }
+                else { effects.UnPause(); shiftEffects.UnPause(); pedalEffects.UnPause(); thunder.UnPause(); }
             }
+            TickWeather();
             if (game.State == GameState.Menu) effects.Stop();
             if (game.State == GameState.Menu || game.State == GameState.GameOver) { shiftEffects.Stop(); pedalEffects.Stop(); }
+        }
+
+        void TickWeather()
+        {
+            float storm = game.Weather.StormAmount;
+            float rainGain = game.Weather.RainAmount * Mathf.Lerp(.36f, .58f, storm);
+            if (paused) rainGain *= .4f;
+            float blend = heavyRain.clip != null ? storm : 0;
+            rain.volume = rainGain * (1 - blend);
+            heavyRain.volume = rainGain * blend;
+
+            if (game.State == GameState.Menu || game.State == GameState.GameOver)
+            {
+                thunder.Stop();
+                return;
+            }
+            if (game.State != GameState.Playing || catalog.thunderSounds == null || catalog.thunderSounds.Length == 0) return;
+
+            thunderCooldown -= Time.deltaTime;
+            if (storm < .35f || game.Weather.RainAmount < .25f || thunderCooldown > 0 || thunder.isPlaying) return;
+
+            thunder.clip = catalog.thunderSounds[nextThunder];
+            nextThunder = (nextThunder + 1) % catalog.thunderSounds.Length;
+            thunderCooldown = Random.Range(16f, 27f);
+            thunder.volume = Mathf.Lerp(.55f, .72f, storm);
+            if (thunder.clip != null) thunder.Play();
         }
     }
 }

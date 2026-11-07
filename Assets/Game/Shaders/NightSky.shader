@@ -13,10 +13,46 @@ Shader "AfterHours/NightSky"
             struct Attributes { float4 positionOS : POSITION; };
             struct Varyings { float4 positionCS : SV_POSITION; float3 direction : TEXCOORD0; };
             float _AfterHoursFog;
+            float _AfterHoursCloudCover;
             Varyings Vert(Attributes v)
             {
                 Varyings o; o.positionCS = TransformObjectToHClip(v.positionOS.xyz); o.direction = v.positionOS.xyz; return o;
             }
+
+            float CloudHash(float2 cell)
+            {
+                float3 p = frac(float3(cell.xyx) * .1031);
+                p += dot(p, p.yzx + 33.33);
+                return frac((p.x + p.y) * p.z);
+            }
+
+            float CloudNoise(float2 uv)
+            {
+                float2 cell = floor(uv);
+                float2 blend = frac(uv);
+                blend = blend * blend * (3 - 2 * blend);
+                float lower = lerp(CloudHash(cell), CloudHash(cell + float2(1, 0)), blend.x);
+                float upper = lerp(CloudHash(cell + float2(0, 1)), CloudHash(cell + 1), blend.x);
+                return lerp(lower, upper, blend.y);
+            }
+
+            float3 AddClouds(float3 sky, float3 direction, float moonAlignment)
+            {
+                // Project onto a sky plane to avoid a seam as the camera turns.
+                float2 uv = direction.xz / (max(direction.y, 0) + .28);
+                uv = uv * 1.65 + float2(.011, .006) * _Time.y;
+                float body = CloudNoise(uv) * .57 + CloudNoise(uv * 2.13 + 14) * .27;
+                body += CloudNoise(uv * 4.37 + 27) * .11 + CloudNoise(uv * 8.71) * .05;
+                float cover = saturate(_AfterHoursCloudCover);
+                float edge = lerp(.46, .24, cover);
+                float opacity = smoothstep(edge, edge + .17, body) * smoothstep(0, .09, direction.y);
+                float silver = pow(saturate(moonAlignment), 18) * .45;
+                float lighting = saturate(.28 + body * .54 + silver);
+                float3 clearCloud = lerp(float3(.027, .034, .051), float3(.124, .151, .19), lighting);
+                float3 stormCloud = lerp(float3(.015, .021, .033), float3(.073, .085, .106), lighting);
+                return lerp(sky, lerp(clearCloud, stormCloud, cover), opacity * lerp(.84, .98, cover));
+            }
+
             half4 Frag(Varyings input) : SV_Target
             {
                 float3 d = normalize(input.direction);
@@ -35,6 +71,7 @@ Shader "AfterHours/NightSky"
                 float craters = .035 * sin(moonUV.x * 9 + sin(moonUV.y * 7)) * sin(moonUV.y * 11);
                 color += halo * float3(.65, .73, .8);
                 color = lerp(color, float3(1.2, 1.22, 1.13) + craters, moon);
+                color = AddClouds(color, d, alignment);
                 color = lerp(color, float3(.065, .09, .115), saturate(_AfterHoursFog * horizon * .65));
                 return half4(color, 1);
             }

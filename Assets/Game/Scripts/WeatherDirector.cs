@@ -7,6 +7,7 @@ namespace AfterHours
         GameManager game;
         ParticleSystem rain;
         float fireworkTimer = 17;
+        static readonly int CloudCoverId = Shader.PropertyToID("_AfterHoursCloudCover");
         public float RainAmount { get; private set; }
         public float FogAmount { get; private set; }
         public float StormAmount { get; private set; }
@@ -44,6 +45,7 @@ namespace AfterHours
             RainAmount = FogAmount = StormAmount = 0; fireworkTimer = 17;
             Conditions = "CLEAR NIGHT"; RenderSettings.fogDensity = ClearFogDensity;
             Shader.SetGlobalFloat("_AfterHoursFogDensity", ClearFogDensity); Shader.SetGlobalFloat("_AfterHoursFog", 0);
+            Shader.SetGlobalFloat(CloudCoverId, 0);
             rain.Clear(); var emission = rain.emission; emission.rateOverTime = 0;
         }
         public void Tick(float dt)
@@ -61,6 +63,7 @@ namespace AfterHours
             RenderSettings.fogColor = new Color(.065f, .09f, .115f);
             Shader.SetGlobalFloat("_AfterHoursFogDensity", RenderSettings.fogDensity);
             Shader.SetGlobalFloat("_AfterHoursFog", FogAmount);
+            Shader.SetGlobalFloat(CloudCoverId, RainAmount * .45f + StormAmount * .55f);
             Conditions = StormAmount > .45f ? "HEAVY RAIN / DENSE FOG" : FogAmount > .4f ? RainAmount > .3f ? "RAIN / LOW FOG" : "FOG PATCH" : RainAmount > .3f ? "RAIN" : "CLEAR NIGHT";
             rain.transform.position = game.Driver.transform.position + new Vector3(0, 16, 12);
             var emission = rain.emission; emission.rateOverTime = RainEmissionRate;

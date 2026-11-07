@@ -46,6 +46,8 @@ namespace AfterHours
         public AudioClip fuelSound;
         public AudioClip ignitionSound;
         public AudioClip rainSound;
+        public AudioClip heavyRainSound;
+        public AudioClip[] thunderSounds;
         public AudioClip[] gearShiftSounds;
         public AudioClip throttleOnSound;
         public AudioClip throttleOffSound;

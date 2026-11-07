@@ -59,3 +59,11 @@ The Ferrari-derived profiles were replaced at the user's request. The 12 clips u
 Each profile has recorded idle, mid/load, gas-on/off and downshift cues. The Nissan recordings supply stylized voices for the fictional player vehicles; they are not recordings of those fictional models. Both profile pitch multipliers are 1.0 before the existing runtime RPM response. Other cars keep their previous recordings. No synthesized replacement engine sound was generated.
 
 Original Nissan recordings and download metadata are retained outside Unity in `../SourceAudio/GTR`. `Docs/PerformanceCarSoundSources.json` records source URLs, licenses, excerpts and checksums; `Tools/prepare_performance_audio.py` reproduces preparation. The superseded Ferrari originals remain in `../SourceAudio/PerformanceCars` and Git history; they are no longer the performance profiles' audio. Credits are copied alongside the GTR Windows player.
+
+## Recorded weather
+
+- Light rain uses **gentle steady spring rain city**, recorded by **Garuda1982** and released under CC0 1.0. https://freesound.org/people/Garuda1982/sounds/852917/
+- Heavy rain uses **Tropical Rain 1.wav**, recorded by **Doc Jon** and released under **CC BY 4.0** (https://creativecommons.org/licenses/by/4.0/). The game uses a stereo excerpt with filtering, level matching and a loop crossfade. https://freesound.org/people/Doc%20Jon/sounds/420635/
+- Storm thunder uses **thunder crack.wav** and **thunder crack 2.wav**, field recordings by **cognito perceptu** released under CC0 1.0. The game uses stereo excerpts with filtering, level matching and fades. https://freesound.org/people/cognito%20perceptu/sounds/347853/ and https://freesound.org/people/cognito%20perceptu/sounds/347854/
+
+Exact excerpts and processing are recorded in `Docs/WeatherSoundSources.json`. Original downloaded recordings are retained outside the project in `../SourceAudio/Weather`.
