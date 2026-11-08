@@ -75,8 +75,8 @@ public static class CitySceneryUpgrade
             EditorUtility.SetDirty(catalog); AssetDatabase.SaveAssetIfDirty(catalog);
             // Save only our generated assets; TMP may upgrade a vendor font in memory while baking signs.
             foreach (string guid in AssetDatabase.FindAssets("", new[] { Folder })) AssetDatabase.SaveAssetIfDirty(new GUID(guid));
-            Directory.CreateDirectory("Docs/Validation");
-            File.WriteAllText("Docs/Validation/city-authoring.json", Newtonsoft.Json.JsonConvert.SerializeObject(new { litWindowGroups, prefabs = report }, Newtonsoft.Json.Formatting.Indented));
+            Directory.CreateDirectory("Logs");
+            File.WriteAllText("Logs/city-authoring.json", Newtonsoft.Json.JsonConvert.SerializeObject(new { litWindowGroups, prefabs = report }, Newtonsoft.Json.Formatting.Indented));
             Debug.Log("DISTRICT_CITY_SCENERY_APPLIED: " + report.Count + " combined prefabs, " + litWindowGroups + " lit authored window groups");
         }
         finally

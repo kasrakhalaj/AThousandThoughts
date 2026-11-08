@@ -1,8 +1,0 @@
-{
-  "graphicsDirect3D12": true,
-  "lines": 37,
-  "issues": [],
-  "graphicsMessages": [
-    "d3d12: failed to query info queue interface (0x80004002)."
-  ]
-}

@@ -1,8 +1,0 @@
-{
-  "path": "E:\\MyGames\\HW2\\Build\\AfterHours-City\\AfterHours.exe",
-  "pid": 26332,
-  "responding": true,
-  "direct3D12": true,
-  "errorMatches": [],
-  "coverage": "Standalone startup only; gameplay validated in Editor"
-}

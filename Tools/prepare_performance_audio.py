@@ -1,10 +1,11 @@
 """Prepare the R34 (Tristar) and R35 (docLorean) recording profiles.
 
-Original recordings live in ../SourceAudio/GTR; see CREDITS.md for attribution
-and the source licenses. Existing asset paths/metas are intentionally retained.
+Set HW2_SOURCE_AUDIO to the recording archive directory. See CREDITS.md
+for attribution and the source licenses. Existing asset paths/metas are intentionally retained.
 Requires ffmpeg and numpy. No synthesized engine sound is generated.
 """
 from pathlib import Path
+import os
 import hashlib
 import json
 import subprocess
@@ -12,7 +13,7 @@ import wave
 import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCES = ROOT.parent / "SourceAudio/GTR"
+SOURCES = Path(os.environ.get("HW2_SOURCE_AUDIO", ROOT.parent / "SourceAudio")) / "GTR"
 OUT = ROOT / "Assets/Game/Audio/Performance"
 RATE = 44100
 LABELS = ["idle", "mid", "load", "gas-on", "gas-off", "downshift"]

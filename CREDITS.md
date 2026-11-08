@@ -16,7 +16,7 @@ Kenney environment packs, downloaded from the publisher on 2026-11-03. License f
 - City Kit (Suburban): https://kenney.nl/assets/city-kit-suburban
 - City Kit (Commercial): https://kenney.nl/assets/city-kit-commercial
 
-These packs are CC0. The download manifest and archive checksums are retained outside the Unity project in `../SourceAssets/Kenney/sources.json`. Three-lane road geometry and road paint are original procedural geometry; Kenney models provide the surrounding scenery and props. The district city pass reuses these four packs; sidewalks, service structures, the café canopy, furniture, utility wires and overpass approaches are original procedural geometry. Selected lit windows follow existing imported glass faces.
+These packs are CC0. The download manifest and archive checksums are retained outside the Unity project in `../../HW2-Archive/SourceAssets/Kenney/sources.json`. Three-lane road geometry and road paint are original procedural geometry; Kenney models provide the surrounding scenery and props. The district city pass reuses these four packs; sidewalks, service structures, the café canopy, furniture, utility wires and overpass approaches are original procedural geometry. Selected lit windows follow existing imported glass faces.
 
 ## Vehicles
 
@@ -37,9 +37,9 @@ Active engine, ignition and rain sounds are edited **real field recordings**, do
 - AI engine: **Car engine start up running and turning off.wav**, by **sound_catcher99** — https://freesound.org/people/sound_catcher99/sounds/425158/
 - Rain: **Rainfall**, by **colorsCrimsonTears** — https://freesound.org/people/colorsCrimsonTears/sounds/532681/
 
-License: https://creativecommons.org/publicdomain/zero/1.0/. Source MP3s, downloaded source pages and download manifest are retained in `../SourceAudio/FieldRecordings`. `Docs/RecordedSoundSources.json` records download URLs, excerpts and processing for the engine/ignition/rain clips. Preparation uses mono conversion, filtering, level adjustment and loop crossfades; no engine or rain tones are synthesized. The player layers come from portions of the same recording with runtime pitch/crossfade changes. They are stylized engine characters, not exact recordings of each depicted vehicle make.
+License: https://creativecommons.org/publicdomain/zero/1.0/. Source MP3s, downloaded source pages and download manifest are retained in `../../HW2-Archive/SourceAudio/FieldRecordings`. `Docs/RecordedSoundSources.json` records download URLs, excerpts and processing for the engine/ignition/rain clips. Preparation uses mono conversion, filtering, level adjustment and loop crossfades; no engine or rain tones are synthesized. The player layers come from portions of the same recording with runtime pitch/crossfade changes. They are stylized engine characters, not exact recordings of each depicted vehicle make.
 
-Collision and pickup effects are synthesized for this project. The original generator is `../Tools/make_drive_audio.py`. The earlier synthesized engine, ignition and rain placeholders and the superseded mono rain clip were retired.
+Collision and pickup effects are synthesized for this project. The original generator is `../../HW2-Archive/Original-Tools/make_drive_audio.py`. The earlier synthesized engine, ignition and rain placeholders and the superseded mono rain clip were retired.
 
 The personal MP3 music library was supplied by the student. It is stored outside Unity Assets and read from the local Music folder. Original artist/song filenames are preserved. The music is not part of the Kenney assets. Original-format backups are retained outside the active library.
 
@@ -50,7 +50,9 @@ Additional real recordings downloaded from Freesound public HQ previews on 2026-
 - **412_gearsw.wav**, **Mihacappy** — https://freesound.org/people/Mihacappy/sounds/871568/ — recorded gear changes inside an IZ-412. Three lever/clunk excerpts provide shift variation.
 - **v8 engine rev.wav**, **overmedium** — https://freesound.org/people/overmedium/sounds/651534/ — recorded throttle blips/idling. Short excerpts provide gas-on, gas-off and downshift rev-match cues.
 
-Sources, HTML license evidence and originals are retained outside the Unity project in `../SourceAudio/ManualGears`. `Docs/ManualGearSoundSources.json` records exact URLs, excerpts, checksums and processing; `Tools/prepare_manual_gear_audio.py` reproduces the mono PCM clips. These are stylized layers alongside the existing engine recording, not exact make-matched car sounds. No synthesized gear or throttle sound was generated. Runtime limiter pulse and engine pitch/volume control act on the real recordings.
+Sources, HTML license evidence and originals are retained outside the Unity project in `../../HW2-Archive/SourceAudio/ManualGears`. `Docs/ManualGearSoundSources.json` records exact URLs, excerpts, checksums and processing; `Tools/prepare_manual_gear_audio.py` reproduces the mono PCM clips. These are stylized layers alongside the existing engine recording, not exact make-matched car sounds. No synthesized gear or throttle sound was generated. Runtime limiter pulse and engine pitch/volume control act on the real recordings.
+
+The recording preparation scripts accept the `HW2_SOURCE_AUDIO` environment variable. For this workspace, point it at `../../HW2-Archive/SourceAudio` from the Unity project root.
 
 ## Assistance
 
@@ -65,7 +67,7 @@ The Ferrari-derived profiles were replaced at the user's request. The 12 clips u
 
 Each profile has recorded idle, mid/load, gas-on/off and downshift cues. The Nissan recordings supply stylized voices for the fictional player vehicles; they are not recordings of those fictional models. Both profile pitch multipliers are 1.0 before the existing runtime RPM response. Other cars keep their previous recordings. No synthesized replacement engine sound was generated.
 
-Original Nissan recordings and download metadata are retained outside Unity in `../SourceAudio/GTR`. `Docs/PerformanceCarSoundSources.json` records source URLs, licenses, excerpts and checksums; `Tools/prepare_performance_audio.py` reproduces preparation. The superseded Ferrari originals remain in `../SourceAudio/PerformanceCars` and Git history; they are no longer the performance profiles' audio. Credits are copied alongside the GTR Windows player.
+Original Nissan recordings and download metadata are retained outside Unity in `../../HW2-Archive/SourceAudio/GTR`. `Docs/PerformanceCarSoundSources.json` records source URLs, licenses, excerpts and checksums; `Tools/prepare_performance_audio.py` reproduces preparation. The superseded Ferrari originals remain in `../../HW2-Archive/SourceAudio/PerformanceCars` and Git history; they are no longer the performance profiles' audio. Credits are copied alongside the A Thousand Thoughts Windows player.
 
 ## Recorded weather
 
@@ -73,4 +75,4 @@ Original Nissan recordings and download metadata are retained outside Unity in `
 - Heavy rain uses **Tropical Rain 1.wav**, recorded by **Doc Jon** and released under **CC BY 4.0** (https://creativecommons.org/licenses/by/4.0/). The game uses a stereo excerpt with filtering, level matching and a loop crossfade. https://freesound.org/people/Doc%20Jon/sounds/420635/
 - Storm thunder uses **thunder crack.wav** and **thunder crack 2.wav**, field recordings by **cognito perceptu** released under CC0 1.0. The game uses stereo excerpts with filtering, level matching and fades. https://freesound.org/people/cognito%20perceptu/sounds/347853/ and https://freesound.org/people/cognito%20perceptu/sounds/347854/
 
-Exact excerpts and processing are recorded in `Docs/WeatherSoundSources.json`. Original downloaded recordings are retained outside the project in `../SourceAudio/Weather`.
+Exact excerpts and processing are recorded in `Docs/WeatherSoundSources.json`. Original downloaded recordings are retained outside the project in `../../HW2-Archive/SourceAudio/Weather`.

@@ -1,8 +1,0 @@
-{
-  "path": "E:\\MyGames\\HW2\\Build\\AfterHours-GTR\\AfterHours.exe",
-  "pid": 44328,
-  "responding": true,
-  "direct3D12": true,
-  "errorMatches": [],
-  "coverage": "Standalone startup only; audio/gear playback covered by PlayMode tests"
-}

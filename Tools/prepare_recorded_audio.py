@@ -1,12 +1,13 @@
 """Prepare engine loops and ignition from attributed CC0 field recordings."""
 from pathlib import Path
+import os
 import json
 import subprocess
 import wave
 import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE = ROOT.parent / 'SourceAudio' / 'FieldRecordings'
+SOURCE = Path(os.environ.get("HW2_SOURCE_AUDIO", ROOT.parent / "SourceAudio")) / "FieldRecordings"
 OUTPUT = ROOT / 'Assets' / 'Game' / 'Audio' / 'Recorded'
 RATE = 44100
 JOBS = [

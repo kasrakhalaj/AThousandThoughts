@@ -1,9 +1,0 @@
-{
-  "exe": "E:\\MyGames\\HW2\\Build\\AfterHours\\AfterHours.exe",
-  "exeSha256": "9806abde4a406ed68647e9505852c49f6aa72a372f4f084e2aa2821affea57a2",
-  "assembly": "E:\\MyGames\\HW2\\Build\\AfterHours\\AfterHours_Data\\Managed\\AfterHours.Runtime.dll",
-  "assemblySha256": "b7c3ecfcbb5fa34b7f2ea5555d1576762cdca1d803b6d174e21b9a69b1f12b16",
-  "containsLookingBack": true,
-  "containsCameraRearView": true,
-  "containsLookBackAction": true
-}

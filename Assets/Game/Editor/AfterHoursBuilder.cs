@@ -286,12 +286,12 @@ public static class AfterHoursBuilder
         BuildWindowsPlayer("Build/AThousandThoughts");
     }
 
-    public static BuildReport BuildWindowsPlayer(string outputDirectory, string executableName = "AThousandThoughts")
+    public static BuildReport BuildWindowsPlayer(string outputDirectory)
     {
         if (EditorApplication.isPlaying) throw new InvalidOperationException("Exit Play Mode before building.");
         var folder = Path.GetFullPath(outputDirectory);
         Directory.CreateDirectory(folder);
-        var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions { scenes = new[] { ScenePath }, locationPathName = Path.Combine(folder, executableName + ".exe"), target = BuildTarget.StandaloneWindows64, options = BuildOptions.None });
+        var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions { scenes = new[] { ScenePath }, locationPathName = Path.Combine(folder, "AThousandThoughts.exe"), target = BuildTarget.StandaloneWindows64, options = BuildOptions.None });
         if (report.summary.result != BuildResult.Succeeded) throw new Exception("Windows build failed: " + report.summary.result);
         File.Copy("CREDITS.md", Path.Combine(folder, "CREDITS.md"), true);
         var licenses = Directory.CreateDirectory(Path.Combine(folder, "Licenses"));

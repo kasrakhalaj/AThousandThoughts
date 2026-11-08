@@ -1,5 +1,6 @@
 """Prepare short game cues from attributed CC0 gear-lever and throttle field recordings."""
 from pathlib import Path
+import os
 import hashlib
 import json
 import subprocess
@@ -7,7 +8,7 @@ import wave
 import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE = ROOT.parent / 'SourceAudio' / 'ManualGears'
+SOURCE = Path(os.environ.get("HW2_SOURCE_AUDIO", ROOT.parent / "SourceAudio")) / "ManualGears"
 OUTPUT = ROOT / 'Assets/Game/Audio/Recorded'
 RATE = 44100
 JOBS = [
