@@ -34,7 +34,7 @@ public static class TrafficAudioUpgrade
             catalog.movingCar = variants[0]; catalog.movingTrafficVariants = variants;
             catalog.engineSound = Clip("player-idle"); catalog.engineMidSound = Clip("player-mid");
             catalog.engineLoadSound = Clip("player-load"); catalog.trafficEngineSound = Clip("traffic-engine");
-            catalog.ignitionSound = Clip("ignition"); catalog.rainSound = Clip("rain");
+            catalog.ignitionSound = Clip("ignition");
             EditorUtility.SetDirty(catalog); AssetDatabase.SaveAssets();
         }
         finally { EditorSceneManager.ClosePreviewScene(preview); }
@@ -48,8 +48,8 @@ public static class TrafficAudioUpgrade
         if (clip == null) throw new InvalidOperationException("Missing recorded audio: " + path);
         var importer = (AudioImporter)AssetImporter.GetAtPath(path);
         var settings = importer.defaultSampleSettings;
-        settings.loadType = name == "rain" ? AudioClipLoadType.CompressedInMemory : AudioClipLoadType.DecompressOnLoad;
-        settings.compressionFormat = name == "rain" ? AudioCompressionFormat.Vorbis : AudioCompressionFormat.PCM;
+        settings.loadType = AudioClipLoadType.DecompressOnLoad;
+        settings.compressionFormat = AudioCompressionFormat.PCM;
         settings.quality = .9f; settings.sampleRateSetting = AudioSampleRateSetting.PreserveSampleRate;
         importer.defaultSampleSettings = settings; importer.forceToMono = true; importer.SaveAndReimport();
         return AssetDatabase.LoadAssetAtPath<AudioClip>(path);

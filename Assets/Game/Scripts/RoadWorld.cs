@@ -281,19 +281,24 @@ namespace AfterHours
             for (int i = 0; i < sampleCount; i++) if (trafficSamples[i].Car == car) { self = trafficSamples[i]; found = true; break; }
             if (!found) return desired;
             float result = desired;
+            float playerSpeed = game.Driver.Speed;
             for (int a = 0; a < sampleCount; a++)
             {
-                var first = trafficSamples[a]; if (first.Car == car) continue;
+                var first = trafficSamples[a];
+                if (!CanFormRowAhead(self, first)) continue;
                 for (int b = a; b < sampleCount; b++)
                 {
-                    var second = trafficSamples[b]; if (second.Car == car || (self.Lanes | first.Lanes | second.Lanes) != 7) continue;
-                    // The current trailing car owns the yield. Do not brake a leading car merely
-                    // because a forecast assumes the cars behind it will overtake it.
-                    if (self.Z > first.Z + .25f || self.Z > second.Z + .25f) continue;
-                    if (Mathf.Abs(self.Z - first.Z) <= .25f && self.Id < first.Id) continue;
-                    if (Mathf.Abs(self.Z - second.Z) <= .25f && self.Id < second.Id) continue;
+                    var second = trafficSamples[b];
+                    if ((self.Lanes | first.Lanes | second.Lanes) != 7 || !CanFormRowAhead(self, second)) continue;
                     float rowSpeed = Mathf.Min(first.Speed, second.Speed);
-                    float spacing = TrafficRules.RowSpacing(game.Driver.Speed, rowSpeed);
+                    float spacing = TrafficRules.RowSpacing(playerSpeed, rowSpeed);
+                    float startGap = first.Z - second.Z;
+                    float endGap = first.Z + first.Speed * TrafficRules.FormationLookahead - (second.Z + second.Speed * TrafficRules.FormationLookahead);
+                    // The forecast uses constant speeds. A pair outside the spacing on the same
+                    // side at both ends cannot form a row. Keep a margin for float rounding.
+                    float roundingMargin = Mathf.Max(.25f, Mathf.Max(Mathf.Abs(first.Z), Mathf.Abs(second.Z)) * .000001f);
+                    float limit = spacing + roundingMargin;
+                    if ((startGap > limit && endGap > limit) || (startGap < -limit && endGap < -limit)) continue;
                     for (int step = 0; step <= 8; step++)
                     {
                         float time = step * (TrafficRules.FormationLookahead / 8);
@@ -309,18 +314,27 @@ namespace AfterHours
             }
             return result;
         }
+        static bool CanFormRowAhead(TrafficSample self, TrafficSample other)
+        {
+            // Only the current trailing car yields. List order breaks ties.
+            return other.Id != self.Id && self.Z <= other.Z + .25f
+                && (self.Id > other.Id || Mathf.Abs(self.Z - other.Z) > .25f);
+        }
         float TrafficSpeedInLane(StationaryCar car, float cruising, int lane)
         {
             float result = cruising;
             float headway = (car is MovingCar moving ? moving.Headway : 1.5f) * WeatherHeadway;
-            float playerGap = game.Driver.transform.position.z - car.transform.position.z;
+            float carZ = car.transform.position.z;
+            float carSpeed = car.Speed;
+            float playerGap = game.Driver.transform.position.z - carZ;
             if (playerGap > 0 && PlayerOccupiesLane(lane))
-                result = Mathf.Min(result, TrafficRules.FollowingSpeed(cruising, car.Speed, game.Driver.Speed, playerGap, headway));
+                result = Mathf.Min(result, TrafficRules.FollowingSpeed(cruising, carSpeed, game.Driver.Speed, playerGap, headway));
             foreach (var other in traffic)
             {
-                if (other == car || !OccupiesLane(other, lane)) continue;
-                float gap = other.transform.position.z - car.transform.position.z;
-                if (gap > 0) result = Mathf.Min(result, TrafficRules.FollowingSpeed(cruising, car.Speed, other.Speed, gap, headway));
+                if (other == car) continue;
+                float gap = other.transform.position.z - carZ;
+                if (gap > 0 && OccupiesLane(other, lane))
+                    result = Mathf.Min(result, TrafficRules.FollowingSpeed(cruising, carSpeed, other.Speed, gap, headway));
             }
             return result;
         }

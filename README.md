@@ -1,64 +1,44 @@
 # After Hours
 
-A low-poly endless night drive for Game Design HW2. Tristar Racer is selected by default. Choose from five cars, start the engine, dodge traffic, collect coins and fuel, and listen to a personal music library through changing rain and fog.
+A low-poly endless night drive for Game Design HW2. Choose one of five cars, start the engine, and dodge traffic through changing districts, fog, and rain. Collect coins and fuel to keep the run going.
 
-## Open and play
+## Run from source
 
-Open this folder with Unity **6000.6.7f1**. Open `Assets/Game/Scenes/AfterHours.unity`, then enter Play Mode. The project uses URP, TextMeshPro/uGUI, and the **New Input System only** (`activeInputHandler = 1`).
+1. Open the repository root with **Unity 6000.6.7f1**. Let Unity restore the packages and import the assets.
+2. Open `Assets/Game/Scenes/AfterHours.unity` and enter Play Mode.
+3. Select a car and press **Enter** to start the engine. Hold **W** to drive.
 
-The scene and serialized catalog/prefabs are already authored. `After Hours > Create initial game scene` is an initial authoring tool; it deliberately refuses to overwrite the existing scene.
+The scene, vehicle prefabs and game catalog are included. The project uses URP, TextMeshPro/uGUI and the New Input System.
 
 ## Controls
 
 | Input | Action |
 | --- | --- |
-| Enter / Start button | Start the engine |
-| A/D or left/right arrows | Change lane |
-| S/down arrow | Brake (takes priority over gas) |
-| R | Select forward or reverse gear |
-| C (hold) / right-stick click (hold) | Look behind while continuing to drive |
-| E / right shoulder | Shift up one gear |
-| Q / left shoulder | Shift down one gear |
-| W/up arrow | Hold for gas in the selected gear |
-| Escape | Pause/resume |
-| N / B | Next / previous song |
-| M | Pause/resume music |
+| Enter | Start the engine |
+| W / up arrow | Accelerate |
+| S / down arrow | Brake |
+| A / D or left / right arrows | Steer one lane while rolling |
+| Q / E | Shift down / up |
+| R | Select forward / reverse |
+| Hold C | Look behind |
+| Escape | Pause / resume |
+| N / B | Next / previous track |
+| M | Pause / resume music |
 
-Hold C to check traffic behind while driving forward; release C to restore the normal view. This camera glance keeps forward steering, gas, gear and engine RPM behavior. R still selects actual reverse driving. Steering follows screen space while the car is reversing. The car's orientation remains physically forward. Gamepad D-pad, triggers, west button and Start are also bound; keyboard/mouse is the primary validation target.
+Brake takes priority over gas. Selecting reverse brakes to a stop first. Hold W to move in the selected direction. In reverse, steering follows the camera view. Holding C while driving forward keeps forward steering. The dashboard shows speed, RPM, acceleration and shift hints.
 
-The engine starts while the car remains stopped. Hold W to accelerate, release it to coast and press S to brake. R selects forward or reverse gear and automatically brakes opposite travel to a stop; W supplies gas in either gear. Release S to accelerate backward. Braking takes priority when both pedals are held. The dashboard shows actual km/h, a speed bar, gear and gas/coast/brake state. The forward limit is 300 km/h. Gas supplies acceleration against rolling/aerodynamic resistance; the final 100 km/h takes much longer than the first. With well-timed manual shifts, base clear-road tuning is approximately 0-100 in 7s, 0-200 in 16s and 0-300 in 39s. Holding gas alone stays in the selected gear. Distance progression adds a small acceleration bonus while traffic gets harder. The dashboard shows signed acceleration along travel in m/s²; six selected gears drive actual torque, per-gear rev limits and engine RPM. E shifts up, Q shifts down, and an automatic clutch briefly cuts power for 0.36s. First through sixth redlines are approximately 45/85/130/180/240/300 km/h. Early high gears lug; a downshift that would over-rev is rejected. The RPM bar and shift prompts guide the driver.
+## Windows build
 
-## Music
+In Unity, choose **After Hours > Build Windows player**. The Windows x64 player and asset credits appear in `Build/AfterHours/` inside the project. Keep the complete player folder together when moving it.
 
-In the Editor the game reads **`../Music`**, the existing HW2 music folder. Singles is the opening playlist: Kavinsky - Nightcall first, then DVRST - Tell Me What Alternative, followed by the remaining singles. The DVRST track also stays in its artist playlist. Each nested folder becomes an artist playlist; root-level tracks belong to Singles. All Music combines the library. Supported runtime files are MP3. Only the active track is loaded. Category controls, shuffle, volume, track progress and an audio-reactive spectrum are included. The library is scanned at startup; restart the game after adding or removing files.
+## Optional music
 
-For a Windows player, the `Music` folder belongs **beside the executable**. `After Hours > Build Windows player` creates `../Build/AfterHours` and copies the active MP3 library there. Original lossless files and backups in `../SourceAudio` are not game content and are not copied.
+Create a `Music` folder beside the executable or at the repository root for Play Mode. The Editor also checks `../Music` when the project has no local music folder. Put MP3s in that folder and use subfolders for artist playlists. Restart after changing the library.
 
-## Required architecture
+The game works with an empty library. Personal music and original recording downloads stay outside version control.
 
-- `GameManager` is the Singleton and state owner: Menu, Starting, Playing, Paused, GameOver.
-- `RunModel` owns lives, fuel, score and progressive difficulty. Distance score is a forward high-water mark.
-- `DriverInput` clones the serialized Input Actions asset. Driving actions are disabled in menus/pause/results; system/music actions remain available. The UI uses InputSystemUIInputModule.
-- StationaryCar, MovingCar, CoinPickup and FuelPickup inherit abstract `Interactable` through virtual/override behavior.
-- `RoadWorld` prewarms a fixed pool of road segments, cars and pickups. Road sections recycle in both directions. Revisiting recycled sections does not regenerate scoring pickups. No repeated gameplay Instantiate/Destroy.
-- Traffic drivers cruise, follow, signal, change lanes and recover before another maneuver. Cautious, balanced and assertive profiles use different headways and signal durations. Drivers overtake slower traffic; cautious drivers also return right when safe. Other drivers hold their lane until a pass offers enough benefit.
-- Target-lane checks include the player, committed player steering, traffic ahead/behind and other merge reservations. Following observes both occupied lanes during a merge. Rain/fog lower desired speeds and increase spacing.
-- A bounded traffic director maintains traffic within 300 metres ahead/100 behind, with sparse, normal, busy and shorter quiet stretches. At high speed the encounter range expands to five seconds ahead, the budget grows and replenishment speeds up. Distant cars no longer consume the encounter budget. New traffic must be outside the camera or fully concealed by opaque distance fog, have sufficient closing-time/vehicle gaps, and leave a reachable escape lane. The streamed road window follows forward/reverse viewing. Quiet stretches stop replenishment and retire hidden cars while visible cars clear naturally.
-- Traffic forecasts approaching rows and keeps the trailing car staggered so three lanes do not close together. Nearby lane changes and new spawns must preserve a reachable gap.
-- A minority of fast AI drivers accelerate through selected road stretches, with a clear-road ceiling around 200 km/h. They still brake, follow, signal and slow in rain/fog; regular nearby opening traffic preserves encounters while the player accelerates.
-- Normal traffic uses all seven Quaternius 2018 car models with rotating wheels, lights and quiet recorded engines. Queue-based reuse cycles through model variants. Rare hazard-lit stopped cars preserve the assignment's stationary obstacles.
-- `WeatherDirector` transitions among clear/rain/fog zones, localized storm pockets with heavier drops/stronger fog/louder recorded rain, and occasional fireworks. Weather fades smoothly and resets on restart. Lights, smoke, sparks, pickup particles and restrained speed-reactive underglow cover the visual brief without changing the grounded art direction.
-- The moon sits within the driving view. City Center, Maple Heights, East Works and Pine Ridge provide coherent commercial, residential, industrial and wooded districts. Sidewalks, cross streets, gardens, yards, a caf�, park, service station and overpass add recognizable surroundings. Selected authored glass faces have warm window light. Scenery is combined into reusable meshes, prewarmed and recycled deterministically in both directions. The driving route remains three lanes. See `Docs/CitySceneryValidation.md`.
-- Fog uses a depth-based URP fullscreen pass before post-processing. An early patch fades in from 110 m, becomes dense around 185–270 m and clears by 350 m; later weather zones include longer fog/rain stretches.
-- Each of the five cars uses its original FBX headlight and tail/brake lens shapes, with road beams and white reverse lamps where the model has distinct reverse lenses. Ignition controls them; traffic cars also carry lights. Damage flashes preserve lamp emission.
-- High score uses `PlayerPrefs` key `AfterHours.HighScore.v1`.
+## Tests and asset credits
 
-The original ignition, default engine layers, traffic engines and rain use actual CC0 recordings. Tristar Racer now uses a real Nissan Skyline GT-R R34 recording and docLorean uses a Nissan GT-R R35 onboard recording, with separate recorded idle/mid/load and pedal/downshift cues. The Nissan clips use CC BY 3.0 and the Sonniss GDC bundle license respectively; see CREDITS.md. See `Docs/PerformanceCarSoundSources.json`. Three newly recorded lever-clunk variants, gas-on/off excerpts and a downshift rev blip provide gearbox/pedal feedback. A held gas input does not spam rev one-shots. New source credits are in `Docs/ManualGearSoundSources.json`. Engine layers respond to throttle, speed and simulated gear changes; AI sources are quieter and spatial, with distance fade and mild Doppler. Music remains independently controlled. Credits and source excerpts are recorded in `CREDITS.md` and `Docs/RecordedSoundSources.json`. `Tools/prepare_recorded_audio.py` reproduces preparation from the source recordings retained outside the project.
+Run the Edit Mode and Play Mode suites in **Window > General > Test Runner**. The suites exercise run rules, steering, gears, camera, traffic, pooling, music and weather. They work with or without a local music library.
 
-## Tests and development
-
-Use Unity Test Runner: `AfterHours.EditMode` for run and traffic safety rules; `AfterHours.PlayMode` for ignition, New Input System steering/reverse, camera, pause, pool capacity, restart, damage, high-score persistence, music/weather, safe spawning, reverse-camera visibility, merge reservations/cancellation/completion and quiet-road draining. Tests restore the pre-existing high-score preference.
-
-The Unity Pipeline package supports local Editor control and is a development dependency. No online game services, ads, accounts or multiplayer are required.
-
-This is the first playable implementation. Track balancing, camera comfort, weather density, audio mixing and car-specific presentation should be refined through player feedback. Weapons are deliberately deferred.
+See [CREDITS.md](CREDITS.md) for third-party assets, source links and terms. This is the local source repository for the assignment. The repository and its history include third-party source assets, so review their redistribution terms before publishing the source.

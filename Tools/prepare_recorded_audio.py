@@ -1,4 +1,4 @@
-"""Prepare loops from attributed CC0 field recordings; no synthesized engine/rain audio."""
+"""Prepare engine loops and ignition from attributed CC0 field recordings."""
 from pathlib import Path
 import json
 import subprocess
@@ -15,7 +15,6 @@ JOBS = [
     ('player-engine', 'Recorded-player-mid', 52, 54.5, .20, .14),
     ('player-engine', 'Recorded-player-load', 47.1, 49.2, .16, .14),
     ('traffic-engine', 'Recorded-traffic-engine', 5.5, 9.5, .25, .12),
-    ('rain', 'Recorded-rain', .2, 21.2, .45, .11),
 ]
 
 

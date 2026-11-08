@@ -24,17 +24,33 @@ namespace AfterHours
         }
         public void SetIgnition(bool on, bool isTraffic = false)
         {
-            ignition = on; traffic = isTraffic; SetDrivingState(false, false);
+            ignition = on; traffic = isTraffic;
+            Braking = Reversing = false;
+            if (properties == null) properties = new MaterialPropertyBlock();
+            Paint(frontLenses, new Color(1, .91f, .7f), ignition ? 6 : 0);
+            PaintBrakeLenses();
+            Paint(reverseLenses, new Color(.8f, .9f, 1), 0);
+            foreach (var beam in beams) { beam.enabled = ignition; beam.range = traffic ? 30 : 72; beam.intensity = traffic ? 9 : 24; }
+            rearGlow.enabled = ignition;
         }
         public void SetDrivingState(bool braking, bool reversing)
         {
-            Braking = braking; Reversing = reversing;
-            if (properties == null) properties = new MaterialPropertyBlock();
-            Paint(frontLenses, new Color(1, .91f, .7f), ignition ? 6 : 0);
-            Paint(rearLenses, new Color(1, .018f, .006f), ignition ? braking ? 7 : 2.8f : .08f);
-            Paint(reverseLenses, new Color(.8f, .9f, 1), ignition && reversing ? 5 : 0);
-            foreach (var beam in beams) { beam.enabled = ignition; beam.range = traffic ? 30 : 72; beam.intensity = traffic ? 9 : 24; }
-            rearGlow.enabled = ignition; rearGlow.intensity = braking ? .8f : .22f;
+            if (properties == null) SetIgnition(ignition, traffic);
+            if (Braking != braking)
+            {
+                Braking = braking;
+                PaintBrakeLenses();
+            }
+            if (Reversing != reversing)
+            {
+                Reversing = reversing;
+                Paint(reverseLenses, new Color(.8f, .9f, 1), ignition && reversing ? 5 : 0);
+            }
+        }
+        void PaintBrakeLenses()
+        {
+            Paint(rearLenses, new Color(1, .018f, .006f), ignition ? Braking ? 7 : 2.8f : .08f);
+            rearGlow.intensity = Braking ? .8f : .22f;
         }
         void Paint(Renderer[] lenses, Color color, float intensity)
         {

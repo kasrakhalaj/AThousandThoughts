@@ -34,7 +34,8 @@ namespace AfterHours
         {
             source = gameObject.AddComponent<AudioSource>(); source.volume = Volume;
             string folder = Path.Combine(Path.GetDirectoryName(Application.dataPath), "Music");
-            if (Application.isEditor) folder = Path.GetFullPath(Path.Combine(Application.dataPath, "..", "..", "Music"));
+            if (Application.isEditor && !Directory.Exists(folder))
+                folder = Path.GetFullPath(Path.Combine(Application.dataPath, "..", "..", "Music"));
             library["All Music"] = new List<string>();
             library["Singles"] = new List<string>();
             try

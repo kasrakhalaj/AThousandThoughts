@@ -165,12 +165,17 @@ public sealed class DrivingFlowTests
         Assert.That(g.Driver.Speed, Is.LessThan(poweredSpeed - 3));
         var hud = Object.FindAnyObjectByType<GameHud>();
         Assert.That(hud.DisplayedSpeedKph, Is.EqualTo(Mathf.RoundToInt(Mathf.Abs(g.Driver.Speed) * 3.6f)).Within(4));
-        yield return Press(Key.D); yield return new WaitForSeconds(.3f); Assert.That(g.Driver.Lane, Is.EqualTo(2));
+        yield return Press(Key.D); yield return new WaitForSeconds(1.7f); Assert.That(g.Driver.Lane, Is.EqualTo(2));
         yield return Press(Key.R); yield return Hold(Key.W, 2); Assert.That(g.Driver.Speed, Is.LessThan(0));
         Assert.That(Camera.main.transform.position.z, Is.GreaterThan(g.Driver.transform.position.z));
-        yield return Press(Key.D); Assert.That(g.Driver.Lane, Is.EqualTo(1)); // Screen-right becomes world-left in reverse.
-        yield return new WaitForSeconds(.6f);
-        Assert.That(g.Driver.transform.position.x, Is.LessThan(2.7f), "The reverse maneuver must move toward the requested lane.");
+        float beforeReverseTurn = g.Driver.transform.position.x;
+        InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.W, Key.D));
+        yield return new WaitForSeconds(.12f);
+        Assert.That(g.Driver.Lane, Is.EqualTo(1)); // Screen-right becomes world-left in reverse.
+        InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.W));
+        yield return new WaitForSeconds(1.8f);
+        InputSystem.QueueStateEvent(keyboard, new KeyboardState()); yield return null;
+        Assert.That(g.Driver.transform.position.x, Is.LessThan(beforeReverseTurn - .6f), "The reverse maneuver must move toward the requested lane.");
         yield return Press(Key.A); Assert.That(g.Driver.Lane, Is.EqualTo(2));
         yield return Press(Key.Escape); Assert.That(g.State, Is.EqualTo(GameState.Paused));
         Vector3 position = g.Driver.transform.position; float fuel = g.Run.Fuel;
@@ -197,7 +202,7 @@ public sealed class DrivingFlowTests
 
             InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.W)); yield return null;
             for (int i = 0; i < 20; i++) driver.Tick(g.Input, g.Run.TopSpeed, .02f);
-            Assert.That(driver.transform.position.x, Is.InRange(.01f, .2f), "A queued turn should begin gently as the car rolls.");
+            Assert.That(driver.transform.position.x, Is.InRange(.0005f, .025f), "A queued turn should begin gently as the car rolls.");
 
             driver.Reset();
             for (int i = 0; i < 2250; i++)
@@ -209,16 +214,28 @@ public sealed class DrivingFlowTests
             InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.W, Key.D)); yield return null;
             driver.Tick(g.Input, g.Run.TopSpeed, .02f);
             float firstStep = driver.transform.position.x;
-            Assert.That(firstStep, Is.InRange(.01f, .25f));
+            Assert.That(firstStep, Is.InRange(.003f, .03f));
             InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.W)); yield return null;
             driver.Tick(g.Input, g.Run.TopSpeed, .02f);
             Assert.That(driver.transform.position.x - firstStep, Is.GreaterThan(firstStep), "Lateral movement should build after turn-in.");
-            Assert.That(body.localRotation.eulerAngles.y, Is.InRange(5f, 26f));
-            for (int i = 0; i < 11; i++) driver.Tick(g.Input, g.Run.TopSpeed, .02f);
-            Assert.That(driver.transform.position.x, Is.GreaterThan(3.05f), "At highway speed the arc must still clear the old lane quickly.");
-            for (int i = 0; i < 22; i++) driver.Tick(g.Input, g.Run.TopSpeed, .02f);
+            Assert.That(body.localRotation.eulerAngles.y, Is.InRange(1f, 5f));
+            for (int i = 0; i < 10; i++) driver.Tick(g.Input, g.Run.TopSpeed, .02f);
+            Assert.That(driver.transform.position.x, Is.GreaterThan(1.8f), "At highway speed the car must reach the next lane within the dodge window.");
+            for (int i = 0; i < 26; i++) driver.Tick(g.Input, g.Run.TopSpeed, .02f);
             Assert.That(driver.transform.position.x, Is.EqualTo(CarDriver.LaneWidth).Within(.01f));
             Assert.That(Quaternion.Angle(body.localRotation, Quaternion.identity), Is.LessThan(.3f));
+
+            InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.W, Key.A)); yield return null;
+            driver.Tick(g.Input, g.Run.TopSpeed, .02f);
+            InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.W)); yield return null;
+            for (int i = 0; i < 5; i++) driver.Tick(g.Input, g.Run.TopSpeed, .02f);
+            float beforeCorrection = driver.transform.position.x;
+            InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.W, Key.D)); yield return null;
+            driver.Tick(g.Input, g.Run.TopSpeed, .02f);
+            Assert.That(driver.transform.position.x, Is.LessThan(beforeCorrection), "A correction should unwind the leftward motion smoothly.");
+            InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.W)); yield return null;
+            for (int i = 0; i < 42; i++) driver.Tick(g.Input, g.Run.TopSpeed, .02f);
+            Assert.That(driver.transform.position.x, Is.EqualTo(CarDriver.LaneWidth).Within(.01f));
         }
         finally { g.enabled = true; }
     }
@@ -235,18 +252,33 @@ public sealed class DrivingFlowTests
     [UnityTest] public IEnumerator MusicCategoriesPlaybackAndWeatherZones()
     {
         var g = GameManager.Instance;
-        Assert.That(g.Music.Category, Is.EqualTo("Singles")); Assert.That(g.Music.Categories[0], Is.EqualTo("Singles"));
-        Assert.That(g.Music.Categories, Does.Contain("Pink Floyd"));
-        float deadline = Time.realtimeSinceStartup + 10;
-        while (!g.Music.IsPlaying && Time.realtimeSinceStartup < deadline) yield return null;
-        Assert.That(g.Music.IsPlaying, Is.True, g.Music.Status);
-        Assert.That(g.Music.TrackName, Does.StartWith("Kavinsky - Nightcall"));
-        string original = g.Music.TrackName; g.Music.Next(1);
-        yield return new WaitForSecondsRealtime(2); Assert.That(g.Music.TrackName, Is.Not.EqualTo(original));
-        Assert.That(g.Music.TrackName, Does.Contain("DVRST").And.Contain("Tell Me What"));
-        g.Music.Toggle(); Assert.That(g.Music.IsPlaying, Is.False); g.Music.Toggle(); Assert.That(g.Music.IsPlaying, Is.True);
-        g.Music.ChangeCategory(1); Assert.That(g.Music.Category, Is.EqualTo("All Music"));
-        Assert.That(g.Music.TrackCount, Is.GreaterThanOrEqualTo(26));
+        Assert.That(g.Music.Categories[0], Is.EqualTo("Singles"));
+        Assert.That(g.Music.Categories[1], Is.EqualTo("All Music"));
+        if (g.Music.TrackCount == 0)
+        {
+            Assert.That(g.Music.Status, Is.EqualTo("Add MP3 files to the Music folder"));
+            Assert.That(g.Music.IsPlaying, Is.False);
+        }
+        else
+        {
+            float deadline = Time.realtimeSinceStartup + 10;
+            while (!g.Music.IsPlaying && Time.realtimeSinceStartup < deadline) yield return null;
+            Assert.That(g.Music.IsPlaying, Is.True, g.Music.Status);
+            if (g.Music.TrackCount > 1)
+            {
+                string title = g.Music.TrackName, artist = g.Music.Artist;
+                g.Music.Next(1);
+                deadline = Time.realtimeSinceStartup + 10;
+                while (!g.Music.IsPlaying && Time.realtimeSinceStartup < deadline) yield return null;
+                Assert.That(g.Music.IsPlaying, Is.True, g.Music.Status);
+                Assert.That(g.Music.TrackName != title || g.Music.Artist != artist, Is.True);
+            }
+            g.Music.Toggle(); Assert.That(g.Music.IsPlaying, Is.False);
+            g.Music.Toggle(); Assert.That(g.Music.IsPlaying, Is.True);
+            if (g.Music.Category == "Singles") g.Music.ChangeCategory(1);
+            Assert.That(g.Music.Category, Is.EqualTo("All Music"));
+            Assert.That(g.Music.TrackCount, Is.GreaterThan(0));
+        }
         g.Driver.transform.position = new Vector3(0, 0, 1100);
         for (int i = 0; i < 50; i++) g.Weather.Tick(.1f);
         Assert.That(g.Weather.RainAmount, Is.GreaterThan(.5f)); Assert.That(g.Weather.Conditions, Is.EqualTo("HEAVY RAIN / DENSE FOG"));

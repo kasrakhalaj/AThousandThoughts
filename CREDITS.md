@@ -9,11 +9,11 @@ Kenney environment packs, downloaded from the publisher on 2026-11-03. License f
 - City Kit (Suburban): https://kenney.nl/assets/city-kit-suburban
 - City Kit (Commercial): https://kenney.nl/assets/city-kit-commercial
 
-These packs are CC0. The download manifest and archive checksums are retained outside the Unity project in `../SourceAssets/Kenney/sources.json`. Three-lane road geometry and road paint are original procedural geometry; Kenney models provide the surrounding scenery and props. The district city pass reuses these four packs; sidewalks, service structures, the café canopy, furniture, utility wires and overpass approaches are original procedural geometry. Selected lit windows follow existing imported glass faces.
+These packs are CC0. The download manifest and archive checksums are retained outside the Unity project in `../SourceAssets/Kenney/sources.json`. Three-lane road geometry and road paint are original procedural geometry; Kenney models provide the surrounding scenery and props. The district city pass reuses these four packs; sidewalks, service structures, the cafÃ© canopy, furniture, utility wires and overpass approaches are original procedural geometry. Selected lit windows follow existing imported glass faces.
 
 ## Vehicles
 
-Five FBX vehicle models and related props were supplied by the student in `../Assets/Vehicles` and copied unchanged into `Assets/Art/Vehicles`. The student described these as free itch.io assets. The exact publisher URL/license file was not included in the supplied folder; record those details before final submission. Generated prefab wrappers normalize model scale and convert materials for URP while preserving the source files.
+The five player cars are from **FREE â€“ Low Poly Car Starter Pack** by **designersoup** (https://designersoup.itch.io/low-poly-car-pack-1), supplied by the student. The publisher permits use and modification in games and lists restrictions on repackaging the source models and textures. Generated prefabs normalize the FBXs and convert their materials for URP.
 
 AI traffic uses Quaternius's **Realistic Car Pack - Nov 2018**, supplied in `../Assets/Vehicles/Realistic Car Pack - Nov 2018`. Seven FBXs and the included CC0 1.0 license were copied unchanged to `Assets/Art/RealCars2018`. Publisher: https://quaternius.com/ (the supplied license also credits https://www.patreon.com/quaternius). Generated wrappers normalize scale, convert materials and extract the authored lamp geometry into independently lit meshes. Original FBXs are not modified.
 
@@ -32,7 +32,7 @@ Active engine, ignition and rain sounds are edited **real field recordings**, do
 
 License: https://creativecommons.org/publicdomain/zero/1.0/. Source MP3s, downloaded source pages and download manifest are retained in `../SourceAudio/FieldRecordings`. `Docs/RecordedSoundSources.json` records download URLs, excerpts and processing for the engine/ignition/rain clips. Preparation uses mono conversion, filtering, level adjustment and loop crossfades; no engine or rain tones are synthesized. The player layers come from portions of the same recording with runtime pitch/crossfade changes. They are stylized engine characters, not exact recordings of each depicted vehicle make.
 
-Collision and pickup effects remain original synthesized audio generated for this project. Their generator is `../Tools/make_drive_audio.py`. Older synthesized engine/ignition/rain files remain as unused development assets; the catalog points to `Audio/Recorded` clips.
+Collision and pickup effects are synthesized for this project. The original generator is `../Tools/make_drive_audio.py`. The earlier synthesized engine, ignition and rain placeholders and the superseded mono rain clip were retired.
 
 The personal MP3 music library was supplied by the student. It is stored outside Unity Assets and read from the local Music folder. Original artist/song filenames are preserved. The music is not part of the Kenney assets. Original-format backups are retained outside the active library.
 
@@ -49,12 +49,12 @@ Sources, HTML license evidence and originals are retained outside the Unity proj
 
 OpenAI Codex assisted with planning, C# implementation, asset preparation, audio conversion, synthesized effects, documentation and validation. The student directs the game design and supplies the music and vehicle assets. This acknowledgement follows the assignment's external-source disclosure requirement.
 
-## Performance-car engine voices — updated 2026-11-06
+## Performance-car engine voices â€” updated 2026-11-06
 
 The Ferrari-derived profiles were replaced at the user's request. The 12 clips under `Assets/Game/Audio/Performance` now use these real recordings:
 
-- **Tristar Racer — Nissan Skyline GT-R R34:** LowFps, *BUMPER CAM NISSAN SKYLINE GT-R R34 - PURE SOUND AT NÜRBURGRING*. Original: https://www.youtube.com/watch?v=NpqxDM7pejs . Audio source and license declaration: https://commons.wikimedia.org/wiki/File:Nissan_Skyline_GT-R_-_engine_and_exhaust_sound_(YouTube_NpqxDM7pejs).opus . Licensed under **Creative Commons Attribution 3.0**, https://creativecommons.org/licenses/by/3.0/ . Changes: excerpts, mono conversion, filtering, DC removal, loop crossfades, cue fades and level normalization. No endorsement is implied.
-- **docLorean — Nissan GT-R R35 2012:** **Pole Position Production**, `Nissan_GTR_t6_Onbrd_Drive_Ramps_Engine_Left_Valve_DPA4062.wav`, from the **Sonniss GDC 2020 Game Audio Bundle**, part 8. Collection: https://sonniss.com/gameaudiogdc/ . Used under the **Sonniss GDC Game Audio Bundle license v2.0**, effective 27 August 2026: https://sonniss.com/gdc-bundle-license/ . Changes: excerpts, mono conversion, filtering, DC removal, loop crossfades, cue fades and level normalization. Sound effects used under the Sonniss GDC bundle licence, incorporated in this game; original recording remains the property of its rights holder.
+- **Tristar Racer â€” Nissan Skyline GT-R R34:** LowFps, *BUMPER CAM NISSAN SKYLINE GT-R R34 - PURE SOUND AT NÃœRBURGRING*. Original: https://www.youtube.com/watch?v=NpqxDM7pejs . Audio source and license declaration: https://commons.wikimedia.org/wiki/File:Nissan_Skyline_GT-R_-_engine_and_exhaust_sound_(YouTube_NpqxDM7pejs).opus . Licensed under **Creative Commons Attribution 3.0**, https://creativecommons.org/licenses/by/3.0/ . Changes: excerpts, mono conversion, filtering, DC removal, loop crossfades, cue fades and level normalization. No endorsement is implied.
+- **docLorean â€” Nissan GT-R R35 2012:** **Pole Position Production**, `Nissan_GTR_t6_Onbrd_Drive_Ramps_Engine_Left_Valve_DPA4062.wav`, from the **Sonniss GDC 2020 Game Audio Bundle**, part 8. Collection: https://sonniss.com/gameaudiogdc/ . Used under the **Sonniss GDC Game Audio Bundle license v2.0**, effective 27 August 2026: https://sonniss.com/gdc-bundle-license/ . Changes: excerpts, mono conversion, filtering, DC removal, loop crossfades, cue fades and level normalization. Sound effects used under the Sonniss GDC bundle licence, incorporated in this game; original recording remains the property of its rights holder.
 
 Each profile has recorded idle, mid/load, gas-on/off and downshift cues. The Nissan recordings supply stylized voices for the fictional player vehicles; they are not recordings of those fictional models. Both profile pitch multipliers are 1.0 before the existing runtime RPM response. Other cars keep their previous recordings. No synthesized replacement engine sound was generated.
 

@@ -28,8 +28,9 @@ namespace AfterHours
         public bool Lugging => !Reversing && Gear > 1 && RpmRatio < .25f && Throttle > .2f;
         public const float LaneWidth = 3.6f;
         public const float LaneDodgeTime = .24f;
-        const float MaximumSteeringSlope = .48f;
-        float lateralSlope, lateralSpeed, bodyRoll;
+        const float SteeringResponseTime = .073f;
+        const float MinimumSteeringLength = LaneWidth;
+        float steeringLead, steeringMid, bodyRoll;
         GameObject[] models;
         Transform visual;
         VehicleLights[] lamps;
@@ -82,7 +83,7 @@ namespace AfterHours
             Lane = 1; HitCooldown = 0; Acceleration = 0; Throttle = 0; Braking = false; PreviousPosition = transform.position;
             transmission.Reset();
             LookingBack = false;
-            lateralSlope = lateralSpeed = bodyRoll = 0;
+            steeringLead = steeringMid = bodyRoll = 0;
             visual.localRotation = Quaternion.identity;
         }
         public void Tick(DriverInput input, float topSpeed, float dt, float power = 1)
@@ -105,43 +106,40 @@ namespace AfterHours
             // When the rear-facing camera is active, left/right follow screen space.
             if (RearView) steering = -steering;
             Lane = Mathf.Clamp(Lane + steering, 0, 2);
-            MoveAlongRoad(previousSpeed, dt);
+            MoveAlongRoad(dt);
             underglow.intensity = Mathf.Lerp(.1f, 1.8f, Mathf.InverseLerp(0, VehicleDynamics.ForwardLimit, Mathf.Abs(Speed)));
             flash.SetColor("_EmissionColor", HitCooldown > 0 && Mathf.Sin(HitCooldown * 35) > 0 ? new Color(.8f, .12f, .04f) : Color.black);
             foreach (var renderer in renderers) renderer.SetPropertyBlock(flash);
         }
-        void MoveAlongRoad(float previousSpeed, float dt)
+        void MoveAlongRoad(float dt)
         {
             if (dt <= 0) return;
             Vector3 position = transform.position;
             float travelSpeed = Mathf.Abs(Speed);
-            float distance = travelSpeed * dt;
-            float previousLateralSpeed = lateralSpeed;
-            float x = position.x;
-            if (distance > 0)
+            float steeringLength = Mathf.Max(MinimumSteeringLength, travelSpeed * SteeringResponseTime);
+            float rate = travelSpeed / steeringLength;
+            if (rate > 0)
             {
-                if (previousSpeed * Speed <= 0) lateralSlope = 0;
                 float targetX = (Lane - 1) * LaneWidth;
-                // Damping over distance gives a smooth turn-in and straightening, even while braking.
-                // Limit lateral metres per forward metre so the body follows a plausible heading at low speed.
-                float steeringLength = Mathf.Max(4, travelSpeed * .12f);
-                float desiredX = Mathf.SmoothDamp(x, targetX, ref lateralSlope, steeringLength, Mathf.Infinity, distance);
-                float maxStep = MaximumSteeringSlope * distance;
-                lateralSlope = Mathf.Clamp(lateralSlope, -MaximumSteeringSlope, MaximumSteeringSlope);
-                position.x = Mathf.Clamp(Mathf.MoveTowards(x, desiredX, maxStep), -LaneWidth, LaneWidth);
-                if ((position.x == -LaneWidth && lateralSlope < 0) || (position.x == LaneWidth && lateralSlope > 0))
-                    lateralSlope = 0;
+                // Integrate three cascaded dampers exactly over this frame. The two intermediate
+                // positions carry steering velocity and acceleration through a change of target.
+                float step = rate * dt;
+                float decay = Mathf.Exp(-step);
+                float leadError = steeringLead - targetX;
+                float midError = steeringMid - targetX;
+                position.x = targetX + decay * (position.x - targetX + step * (midError + .5f * step * leadError));
+                steeringMid = targetX + decay * (midError + step * leadError);
+                steeringLead = targetX + decay * leadError;
                 position.z += Speed * dt;
                 transform.position = position;
             }
-            else lateralSlope = 0;
 
-            lateralSpeed = (position.x - x) / dt;
-            float sideAcceleration = (lateralSpeed - previousLateralSpeed) / dt;
-            float roll = distance > 0 ? Mathf.Clamp(-sideAcceleration * .16f, -3.5f, 3.5f) : 0;
+            float sideAcceleration = ((steeringLead - steeringMid) - (steeringMid - position.x)) * rate * rate;
+            float roll = -3.5f * sideAcceleration / (55 + Mathf.Abs(sideAcceleration));
             bodyRoll = Mathf.Lerp(bodyRoll, roll, 1 - Mathf.Exp(-dt * 12));
-            // The nose points along the path going forward, and opposite the path in reverse.
-            float yaw = Mathf.Atan(lateralSlope * Mathf.Sign(Speed)) * Mathf.Rad2Deg;
+            // Ease the heading through zero speed so a forward/reverse transition cannot snap the body.
+            float direction = Mathf.Clamp(Speed / 3, -1, 1);
+            float yaw = Mathf.Atan((steeringMid - position.x) / steeringLength * direction) * Mathf.Rad2Deg;
             visual.localRotation = Quaternion.Euler(0, yaw, bodyRoll);
         }
         public bool TakeHit()

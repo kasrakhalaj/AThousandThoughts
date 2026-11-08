@@ -41,9 +41,12 @@ public static class AfterHoursBuilder
         catalog.movingCar = CreateTraffic(catalog.cars[0], true);
         catalog.coin = CreatePickup(false); catalog.fuel = CreatePickup(true);
         catalog.particleMaterial = particle;
-        catalog.engineSound = Clip("engine"); catalog.ignitionSound = Clip("ignition");
+        catalog.engineSound = Clip("Recorded/Recorded-player-idle"); catalog.ignitionSound = Clip("Recorded/Recorded-ignition");
         catalog.collisionSound = Clip("collision"); catalog.coinSound = Clip("coin");
-        catalog.fuelSound = Clip("fuel"); catalog.rainSound = Clip("rain");
+        catalog.fuelSound = Clip("fuel");
+        catalog.rainSound = Clip("Weather/Weather-street-rain");
+        catalog.heavyRainSound = Clip("Weather/Weather-heavy-rain");
+        catalog.thunderSounds = new[] { Clip("Weather/Weather-thunder-close"), Clip("Weather/Weather-thunder-roll") };
         catalog.controls = CreateControls();
         AssetDatabase.CreateAsset(catalog, Generated + "/GameCatalog.asset");
 
@@ -276,15 +279,19 @@ public static class AfterHoursBuilder
     [MenuItem("After Hours/Build Windows player")]
     public static void BuildWindows()
     {
-        var folder = Path.GetFullPath("../Build/AfterHours"); Directory.CreateDirectory(folder);
+        BuildWindowsPlayer("Build/AfterHours");
+    }
+
+    public static BuildReport BuildWindowsPlayer(string outputDirectory)
+    {
+        if (EditorApplication.isPlaying) throw new InvalidOperationException("Exit Play Mode before building.");
+        var folder = Path.GetFullPath(outputDirectory);
+        Directory.CreateDirectory(folder);
         var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions { scenes = new[] { ScenePath }, locationPathName = Path.Combine(folder, "AfterHours.exe"), target = BuildTarget.StandaloneWindows64, options = BuildOptions.None });
         if (report.summary.result != BuildResult.Succeeded) throw new Exception("Windows build failed: " + report.summary.result);
-        var source = Path.GetFullPath("../Music");
-        foreach (string file in Directory.GetFiles(source, "*.mp3", SearchOption.AllDirectories))
-        {
-            string output = Path.Combine(folder, "Music", Path.GetRelativePath(source, file)); Directory.CreateDirectory(Path.GetDirectoryName(output)); File.Copy(file, output, true);
-        }
+        File.Copy("CREDITS.md", Path.Combine(folder, "CREDITS.md"), true);
         Debug.Log("AFTER_HOURS_BUILD: " + folder);
+        return report;
     }
 
     public static GameObject[] BuildRoadsidePlants()
