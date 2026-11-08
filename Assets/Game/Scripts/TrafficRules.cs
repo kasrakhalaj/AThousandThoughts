@@ -10,7 +10,7 @@ namespace AfterHours
         public const float MaximumTrafficSpeed = 56; // About 200 km/h, before weather/following limits.
         public const float FormationLookahead = 4;
         public static float RowSpacing(float playerSpeed, float rowSpeed) =>
-            Mathf.Clamp(16 + Mathf.Abs(playerSpeed - rowSpeed) * (.4f + 2 * CarDriver.LaneTime), 24, 90);
+            Mathf.Clamp(16 + Mathf.Abs(playerSpeed - rowSpeed) * (.4f + 2 * CarDriver.LaneDodgeTime), 24, 90);
         public static float StaggerSpeed(float desired, float rowSpeed, float gap, float spacing)
         {
             float lead = Mathf.Max(0, rowSpeed);

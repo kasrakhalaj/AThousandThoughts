@@ -159,13 +159,19 @@ public sealed class DrivingFlowTests
         yield return Hold(Key.W, 2.5f); Assert.That(g.Driver.Speed, Is.GreaterThan(10));
         float poweredSpeed = g.Driver.Speed; yield return new WaitForSeconds(.4f);
         Assert.That(g.Driver.Speed, Is.LessThan(poweredSpeed)); Assert.That(g.Driver.Speed, Is.GreaterThan(0));
-        yield return Hold(Key.S, .25f); Assert.That(g.Driver.Speed, Is.LessThan(poweredSpeed - 3));
+        InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.S));
+        yield return new WaitForSeconds(.35f);
+        InputSystem.QueueStateEvent(keyboard, new KeyboardState()); yield return null;
+        Assert.That(g.Driver.Speed, Is.LessThan(poweredSpeed - 3));
         var hud = Object.FindAnyObjectByType<GameHud>();
         Assert.That(hud.DisplayedSpeedKph, Is.EqualTo(Mathf.RoundToInt(Mathf.Abs(g.Driver.Speed) * 3.6f)).Within(4));
         yield return Press(Key.D); yield return new WaitForSeconds(.3f); Assert.That(g.Driver.Lane, Is.EqualTo(2));
         yield return Press(Key.R); yield return Hold(Key.W, 2); Assert.That(g.Driver.Speed, Is.LessThan(0));
         Assert.That(Camera.main.transform.position.z, Is.GreaterThan(g.Driver.transform.position.z));
-        yield return Press(Key.A); Assert.That(g.Driver.Lane, Is.EqualTo(2)); // Screen-left becomes world-right in reverse.
+        yield return Press(Key.D); Assert.That(g.Driver.Lane, Is.EqualTo(1)); // Screen-right becomes world-left in reverse.
+        yield return new WaitForSeconds(.6f);
+        Assert.That(g.Driver.transform.position.x, Is.LessThan(2.7f), "The reverse maneuver must move toward the requested lane.");
+        yield return Press(Key.A); Assert.That(g.Driver.Lane, Is.EqualTo(2));
         yield return Press(Key.Escape); Assert.That(g.State, Is.EqualTo(GameState.Paused));
         Vector3 position = g.Driver.transform.position; float fuel = g.Run.Fuel;
         yield return new WaitForSecondsRealtime(.25f); Assert.That(g.Driver.transform.position, Is.EqualTo(position)); Assert.That(g.Run.Fuel, Is.EqualTo(fuel));
@@ -175,6 +181,46 @@ public sealed class DrivingFlowTests
         Assert.That(g.World.PooledCount, Is.EqualTo(capacity)); Assert.That(g.World.ActiveCount, Is.LessThan(capacity));
         g.Restart(); yield return WaitForDriving();
         Assert.That(g.Run.Lives, Is.EqualTo(3)); Assert.That(g.Run.Fuel, Is.GreaterThan(99));
+    }
+    [UnityTest] public IEnumerator SteeringRequiresRollingAndArcsIntoLaneAtHighSpeed()
+    {
+        var g = GameManager.Instance; g.StartRun(); yield return WaitForDriving();
+        var driver = g.Driver;
+        var body = driver.transform.Find("Visual");
+        g.enabled = false; // Step the real car and input actions without traffic or frame-rate variance.
+        try
+        {
+            InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.D)); yield return null;
+            driver.Tick(g.Input, g.Run.TopSpeed, .3f);
+            Assert.That(driver.Lane, Is.EqualTo(2));
+            Assert.That(driver.transform.position.x, Is.Zero, "A stopped car must not slide sideways.");
+
+            InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.W)); yield return null;
+            for (int i = 0; i < 20; i++) driver.Tick(g.Input, g.Run.TopSpeed, .02f);
+            Assert.That(driver.transform.position.x, Is.InRange(.01f, .2f), "A queued turn should begin gently as the car rolls.");
+
+            driver.Reset();
+            for (int i = 0; i < 2250; i++)
+            {
+                if (!driver.IsShifting && driver.Gear < 6 && driver.RpmRatio > .92f) driver.RequestShift(1);
+                driver.Tick(g.Input, g.Run.TopSpeed, .02f);
+            }
+            Assert.That(driver.Speed, Is.GreaterThan(80));
+            InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.W, Key.D)); yield return null;
+            driver.Tick(g.Input, g.Run.TopSpeed, .02f);
+            float firstStep = driver.transform.position.x;
+            Assert.That(firstStep, Is.InRange(.01f, .25f));
+            InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.W)); yield return null;
+            driver.Tick(g.Input, g.Run.TopSpeed, .02f);
+            Assert.That(driver.transform.position.x - firstStep, Is.GreaterThan(firstStep), "Lateral movement should build after turn-in.");
+            Assert.That(body.localRotation.eulerAngles.y, Is.InRange(5f, 26f));
+            for (int i = 0; i < 11; i++) driver.Tick(g.Input, g.Run.TopSpeed, .02f);
+            Assert.That(driver.transform.position.x, Is.GreaterThan(3.05f), "At highway speed the arc must still clear the old lane quickly.");
+            for (int i = 0; i < 22; i++) driver.Tick(g.Input, g.Run.TopSpeed, .02f);
+            Assert.That(driver.transform.position.x, Is.EqualTo(CarDriver.LaneWidth).Within(.01f));
+            Assert.That(Quaternion.Angle(body.localRotation, Quaternion.identity), Is.LessThan(.3f));
+        }
+        finally { g.enabled = true; }
     }
     [UnityTest] public IEnumerator DamageCooldownGameOverAndPersistentBest()
     {

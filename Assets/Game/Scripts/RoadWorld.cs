@@ -174,11 +174,14 @@ namespace AfterHours
         bool HasEscapeLane(float z, float speed, int proposedLane, StationaryCar ignored)
         {
             int proposed = (1 << proposedLane) | (ignored == null ? 0 : LaneMask(ignored));
+            Vector3 player = game.Driver.transform.position;
+            // A requested lane can be a full lane away from the car during the turn-in.
+            int playerLane = Mathf.RoundToInt(player.x / CarDriver.LaneWidth) + 1;
             for (int step = 0; step <= 8; step++)
             {
                 float time = step * (TrafficRules.FormationLookahead / 8);
                 float rowZ = z + speed * time;
-                float playerGap = rowZ - (game.Driver.transform.position.z + game.Driver.Speed * time);
+                float playerGap = rowZ - (player.z + game.Driver.Speed * time);
                 float closing = playerGap >= 0 ? game.Driver.Speed - speed : speed - game.Driver.Speed;
                 bool nearby = Mathf.Abs(playerGap) < Mathf.Max(45, 20 + Mathf.Max(0, closing) * 1.5f);
                 // Distant overtakes can finish before the player arrives; spawning must always leave a gap.
@@ -195,7 +198,7 @@ namespace AfterHours
                 if (nearby)
                 {
                     bool reachable = false;
-                    for (int lane = Mathf.Max(0, game.Driver.Lane - 1); lane <= Mathf.Min(2, game.Driver.Lane + 1); lane++)
+                    for (int lane = Mathf.Max(0, playerLane - 1); lane <= Mathf.Min(2, playerLane + 1); lane++)
                         if ((occupied & (1 << lane)) == 0) reachable = true;
                     if (!reachable) return false;
                 }
