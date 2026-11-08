@@ -137,3 +137,5 @@ MonoBehaviour:
     pitch: 1
     gain: 1.1
   controls: {fileID: -944628639613478452, guid: bf3f1f56759b6b24bb56be62e9a7d0a5, type: 3}
+  displayFont: {fileID: 11400000, guid: 9f2e7955d1af8d1469b636a846862bd5, type: 2}
+  interfaceFont: {fileID: 11400000, guid: 589cbea2b2db716469e22a9aa4033ca3, type: 2}

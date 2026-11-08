@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 
 public static class LookBackUpgrade
 {
-    [MenuItem("After Hours/Apply hold-to-look-back controls")]
+    [MenuItem("A Thousand Thoughts/Apply hold-to-look-back controls")]
     public static void Apply()
     {
         if (EditorApplication.isPlaying) throw new InvalidOperationException("Exit Play Mode first.");

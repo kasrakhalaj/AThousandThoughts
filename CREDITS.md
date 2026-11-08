@@ -1,5 +1,12 @@
 # Sources and credits
 
+## Interface fonts
+
+- **Cinzel Bold** by the Cinzel Project Authors. https://github.com/NDISCOVER/Cinzel
+- **Barlow Condensed SemiBold** by the Barlow Project Authors. https://github.com/jpt/barlow
+
+Both fonts use the SIL Open Font License 1.1. The source fonts and license notices are under `Assets/Game/Fonts`, and the notices ship in `Licenses` beside the Windows player.
+
 ## Environment
 
 Kenney environment packs, downloaded from the publisher on 2026-11-03. License files are retained alongside their assets under `Assets/Art/Kenney`.

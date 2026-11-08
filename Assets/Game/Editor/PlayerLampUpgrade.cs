@@ -10,7 +10,7 @@ public static class PlayerLampUpgrade
 {
     const string Folder = "Assets/Game/Generated/PlayerLamps";
 
-    [MenuItem("After Hours/Use authored player car lamps")]
+    [MenuItem("A Thousand Thoughts/Use authored player car lamps")]
     public static void Apply()
     {
         if (EditorApplication.isPlaying) throw new InvalidOperationException("Exit Play Mode first.");

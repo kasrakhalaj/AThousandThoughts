@@ -1,4 +1,7 @@
 using System.Collections;
+#if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
+using System.Runtime.InteropServices;
+#endif
 using UnityEngine;
 
 namespace AfterHours
@@ -47,7 +50,7 @@ namespace AfterHours
         public void Initialize(GameCatalog catalog, Camera camera)
         {
             if (Instance != null && Instance != this) { Destroy(gameObject); return; }
-            Instance = this; Catalog = catalog; HighScore = PlayerPrefs.GetInt(HighScoreKey, 0);
+            Instance = this; Catalog = catalog; HighScore = LoadBest();
             Input = gameObject.AddComponent<DriverInput>(); Input.Initialize(catalog.controls);
             Driver = new GameObject("Player car").AddComponent<CarDriver>(); Driver.Initialize(catalog);
             SelectedCar = Mathf.Max(0, System.Array.FindIndex(catalog.carNames, name => string.Equals(name, "TRISTAR RACER", System.StringComparison.OrdinalIgnoreCase)));
@@ -96,6 +99,32 @@ namespace AfterHours
         public void CollectCoin(Vector3 position) { if (State != GameState.Playing) return; Run.AddCoin(); Effects.Burst(position, new Color(2, 1.4f, .3f), 12); audioRig.Coin(); }
         public void CollectFuel(Vector3 position) { if (State != GameState.Playing) return; Run.Refuel(); Effects.Burst(position, new Color(.4f, 1.7f, 1.1f), 16); audioRig.Fuel(); }
         void EndRun(string reason) { EndReason = reason; State = GameState.GameOver; Input.EnableDriving(false); SaveBest(); }
+        static int LoadBest()
+        {
+            if (PlayerPrefs.HasKey(HighScoreKey)) return PlayerPrefs.GetInt(HighScoreKey);
+#if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
+            // Unity stores Windows PlayerPrefs under the product name. Carry the score over once.
+#if UNITY_EDITOR_WIN
+            const string previousProduct = @"Software\Unity\UnityEditor\Kasra Khalaj\After Hours";
+#else
+            const string previousProduct = @"Software\Kasra Khalaj\After Hours";
+#endif
+            var currentUser = new System.IntPtr(unchecked((int)0x80000001)); // HKEY_CURRENT_USER
+            const uint regDword = 0x10;
+            uint size = sizeof(int);
+            if (RegGetValueW(currentUser, previousProduct, HighScoreKey + "_h754844723", regDword, System.IntPtr.Zero, out int score, ref size) == 0 && score > 0)
+            {
+                PlayerPrefs.SetInt(HighScoreKey, score);
+                PlayerPrefs.Save();
+                return score;
+            }
+#endif
+            return 0;
+        }
+#if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
+        [DllImport("advapi32.dll", CharSet = CharSet.Unicode, ExactSpelling = true)]
+        static extern int RegGetValueW(System.IntPtr root, string path, string value, uint flags, System.IntPtr type, out int data, ref uint size);
+#endif
         void SaveBest()
         {
             if (Run.Score <= HighScore) return;

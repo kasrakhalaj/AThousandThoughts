@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using AfterHours;
+using TMPro;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
 using UnityEditor.SceneManagement;
@@ -15,11 +16,12 @@ public static class AfterHoursBuilder
 {
     const string Generated = "Assets/Game/Generated";
     const string ScenePath = "Assets/Game/Scenes/AfterHours.unity";
+    const string FontFolder = "Assets/Game/Fonts";
     static readonly Dictionary<Material, Material> Converted = new Dictionary<Material, Material>();
     static int materialIndex;
     static Material asphalt, verge, marking, metal, amber, red, glass, gold, green, particle;
 
-    [MenuItem("After Hours/Create initial game scene")]
+    [MenuItem("A Thousand Thoughts/Create initial game scene")]
     public static void CreateGame()
     {
         if (File.Exists(ScenePath)) throw new InvalidOperationException("The game scene already exists. Existing authored work is protected.");
@@ -48,6 +50,8 @@ public static class AfterHoursBuilder
         catalog.heavyRainSound = Clip("Weather/Weather-heavy-rain");
         catalog.thunderSounds = new[] { Clip("Weather/Weather-thunder-close"), Clip("Weather/Weather-thunder-roll") };
         catalog.controls = CreateControls();
+        catalog.displayFont = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(FontFolder + "/Cinzel Bold SDF.asset");
+        catalog.interfaceFont = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(FontFolder + "/Barlow Condensed SemiBold SDF.asset");
         AssetDatabase.CreateAsset(catalog, Generated + "/GameCatalog.asset");
 
         var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
@@ -74,10 +78,10 @@ public static class AfterHoursBuilder
             AssetDatabase.CreateAsset(sky, Generated + "/NightSky.mat"); RenderSettings.skybox = sky;
         }
         ConfigureVolume();
-        var root = new GameObject("After Hours").AddComponent<GameBootstrap>(); root.Configure(catalog, camera);
+        var root = new GameObject("A Thousand Thoughts").AddComponent<GameBootstrap>(); root.Configure(catalog, camera);
         EditorSceneManager.SaveScene(scene, ScenePath);
         EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene(ScenePath, true) };
-        PlayerSettings.companyName = "Kasra Khalaj"; PlayerSettings.productName = "After Hours";
+        PlayerSettings.companyName = "Kasra Khalaj"; PlayerSettings.productName = "A Thousand Thoughts";
         PlayerSettings.defaultScreenWidth = 1600; PlayerSettings.defaultScreenHeight = 900;
         PlayerSettings.fullScreenMode = FullScreenMode.Windowed; PlayerSettings.runInBackground = true;
         PlayerSettings.colorSpace = ColorSpace.Linear;
@@ -276,20 +280,23 @@ public static class AfterHoursBuilder
         foreach (var component in profile.components) AssetDatabase.AddObjectToAsset(component, profile);
         var volume = new GameObject("Night atmosphere", typeof(Volume)).GetComponent<Volume>(); volume.isGlobal = true; volume.sharedProfile = profile;
     }
-    [MenuItem("After Hours/Build Windows player")]
+    [MenuItem("A Thousand Thoughts/Build Windows player")]
     public static void BuildWindows()
     {
-        BuildWindowsPlayer("Build/AfterHours");
+        BuildWindowsPlayer("Build/AThousandThoughts");
     }
 
-    public static BuildReport BuildWindowsPlayer(string outputDirectory)
+    public static BuildReport BuildWindowsPlayer(string outputDirectory, string executableName = "AThousandThoughts")
     {
         if (EditorApplication.isPlaying) throw new InvalidOperationException("Exit Play Mode before building.");
         var folder = Path.GetFullPath(outputDirectory);
         Directory.CreateDirectory(folder);
-        var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions { scenes = new[] { ScenePath }, locationPathName = Path.Combine(folder, "AfterHours.exe"), target = BuildTarget.StandaloneWindows64, options = BuildOptions.None });
+        var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions { scenes = new[] { ScenePath }, locationPathName = Path.Combine(folder, executableName + ".exe"), target = BuildTarget.StandaloneWindows64, options = BuildOptions.None });
         if (report.summary.result != BuildResult.Succeeded) throw new Exception("Windows build failed: " + report.summary.result);
         File.Copy("CREDITS.md", Path.Combine(folder, "CREDITS.md"), true);
+        var licenses = Directory.CreateDirectory(Path.Combine(folder, "Licenses"));
+        foreach (string license in Directory.GetFiles(FontFolder, "*-OFL.txt"))
+            File.Copy(license, Path.Combine(licenses.FullName, Path.GetFileName(license)), true);
         Debug.Log("AFTER_HOURS_BUILD: " + folder);
         return report;
     }

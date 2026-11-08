@@ -22,7 +22,7 @@ public static class CitySceneryUpgrade
     static Material pavement, curb, tarmac, paint, soil, steel, wood, cream, rust, glass, window, windowIvory, water;
     static int litWindowGroups;
 
-    [MenuItem("After Hours/Apply district city scenery")]
+    [MenuItem("A Thousand Thoughts/Apply district city scenery")]
     public static void Apply()
     {
         if (EditorApplication.isPlaying) throw new InvalidOperationException("Exit Play Mode first.");

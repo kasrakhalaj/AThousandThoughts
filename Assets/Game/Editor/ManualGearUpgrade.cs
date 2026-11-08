@@ -7,7 +7,7 @@ using UnityEngine.InputSystem;
 
 public static class ManualGearUpgrade
 {
-    [MenuItem("After Hours/Apply manual gearbox and recorded shift audio")]
+    [MenuItem("A Thousand Thoughts/Apply manual gearbox and recorded shift audio")]
     public static void Apply()
     {
         if (EditorApplication.isPlaying) throw new InvalidOperationException("Exit Play Mode first.");

@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -11,7 +12,7 @@ namespace AfterHours
         public float pitch = 1, gain = 1;
     }
 
-    [CreateAssetMenu(menuName = "After Hours/Game Catalog")]
+    [CreateAssetMenu(menuName = "A Thousand Thoughts/Game Catalog")]
     public sealed class GameCatalog : ScriptableObject
     {
         public GameObject[] cars;
@@ -54,5 +55,7 @@ namespace AfterHours
         public AudioClip downshiftBlipSound;
         public CarEngineVoice[] performanceVoices;
         public InputActionAsset controls;
+        public TMP_FontAsset displayFont;
+        public TMP_FontAsset interfaceFont;
     }
 }

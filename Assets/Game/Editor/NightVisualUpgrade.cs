@@ -10,7 +10,7 @@ using UnityEngine.Rendering.Universal;
 public static class NightVisualUpgrade
 {
     const string Folder = "Assets/Game/Generated/";
-    [MenuItem("After Hours/Apply night scenery and vehicle lights")]
+    [MenuItem("A Thousand Thoughts/Apply night scenery and vehicle lights")]
     public static void Apply()
     {
         if (EditorApplication.isPlaying) throw new InvalidOperationException("Exit Play Mode first.");

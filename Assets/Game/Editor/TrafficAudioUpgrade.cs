@@ -14,7 +14,7 @@ public static class TrafficAudioUpgrade
     const string Folder = "Assets/Game/Generated/Traffic";
     static readonly string[] Names = { "NormalCar1", "NormalCar2", "SUV", "SportsCar", "SportsCar2", "Taxi", "Cop" };
 
-    [MenuItem("After Hours/Apply recorded audio and 2018 traffic pack")]
+    [MenuItem("A Thousand Thoughts/Apply recorded audio and 2018 traffic pack")]
     public static void Apply()
     {
         if (EditorApplication.isPlaying) throw new InvalidOperationException("Exit Play Mode first.");

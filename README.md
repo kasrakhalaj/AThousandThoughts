@@ -1,4 +1,4 @@
-# After Hours
+# A Thousand Thoughts
 
 A low-poly endless night drive for Game Design HW2. Choose one of five cars, start the engine, and dodge traffic through changing districts, fog, and rain. Collect coins and fuel to keep the run going.
 
@@ -29,7 +29,7 @@ Brake takes priority over gas. Selecting reverse brakes to a stop first. Hold W 
 
 ## Windows build
 
-In Unity, choose **After Hours > Build Windows player**. The Windows x64 player and asset credits appear in `Build/AfterHours/` inside the project. Keep the complete player folder together when moving it.
+In Unity, choose **A Thousand Thoughts > Build Windows player**. The Windows x64 player, asset credits and font licenses appear in `Build/AThousandThoughts/` inside the project. Launch `AThousandThoughts.exe` and keep the complete player folder together when moving it.
 
 ## Optional music
 

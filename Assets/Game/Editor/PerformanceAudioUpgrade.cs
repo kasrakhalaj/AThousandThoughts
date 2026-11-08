@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 public static class PerformanceAudioUpgrade
 {
-    [MenuItem("After Hours/Apply performance engine voices")]
+    [MenuItem("A Thousand Thoughts/Apply performance engine voices")]
     public static void Apply()
     {
         if (EditorApplication.isPlaying) throw new System.InvalidOperationException("Exit Play Mode first.");

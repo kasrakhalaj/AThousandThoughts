@@ -7,10 +7,10 @@ namespace AfterHours
 {
     public sealed class GameHud : MonoBehaviour
     {
-        static readonly Color Cream = new Color(.91f, .9f, .82f);
-        static readonly Color Muted = new Color(.57f, .65f, .64f);
-        static readonly Color Amber = new Color(.92f, .65f, .31f);
-        static readonly Color PanelColor = new Color(.045f, .075f, .077f, .94f);
+        static readonly Color Cream = new Color(.96f, .92f, .83f);
+        static readonly Color Muted = new Color(.69f, .72f, .70f);
+        static readonly Color Amber = new Color(.94f, .69f, .37f);
+        static readonly Color PanelColor = new Color(.05f, .055f, .058f, .95f);
         GameManager game;
         Camera cameraRef;
         RectTransform canvas, menu, hud, pause, results, starting, musicCard;
@@ -30,7 +30,7 @@ namespace AfterHours
         public void Initialize(GameManager manager, Camera camera)
         {
             game = manager; cameraRef = camera;
-            var go = new GameObject("After Hours Canvas", typeof(RectTransform), typeof(Canvas), typeof(UnityEngine.UI.CanvasScaler), typeof(UnityEngine.UI.GraphicRaycaster));
+            var go = new GameObject("Game Canvas", typeof(RectTransform), typeof(Canvas), typeof(UnityEngine.UI.CanvasScaler), typeof(UnityEngine.UI.GraphicRaycaster));
             go.transform.SetParent(transform, false); canvas = (RectTransform)go.transform;
             go.GetComponent<Canvas>().renderMode = RenderMode.ScreenSpaceOverlay;
             var scaler = go.GetComponent<UnityEngine.UI.CanvasScaler>(); scaler.uiScaleMode = UnityEngine.UI.CanvasScaler.ScaleMode.ScaleWithScreenSize;
@@ -38,12 +38,15 @@ namespace AfterHours
             var events = new GameObject("EventSystem", typeof(EventSystem), typeof(InputSystemUIInputModule));
             events.transform.SetParent(transform); events.GetComponent<InputSystemUIInputModule>().AssignDefaultActions();
 
-            menu = Box("Car selection", canvas, new Vector2(.045f, .47f), new Vector2(470, 670), new Vector2(0, .5f), new Color(.025f, .045f, .05f, .88f));
-            Label(menu, "A NIGHT DRIVE / VOL. 01", 18, Amber, 34, -30, 410, 30);
-            Label(menu, "AFTER\nHOURS", 82, Cream, 30, -80, 420, 195, FontStyles.Bold);
-            Label(menu, "Take the long way home.", 23, Cream, 34, -290, 410, 40);
-            Label(menu, "Three lanes. Your music.\nA little rain on the windshield.", 19, Muted, 34, -342, 400, 65);
-            carName = Label(menu, "", 27, Cream, 90, -438, 290, 40, FontStyles.Bold, TextAlignmentOptions.Center);
+            menu = Box("Car selection", canvas, new Vector2(.045f, .47f), new Vector2(470, 670), new Vector2(0, .5f), PanelColor);
+            Label(menu, "NIGHT DRIVE  /  VOL. 01", 18, Amber, 34, -30, 410, 30).characterSpacing = 2;
+            Heading(menu, "A THOUSAND", 52, 32, -79, 410, 80);
+            Heading(menu, "THOUGHTS", 62, 32, -139, 410, 90);
+            var divider = Box("Title rule", menu, new Vector2(0, 1), new Vector2(72, 2), new Vector2(0, 1), Amber);
+            divider.anchoredPosition = new Vector2(34, -240);
+            Label(menu, "Take the long way home.", 24, Cream, 34, -263, 410, 40);
+            Label(menu, "Three lanes. Your music.\nA little rain on the windshield.", 20, Muted, 34, -313, 400, 70);
+            carName = Label(menu, "", 29, Amber, 90, -438, 290, 40, FontStyles.Normal, TextAlignmentOptions.Center);
             Button(menu, "<", 30, -435, 52, 48, () => game.SelectCar(-1));
             Button(menu, ">", 387, -435, 52, 48, () => game.SelectCar(1));
             Button(menu, "START THE ENGINE   /   ENTER", 32, -510, 407, 60, () => game.StartRun(), true);
@@ -53,9 +56,9 @@ namespace AfterHours
             hud = Node("Driving HUD", canvas, Vector2.zero, Vector2.zero);
             Stretch(hud);
             var dashboard = Box("Dashboard", hud, new Vector2(.035f, .96f), new Vector2(550, 210), new Vector2(0, 1), PanelColor);
-            speed = Label(dashboard, "000", 65, Cream, 22, -15, 175, 80, FontStyles.Bold);
+            speed = Label(dashboard, "000", 72, Cream, 22, -10, 120, 94);
             speed.gameObject.name = "Speed (kmh)";
-            Label(dashboard, "KM/H", 16, Muted, 180, -53, 70, 25);
+            Label(dashboard, "KM/H", 17, Muted, 135, -53, 70, 25);
             var speedRail = Box("Speed gauge", dashboard, new Vector2(0, 1), new Vector2(210, 5), new Vector2(0, 1), new Color(.2f, .26f, .24f));
             speedRail.anchoredPosition = new Vector2(24, -92);
             speedFill = Box("Speed", speedRail, new Vector2(0, 1), new Vector2(0, 5), new Vector2(0, 1), Amber).GetComponent<UnityEngine.UI.Image>();
@@ -81,7 +84,7 @@ namespace AfterHours
             var wr = (RectTransform)weather.transform; wr.anchorMin = wr.anchorMax = new Vector2(.965f, .79f); wr.pivot = new Vector2(1, 1); wr.anchoredPosition = Vector2.zero; weather.alignment = TextAlignmentOptions.Right;
             tip = Label(hud, "", 18, Cream, 0, 0, 1100, 50, FontStyles.Normal, TextAlignmentOptions.Center);
             var tr = (RectTransform)tip.transform; tr.anchorMin = tr.anchorMax = new Vector2(.5f, .045f); tr.pivot = new Vector2(.5f, 0); tr.anchoredPosition = Vector2.zero;
-            var controls = Label(hud, "W  GAS     S  BRAKE     A / D  STEER     Q / E  GEARS     C  LOOK BACK     R  REVERSE     ESC  PAUSE", 15, Muted, 0, 0, 1100, 30, FontStyles.Normal, TextAlignmentOptions.Center);
+            var controls = Label(hud, "W  GAS     S  BRAKE     A / D  STEER     Q / E  GEARS     C  LOOK BACK     R  REVERSE     ESC  PAUSE", 17, Muted, 0, 0, 1100, 30, FontStyles.Normal, TextAlignmentOptions.Center);
             var cr = (RectTransform)controls.transform; cr.anchorMin = cr.anchorMax = new Vector2(.5f, .015f); cr.pivot = new Vector2(.5f, 0); cr.anchoredPosition = Vector2.zero;
 
             lookBackHint = Label(hud, "LOOK BACK / RELEASE TO RETURN", 16, Amber, 0, 0, 400, 30, FontStyles.Normal, TextAlignmentOptions.Center);
@@ -183,7 +186,7 @@ namespace AfterHours
         RectTransform CenterPanel(string name, string title, string subtitle)
         {
             var panel = Box(name, canvas, new Vector2(.5f, .53f), new Vector2(560, 450), new Vector2(.5f, .5f), PanelColor);
-            Label(panel, title, 33, Cream, 55, -40, 450, 50, FontStyles.Bold);
+            Heading(panel, title, 33, 55, -40, 450, 50);
             Label(panel, subtitle, 18, Muted, 55, -102, 450, 35); return panel;
         }
         static RectTransform Node(string name, Transform parent, Vector2 anchor, Vector2 size)
@@ -197,19 +200,26 @@ namespace AfterHours
             var rt = Node(name, parent, anchor, size); rt.pivot = pivot;
             var image = rt.gameObject.AddComponent<UnityEngine.UI.Image>(); image.color = color; image.raycastTarget = false; return rt;
         }
-        static TMP_Text Label(Transform parent, string text, int size, Color color, float x, float y, float width, float height, FontStyles style = FontStyles.Normal, TextAlignmentOptions align = TextAlignmentOptions.TopLeft)
+        void Heading(Transform parent, string text, int size, float x, float y, float width, float height)
+        {
+            var label = Label(parent, text, size, Cream, x, y, width, height);
+            if (game.Catalog.displayFont != null) label.font = game.Catalog.displayFont;
+            label.textWrappingMode = TextWrappingModes.NoWrap;
+        }
+        TMP_Text Label(Transform parent, string text, int size, Color color, float x, float y, float width, float height, FontStyles style = FontStyles.Normal, TextAlignmentOptions align = TextAlignmentOptions.TopLeft)
         {
             var rt = Node("Text", parent, new Vector2(0, 1), new Vector2(width, height)); rt.pivot = new Vector2(0, 1); rt.anchoredPosition = new Vector2(x, y);
             var label = rt.gameObject.AddComponent<TextMeshProUGUI>(); label.text = text; label.fontSize = size; label.color = color; label.fontStyle = style; label.alignment = align;
+            if (game.Catalog.interfaceFont != null) label.font = game.Catalog.interfaceFont;
             label.raycastTarget = false; label.textWrappingMode = TextWrappingModes.Normal; label.overflowMode = TextOverflowModes.Truncate; return label;
         }
-        static UnityEngine.UI.Button Button(Transform parent, string text, float x, float y, float width, float height, UnityEngine.Events.UnityAction onClick, bool primary = false)
+        UnityEngine.UI.Button Button(Transform parent, string text, float x, float y, float width, float height, UnityEngine.Events.UnityAction onClick, bool primary = false)
         {
-            var rt = Box(text, parent, new Vector2(0, 1), new Vector2(width, height), new Vector2(0, 1), primary ? Amber : new Color(.12f, .17f, .16f)); rt.anchoredPosition = new Vector2(x, y);
+            var rt = Box(text, parent, new Vector2(0, 1), new Vector2(width, height), new Vector2(0, 1), primary ? Amber : new Color(.13f, .15f, .15f)); rt.anchoredPosition = new Vector2(x, y);
             var image = rt.GetComponent<UnityEngine.UI.Image>(); image.raycastTarget = true;
             var button = rt.gameObject.AddComponent<UnityEngine.UI.Button>(); button.targetGraphic = image; button.onClick.AddListener(onClick);
             var colors = button.colors; colors.highlightedColor = new Color(1.18f, 1.18f, 1.18f); colors.pressedColor = new Color(.7f, .7f, .7f); button.colors = colors;
-            Label(rt, text, 16, primary ? new Color(.08f, .11f, .1f) : Cream, 4, -3, width - 8, height - 6, FontStyles.Bold, TextAlignmentOptions.Center);
+            Label(rt, text, 18, primary ? new Color(.08f, .08f, .07f) : Cream, 4, -3, width - 8, height - 6, FontStyles.Normal, TextAlignmentOptions.Center).characterSpacing = 1;
             return button;
         }
     }
