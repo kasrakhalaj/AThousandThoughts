@@ -43,7 +43,12 @@ Active engine, ignition and rain sounds are edited **real field recordings**, do
 
 License: https://creativecommons.org/publicdomain/zero/1.0/. Source MP3s, downloaded source pages and download manifest are retained in `../../HW2-Archive/SourceAudio/FieldRecordings`. `Docs/RecordedSoundSources.json` records download URLs, excerpts and processing for the engine/ignition/rain clips. Preparation uses mono conversion, filtering, level adjustment and loop crossfades; no engine or rain tones are synthesized. The player layers come from portions of the same recording with runtime pitch/crossfade changes. They are stylized engine characters, not exact recordings of each depicted vehicle make.
 
-Collision and fuel pickup effects are synthesized for this project. The original generator is `../../HW2-Archive/Original-Tools/make_drive_audio.py`. The earlier synthesized engine, ignition and rain placeholders and the superseded mono rain clip were retired.
+Fuel pickup audio is synthesized for this project. Its generator is `../../HW2-Archive/Original-Tools/make_drive_audio.py`.
+
+## Recorded vehicle impact
+
+- **Car accident. Real. Interior.** by **softwalls**, released under CC0 1.0. The creator recorded an actual rear-end collision from inside a Škoda Superb. https://freesound.org/people/softwalls/sounds/449062/
+- The game uses 0.620–1.700 seconds of the public stereo HQ preview. The excerpt was filtered, faded, peak matched to −3 dBFS and stored as stereo 48 kHz PCM. The preview is archived in `../../HW2-Archive/SourceAudio/Collision`.
 
 The personal MP3 music library was supplied by the student. It is stored outside Unity Assets and read from the local Music folder. Original artist/song filenames are preserved. The music is not part of the Kenney assets. Original-format backups are retained outside the active library.
 

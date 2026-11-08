@@ -44,7 +44,7 @@ public static class AfterHoursBuilder
         catalog.fuel = CreateFuelPickup();
         catalog.particleMaterial = particle;
         catalog.engineSound = Clip("Recorded/Recorded-player-idle"); catalog.ignitionSound = Clip("Recorded/Recorded-ignition");
-        catalog.collisionSound = Clip("collision");
+        catalog.collisionSound = Clip("Recorded/Recorded-collision");
         catalog.fuelSound = Clip("fuel");
         catalog.rainSound = Clip("Weather/Weather-street-rain");
         catalog.heavyRainSound = Clip("Weather/Weather-heavy-rain");
