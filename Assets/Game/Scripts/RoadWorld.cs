@@ -7,7 +7,7 @@ namespace AfterHours
     {
         const int ChunkCount = 17;
         readonly List<RoadChunk> chunks = new List<RoadChunk>();
-        readonly List<Interactable> active = new List<Interactable>(264);
+        readonly List<Interactable> active = new List<Interactable>(120);
         readonly List<StationaryCar> traffic = new List<StationaryCar>(96);
         readonly Dictionary<int, Queue<Interactable>> pools = new Dictionary<int, Queue<Interactable>>();
         readonly Dictionary<Interactable, int> poolKeys = new Dictionary<Interactable, int>();
@@ -61,7 +61,7 @@ namespace AfterHours
             }
             Warm(0, new[] { catalog.stationaryCar }, 48);
             Warm(1, catalog.movingTrafficVariants != null && catalog.movingTrafficVariants.Length > 0 ? catalog.movingTrafficVariants : new[] { catalog.movingCar }, 48);
-            Warm(2, new[] { catalog.coin }, 144); Warm(3, new[] { catalog.fuel }, 24);
+            Warm(2, new[] { catalog.fuel }, 24);
         }
         void Warm(int key, GameObject[] prefabs, int count)
         {
@@ -141,10 +141,9 @@ namespace AfterHours
                         && unchecked((uint)(index * 73856093 + slot * 19349663)) % 100 < 22;
                     SpawnTraffic(new Vector3((lane - 1) * CarDriver.LaneWidth, .08f, carZ), 18 + (float)random.NextDouble() * 8, stopped, populatingInitial, fastDriver);
                 }
-                if (fresh) for (int c = 0; c < 3; c++) Spawn(2, new Vector3((safeLane - 1) * CarDriver.LaneWidth, .85f, z + c * 4));
             }
             if (fresh && index >= 0 && index % 5 == 2)
-                Spawn(3, new Vector3((random.Next(3) - 1) * CarDriver.LaneWidth, .6f, index * 60 + 10));
+                Spawn(2, new Vector3((random.Next(3) - 1) * CarDriver.LaneWidth, .6f, index * 60 + 10));
         }
 
         bool OccupiesLane(StationaryCar car, int lane) => car is MovingCar moving ? moving.OccupiesLane(lane) : Mathf.Abs(car.transform.position.x - (lane - 1) * CarDriver.LaneWidth) < 2.05f;

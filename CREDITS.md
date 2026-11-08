@@ -1,5 +1,9 @@
 # Sources and credits
 
+## Fuel pickup
+
+The fuel can uses **Gas Can** by **Quaternius**, released under CC0 1.0. The original FBX is retained in `Assets/Art/Quaternius`. The pickup prefab scales and centers the model and converts its materials for URP. https://poly.pizza/m/jRymgnHTTb
+
 ## Interface fonts
 
 - **Cinzel Bold** by the Cinzel Project Authors. https://github.com/NDISCOVER/Cinzel
@@ -39,7 +43,7 @@ Active engine, ignition and rain sounds are edited **real field recordings**, do
 
 License: https://creativecommons.org/publicdomain/zero/1.0/. Source MP3s, downloaded source pages and download manifest are retained in `../../HW2-Archive/SourceAudio/FieldRecordings`. `Docs/RecordedSoundSources.json` records download URLs, excerpts and processing for the engine/ignition/rain clips. Preparation uses mono conversion, filtering, level adjustment and loop crossfades; no engine or rain tones are synthesized. The player layers come from portions of the same recording with runtime pitch/crossfade changes. They are stylized engine characters, not exact recordings of each depicted vehicle make.
 
-Collision and pickup effects are synthesized for this project. The original generator is `../../HW2-Archive/Original-Tools/make_drive_audio.py`. The earlier synthesized engine, ignition and rain placeholders and the superseded mono rain clip were retired.
+Collision and fuel pickup effects are synthesized for this project. The original generator is `../../HW2-Archive/Original-Tools/make_drive_audio.py`. The earlier synthesized engine, ignition and rain placeholders and the superseded mono rain clip were retired.
 
 The personal MP3 music library was supplied by the student. It is stored outside Unity Assets and read from the local Music folder. Original artist/song filenames are preserved. The music is not part of the Kenney assets. Original-format backups are retained outside the active library.
 

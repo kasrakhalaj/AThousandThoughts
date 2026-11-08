@@ -19,7 +19,7 @@ public static class AfterHoursBuilder
     const string FontFolder = "Assets/Game/Fonts";
     static readonly Dictionary<Material, Material> Converted = new Dictionary<Material, Material>();
     static int materialIndex;
-    static Material asphalt, verge, marking, metal, amber, red, glass, gold, green, particle;
+    static Material asphalt, verge, marking, metal, amber, red, glass, particle;
 
     [MenuItem("A Thousand Thoughts/Create initial game scene")]
     public static void CreateGame()
@@ -41,10 +41,10 @@ public static class AfterHoursBuilder
         catalog.roadSegment = CreateRoad();
         catalog.stationaryCar = CreateTraffic(catalog.cars[2], false);
         catalog.movingCar = CreateTraffic(catalog.cars[0], true);
-        catalog.coin = CreatePickup(false); catalog.fuel = CreatePickup(true);
+        catalog.fuel = CreateFuelPickup();
         catalog.particleMaterial = particle;
         catalog.engineSound = Clip("Recorded/Recorded-player-idle"); catalog.ignitionSound = Clip("Recorded/Recorded-ignition");
-        catalog.collisionSound = Clip("collision"); catalog.coinSound = Clip("coin");
+        catalog.collisionSound = Clip("collision");
         catalog.fuelSound = Clip("fuel");
         catalog.rainSound = Clip("Weather/Weather-street-rain");
         catalog.heavyRainSound = Clip("Weather/Weather-heavy-rain");
@@ -173,8 +173,6 @@ public static class AfterHoursBuilder
         marking = Mat("Road paint", new Color(.78f, .77f, .64f)); metal = Mat("Road steel", new Color(.25f, .3f, .31f));
         amber = Mat("Amber light", new Color(.9f, .55f, .17f), .3f, 2);
         red = Mat("Tail lights", new Color(.65f, .035f, .02f), .3f, 3);
-        gold = Mat("Coin gold", new Color(.85f, .57f, .14f), .65f, .4f);
-        green = Mat("Fuel green", new Color(.16f, .47f, .31f), .3f, .15f);
         glass = Mat("Window dark", new Color(.08f, .15f, .19f), .65f);
         particle = new Material(Shader.Find("Universal Render Pipeline/Particles/Unlit"));
         particle.SetFloat("_Surface", 1); particle.SetFloat("_Blend", 0); particle.SetFloat("_SrcBlend", (float)BlendMode.SrcAlpha);
@@ -236,20 +234,27 @@ public static class AfterHoursBuilder
         else go.AddComponent<StationaryCar>();
         return SavePrefab(go, moving ? "MovingCar" : "StationaryCar");
     }
-    static GameObject CreatePickup(bool fuel)
+    static GameObject CreateFuelPickup()
     {
-        var go = new GameObject(fuel ? "Fuel can" : "Coin");
-        if (fuel)
-        {
-            go.AddComponent<FuelPickup>(); Cube("Can", go.transform, Vector3.zero, new Vector3(.75f, .95f, .45f), green);
-            Cube("Handle", go.transform, new Vector3(0, .57f, 0), new Vector3(.4f, .18f, .18f), metal);
-            Cube("Label", go.transform, new Vector3(0, 0, -.235f), new Vector3(.34f, .4f, .025f), marking);
-        }
-        else
-        {
-            go.AddComponent<CoinPickup>(); var coin = Cube("Coin", go.transform, Vector3.zero, new Vector3(.7f, .09f, .7f), gold, PrimitiveType.Cylinder); coin.transform.localRotation = Quaternion.Euler(90, 0, 0);
-        }
-        return SavePrefab(go, fuel ? "FuelCan" : "Coin");
+        var root = new GameObject("FuelCan");
+        root.AddComponent<FuelPickup>();
+        ConfigureFuelVisual(root);
+        return SavePrefab(root, "FuelCan");
+    }
+
+    static void ConfigureFuelVisual(GameObject root)
+    {
+        const string source = "Assets/Art/Quaternius/GasCan.fbx";
+        var model = AssetDatabase.LoadAssetAtPath<GameObject>(source);
+        if (model == null) throw new InvalidOperationException("Missing fuel can model: " + source);
+
+        var visual = UnityEngine.Object.Instantiate(model, root.transform);
+        visual.name = "Gas Can";
+        var bounds = Bounds(visual);
+        visual.transform.localScale *= .85f / Mathf.Max(.001f, bounds.size.y);
+        visual.transform.position -= Bounds(visual).center - root.transform.position;
+        foreach (var renderer in visual.GetComponentsInChildren<MeshRenderer>())
+            renderer.sharedMaterials = renderer.sharedMaterials.Select(ConvertMaterial).ToArray();
     }
     static InputActionAsset CreateControls()
     {

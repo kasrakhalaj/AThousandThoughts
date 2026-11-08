@@ -249,6 +249,28 @@ public sealed class DrivingFlowTests
         Assert.That(PlayerPrefs.GetInt(KeyName), Is.GreaterThanOrEqualTo(200));
         g.MainMenu(); Assert.That(g.State, Is.EqualTo(GameState.Menu)); Assert.That(g.Run.Score, Is.Zero);
     }
+
+    [UnityTest] public IEnumerator FuelPickupRefillsWithoutAddingScore()
+    {
+        var g = GameManager.Instance;
+        g.StartRun(); yield return WaitForDriving();
+        var can = g.World.GetComponentInChildren<FuelPickup>();
+        Assert.That(can, Is.Not.Null);
+        Assert.That(can.GetComponentInChildren<MeshRenderer>(), Is.Not.Null);
+
+        g.Run.Advance(0, 100);
+        float fuel = g.Run.Fuel;
+        int score = g.Run.Score;
+        Vector3 position = can.transform.position;
+        position.y = g.Driver.transform.position.y;
+        g.Driver.transform.position = position;
+        g.World.Tick(0);
+
+        Assert.That(g.Run.Fuel, Is.EqualTo(fuel + 30).Within(.01f));
+        Assert.That(g.Run.Score, Is.EqualTo(score));
+        Assert.That(can.gameObject.activeSelf, Is.False);
+    }
+
     [UnityTest] public IEnumerator MusicCategoriesPlaybackAndWeatherZones()
     {
         var g = GameManager.Instance;
@@ -619,7 +641,7 @@ public sealed class DrivingFlowTests
         }
         Assert.That(g.Driver.Speed, Is.GreaterThan(25));
         Assert.That(ahead, Is.GreaterThanOrEqualTo(4), "The early road must contain visible encounters, not just distant pooled traffic.");
-        Assert.That(g.World.PooledCount, Is.EqualTo(264));
+        Assert.That(g.World.PooledCount, Is.EqualTo(120));
     }
     [UnityTest] public IEnumerator DistantPassingDoesNotReserveAnEscapeLaneForAPlayerFarBehind()
     {

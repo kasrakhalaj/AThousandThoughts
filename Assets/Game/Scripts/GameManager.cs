@@ -96,7 +96,6 @@ namespace AfterHours
             audioRig.Collision(); follow.Shake();
             if (Run.Lives == 0) EndRun("THREE STRIKES");
         }
-        public void CollectCoin(Vector3 position) { if (State != GameState.Playing) return; Run.AddCoin(); Effects.Burst(position, new Color(2, 1.4f, .3f), 12); audioRig.Coin(); }
         public void CollectFuel(Vector3 position) { if (State != GameState.Playing) return; Run.Refuel(); Effects.Burst(position, new Color(.4f, 1.7f, 1.1f), 16); audioRig.Fuel(); }
         void EndRun(string reason) { EndReason = reason; State = GameState.GameOver; Input.EnableDriving(false); SaveBest(); }
         static int LoadBest()

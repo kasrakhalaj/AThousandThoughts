@@ -1,6 +1,6 @@
 # A Thousand Thoughts
 
-A low-poly endless night drive for Game Design HW2. Choose one of five cars, start the engine, and dodge traffic through changing districts, fog, and rain. Collect coins and fuel to keep the run going.
+A low-poly endless night drive for Game Design HW2. Choose one of five cars, start the engine, and dodge traffic through changing districts, fog, and rain. Collect fuel cans to keep driving. Score comes from your furthest distance.
 
 ## Run from source
 

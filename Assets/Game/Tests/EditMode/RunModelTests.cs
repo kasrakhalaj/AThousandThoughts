@@ -27,7 +27,7 @@ public sealed class RunModelTests
     }
     [Test] public void RestartResetsAllRunState()
     {
-        var run = new RunModel(); run.Advance(900, 60); run.AddCoin(); run.Hit(); run.Reset();
+        var run = new RunModel(); run.Advance(900, 60); run.Hit(); run.Reset();
         Assert.That(run.Score, Is.Zero); Assert.That(run.Lives, Is.EqualTo(3)); Assert.That(run.Fuel, Is.EqualTo(100)); Assert.That(run.Difficulty, Is.Zero);
     }
 }

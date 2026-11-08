@@ -74,7 +74,6 @@ namespace AfterHours
             ignitionRemaining = game.IgnitionDuration; effects.PlayOneShot(catalog.ignitionSound, .7f);
         }
         public void Collision() { effects.PlayOneShot(catalog.collisionSound, .8f); }
-        public void Coin() { effects.PlayOneShot(catalog.coinSound, .38f); }
         public void Fuel() { effects.PlayOneShot(catalog.fuelSound, .5f); }
         public void Tick()
         {
